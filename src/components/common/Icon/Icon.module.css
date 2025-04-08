@@ -1,0 +1,32 @@
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.small {
+  width: var(--icon-size-small);
+  height: var(--icon-size-small);
+}
+
+.medium {
+  width: var(--icon-size-medium);
+  height: var(--icon-size-medium);
+}
+
+.large {
+  width: var(--icon-size-large);
+  height: var(--icon-size-large);
+}
+
+.inherit {
+  color: inherit;
+}
+
+.primary {
+  color: var(--color-icon-primary);
+}
+
+.secondary {
+  color: var(--color-icon-secondary);
+}

@@ -1,0 +1,8 @@
+.appContainer {
+  min-height: 100vh;
+  padding: var(--space-md);
+
+  @media (--tablet) {
+    padding: var(--space-lg);
+  }
+}

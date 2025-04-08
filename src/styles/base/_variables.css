@@ -1,0 +1,64 @@
+:root {
+  /* Colors */
+  --color-primary: #6c5ce7;
+  --color-secondary: #a8a5e6;
+  --color-background: #ffffff;
+  --color-text: #2d3436;
+  --color-text-secondary: #64748b;
+
+  /* Extended Colors */
+  --color-primary-dark: #5549d9;
+  --color-secondary-dark: #9691e0;
+
+  /* Difficulty Colors */
+  --color-easy: #00b894;
+  --color-medium: #fdcb6e;
+  --color-quiz-genius: #ff7675;
+
+  /* Input Colors */
+  --color-border: #e2e8f0;
+  --color-error: #ef4444;
+  --color-error-light: rgba(239, 68, 68, 0.2);
+  --color-primary-light: rgba(108, 92, 231, 0.2);
+
+  /* Card Colors */
+  --color-skeleton-start: #f3f4f6;
+  --color-skeleton-end: #e5e7eb;
+
+  /* Component Colors */
+  --color-icon-primary: var(--color-primary);
+  --color-icon-secondary: var(--color-secondary);
+  --color-loading-primary: var(--color-primary);
+  --color-loading-secondary: var(--color-secondary);
+  --color-modal-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Typography */
+  --font-family: 'Inter', sans-serif;
+  --font-size-h1: 32px;
+  --font-size-h2: 24px;
+  --font-size-h3: 20px;
+  --font-size-body: 16px;
+  --font-size-small: 14px;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  /* Breakpoints */
+  --mobile: 320px;
+  --tablet: 768px;
+  --desktop: 1024px;
+
+  /* Container */
+  --container-mobile: calc(100% - 32px);
+  --container-tablet: 720px;
+  --container-desktop: 1140px;
+
+  /* Component Sizes */
+  --icon-size-small: 16px;
+  --icon-size-medium: 24px;
+  --icon-size-large: 32px;
+}

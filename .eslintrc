@@ -1,0 +1,9 @@
+{
+  "extends": ["react-app", "react-app/jest", "prettier"],
+  "plugins": ["prettier"],
+  "rules": {
+    "prettier/prettier": "error",
+    "react/jsx-filename-extension": [1, { "extensions": [".tsx", ".ts"] }],
+    "import/prefer-default-export": "off"
+  }
+}

@@ -1,0 +1,7 @@
+@import './base/_reset.css';
+@import './base/_variables.css';
+@import './base/_typography.css';
+@import './base/_global.css';
+@import './utils/_mixins.css';
+
+/* No need for base styles here since they're in _global.css */
