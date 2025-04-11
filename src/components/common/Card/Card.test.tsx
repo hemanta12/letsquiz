@@ -20,8 +20,8 @@ describe('Card Component', () => {
   });
 
   it('shows loading state', () => {
-    render(<Card loading>Content</Card>);
-    expect(screen.getByRole('generic')).toHaveClass('loading');
+    const { container } = render(<Card loading>Content</Card>);
+    expect(container.firstChild).toHaveClass('loading');
     expect(screen.queryByText('Content')).not.toBeInTheDocument();
   });
 

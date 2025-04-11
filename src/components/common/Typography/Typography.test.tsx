@@ -9,7 +9,7 @@ describe('Typography Component', () => {
   });
 
   it('applies correct html tag based on variant', () => {
-    const { container, rerender } = render(<Typography variant="h1">Heading</Typography>);
+    const { rerender } = render(<Typography variant="h1">Heading</Typography>);
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
 
     rerender(<Typography variant="body1">Paragraph</Typography>);
@@ -17,12 +17,13 @@ describe('Typography Component', () => {
   });
 
   it('allows custom component override', () => {
-    const { container } = render(
+    render(
       <Typography variant="h1" component="span">
         Custom
       </Typography>
     );
-    expect(screen.getByRole('generic')).toBeInTheDocument();
+    // Use more specific query
+    expect(screen.getByText('Custom')).toHaveClass('typography');
   });
 
   it('applies custom className', () => {

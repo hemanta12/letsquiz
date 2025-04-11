@@ -21,18 +21,19 @@ export const Navbar: React.FC = () => {
           className={styles.mobileMenuButton}
           onClick={toggleMobileMenu}
           aria-label="Toggle menu"
+          aria-expanded={isMobileMenuOpen}
         >
           <Icon name="menu" />
         </button>
 
-        <div className={`${styles.menuItems} ${isMobileMenuOpen ? styles.isOpen : ''}`}>
-          <Link to="/" className={styles.menuItem}>
+        <div className={`${styles.menuItems} ${isMobileMenuOpen ? styles.isOpen : ''}`} role="menu">
+          <Link to="/" className={styles.menuItem} role="menuitem">
             Home
           </Link>
-          <Link to="/quiz" className={styles.menuItem}>
+          <Link to="/quiz" className={styles.menuItem} role="menuitem">
             Quiz
           </Link>
-          <Link to="/login" className={styles.menuItem}>
+          <Link to="/login" className={styles.menuItem} role="menuitem">
             Login
           </Link>
         </div>

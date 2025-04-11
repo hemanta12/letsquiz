@@ -35,14 +35,15 @@
 
 .mobileMenuButton {
   display: none;
+  background: none;
+  border: none;
+  color: white;
+  padding: var(--space-sm);
 }
 
 @media (max-width: 768px) {
   .mobileMenuButton {
     display: block;
-    background: none;
-    border: none;
-    color: white;
   }
 
   .menuItems {
@@ -54,6 +55,7 @@
     background-color: var(--color-primary);
     padding: var(--space-md);
     flex-direction: column;
+    gap: var(--space-md);
   }
 
   .menuItems.isOpen {

@@ -1,14 +1,22 @@
 import React from 'react';
 import { render as rtlRender } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import { store } from '../store';
 import { MemoryRouter } from 'react-router-dom';
-import { store } from '../store/store';
 
-function render(ui: React.ReactElement, { ...renderOptions } = {}) {
+interface RenderOptions {
+  initialEntries?: string[];
+  [key: string]: any;
+}
+
+function render(
+  ui: React.ReactElement,
+  { initialEntries = ['/'], ...renderOptions }: RenderOptions = {}
+) {
   function Wrapper({ children }: { children: React.ReactNode }) {
     return (
       <Provider store={store}>
-        <MemoryRouter>{children}</MemoryRouter>
+        <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
       </Provider>
     );
   }

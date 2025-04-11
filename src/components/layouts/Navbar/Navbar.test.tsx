@@ -14,7 +14,10 @@ describe('Navbar Component', () => {
   it('toggles mobile menu when button is clicked', () => {
     render(<Navbar />);
     const menuButton = screen.getByLabelText('Toggle menu');
+    const menuItems = screen.getByRole('menu');
+
+    expect(menuItems).not.toHaveClass('isOpen');
     fireEvent.click(menuButton);
-    expect(screen.getByRole('navigation')).toHaveClass('isOpen');
+    expect(menuItems).toHaveClass('isOpen');
   });
 });

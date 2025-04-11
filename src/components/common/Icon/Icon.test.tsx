@@ -5,7 +5,7 @@ import Icon from './index';
 describe('Icon Component', () => {
   it('renders icon by name', () => {
     const { container } = render(<Icon name="play" />);
-    expect(screen.getByRole('img')).toBeInTheDocument();
+    expect(container.firstChild).toHaveClass('icon');
   });
 
   it('applies size classes correctly', () => {

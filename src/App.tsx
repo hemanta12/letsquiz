@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { MainLayout } from './components/layouts/MainLayout';
@@ -26,17 +26,26 @@ const NotFound = () => (
   </RouteTransition>
 );
 
+const Login = lazy(() => import('./components/auth/Login'));
+const SignUp = lazy(() => import('./components/auth/SignUp'));
+const PasswordReset = lazy(() => import('./components/auth/PasswordReset'));
+
 const App: React.FC = () => {
   return (
     <div className={styles.appContainer}>
       <MainLayout>
         <AnimatePresence mode="wait">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/quiz" element={<Quiz />} />
-            <Route path="/results" element={<Results />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<div>Loading...</div>}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/quiz" element={<Quiz />} />
+              <Route path="/results" element={<Results />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/reset-password" element={<PasswordReset />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </AnimatePresence>
       </MainLayout>
     </div>

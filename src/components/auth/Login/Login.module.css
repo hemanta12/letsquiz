@@ -1,0 +1,41 @@
+.loginCard {
+  max-width: 400px;
+  margin: var(--space-xl) auto;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.error {
+  color: var(--color-error);
+  text-align: center;
+}
+
+.submitButton {
+  margin-top: var(--space-md);
+}
+
+.links {
+  margin-top: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  text-align: center;
+}
+
+.links a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
