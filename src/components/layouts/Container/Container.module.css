@@ -1,0 +1,17 @@
+.container {
+  width: var(--container-mobile);
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+@media (min-width: 768px) {
+  .container {
+    width: var(--container-tablet);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    width: var(--container-desktop);
+  }
+}

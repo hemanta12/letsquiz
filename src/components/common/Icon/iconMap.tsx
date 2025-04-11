@@ -43,4 +43,9 @@ export const icons: Record<IconName, React.FC<React.SVGProps<SVGSVGElement>>> = 
       <path d="M4 4h2l6 6-6 6H4v-2l4-4-4-4V4zm16 0v2l-4 4 4 4v2h-2l-6-6 6-6h2z" />
     </svg>
   ),
+  menu: (props) => (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+    </svg>
+  ),
 };

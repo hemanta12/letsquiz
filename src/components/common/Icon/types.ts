@@ -6,7 +6,8 @@ export type IconName =
   | 'arrow-right'
   | 'person'
   | 'group'
-  | 'shuffle';
+  | 'shuffle'
+  | 'menu';
 
 export interface IconProps extends React.SVGAttributes<SVGElement> {
   name: IconName;
