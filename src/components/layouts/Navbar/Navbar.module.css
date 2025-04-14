@@ -16,6 +16,13 @@
 .logo {
   font-size: var(--font-size-h3);
   font-weight: 700;
+  color: white;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.logo:hover {
+  opacity: 0.9;
 }
 
 .menuItems {
@@ -39,26 +46,59 @@
   border: none;
   color: white;
   padding: var(--space-sm);
+  cursor: pointer;
+}
+
+.mobileMenuButton svg {
+  width: 24px;
+  height: 24px;
+}
+
+.loginLink {
+  color: white;
+  text-decoration: none;
+  font-size: var(--font-size-body);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.loginLink:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 @media (max-width: 768px) {
   .mobileMenuButton {
     display: block;
+    cursor: pointer;
   }
 
   .menuItems {
     display: none;
-    position: absolute;
-    top: 100%;
+    position: fixed;
+    top: 60px;
     left: 0;
     right: 0;
     background-color: var(--color-primary);
     padding: var(--space-md);
     flex-direction: column;
     gap: var(--space-md);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
   }
 
   .menuItems.isOpen {
     display: flex;
+  }
+
+  .menuItem {
+    padding: var(--space-md);
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .menuItem:last-child {
+    border-bottom: none;
   }
 }

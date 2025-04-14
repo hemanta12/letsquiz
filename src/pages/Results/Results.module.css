@@ -1,0 +1,46 @@
+.results {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: var(--space-xl) 0;
+  text-align: center;
+}
+
+.score {
+  margin-bottom: var(--space-xl);
+}
+
+.scoreValue {
+  font-size: 64px;
+  color: var(--color-primary);
+  margin: var(--space-lg) 0;
+}
+
+.breakdown {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+  margin: var(--space-xl) 0;
+}
+
+.stat {
+  padding: var(--space-lg);
+  border-radius: 8px;
+}
+
+.correct {
+  background-color: var(--color-easy);
+  color: white;
+}
+
+.incorrect {
+  background-color: var(--color-quiz-genius);
+  color: white;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-width: 300px;
+  margin: var(--space-xl) auto 0;
+}

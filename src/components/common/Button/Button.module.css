@@ -9,6 +9,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
+  border-radius: 10px;
 }
 
 .primary {
@@ -29,6 +30,11 @@
   background-color: var(--color-secondary-dark);
 }
 
+.quit {
+  background-color: var(--color-quit);
+  color: white;
+}
+
 .text {
   background-color: transparent;
   color: var(--color-primary);
@@ -45,7 +51,7 @@
 }
 
 .medium {
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-md) var(--space-md);
   font-size: var(--font-size-body);
 }
 
@@ -55,7 +61,8 @@
 }
 
 .button:disabled {
-  opacity: 0.6;
+  /* opacity: 0.6; */
+  background-color: var(--color-disabled);
   cursor: not-allowed;
 }
 

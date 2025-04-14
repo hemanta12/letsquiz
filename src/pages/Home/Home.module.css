@@ -1,0 +1,266 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-md) var(--space-md);
+  width: 100%;
+}
+
+.welcomeMessage {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+  font-weight: 700;
+}
+
+.section {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-xl);
+  padding: var(--space-md);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 180px;
+  margin-bottom: var(--space-md);
+}
+
+.sectionContent {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Title for a section inside the main content */
+.sectionTitle {
+  text-align: left;
+  margin-bottom: -0.5rem;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+}
+
+.sectionNumber {
+  width: 28px;
+  height: 28px;
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.modeSelector {
+  display: flex;
+  gap: var(--space-xxl);
+  justify-content: center;
+}
+
+.modeSelector button {
+  padding: var(--space-md) var(--space-xl);
+  width: 190;
+  height: 70px;
+  background-color: white;
+  color: var(--color-text);
+  border: 3px solid var(--color-primary);
+  transition: all 0.3s ease;
+}
+
+.modeSelector button:hover {
+  background-color: var(--color-primary);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.modeSelector .selected {
+  background-color: var(--color-primary);
+  color: white;
+  box-shadow: 0 2px 8px rgba(108, 92, 231, 0.4);
+}
+
+/* Category Grid Styles */
+.categoryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--space-md);
+  justify-items: center;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-md) 0;
+}
+
+/* Category Card Styles */
+.categoryCard {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.categoryCard:hover {
+  transform: translateY(-4px);
+  will-change: transform;
+}
+
+.mixUpButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  height: 45px;
+  margin: var(--space-md) auto 0;
+  padding: var(--space-sm) var(--space-xl);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.mixUpButton:hover {
+  transform: translateY(-4px);
+  border: 3px solid var(--color-primary);
+
+  will-change: transform;
+}
+
+.mixUpButton.selected {
+  border: 3px solid var(--color-primary);
+  box-shadow: 0 2px 8px rgba(108, 92, 231, 0.2);
+}
+
+.difficultySelector {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-xxl);
+  padding-bottom: var(--space-sm);
+  -webkit-overflow-scrolling: touch;
+}
+
+.difficultySelector button {
+  width: 180px;
+  height: 60px;
+  padding: var(--space-md) var(--space-xl);
+  transition: all 0.3s ease;
+  border: 5px solid transparent;
+}
+
+.difficultySelector button:hover {
+  background-color: var(--color-primary);
+  border: 5px solid var(--color-primary);
+
+  color: white;
+  transform: translateY(-2px);
+}
+
+.difficultySelector .selected {
+  border: 5px solid var(--color-primary);
+  color: white;
+  box-shadow: 0 2px 8px rgba(108, 92, 231, 0.4);
+}
+
+.startQuiz {
+  display: flex;
+  justify-content: flex-end;
+  min-width: 200px;
+}
+
+.startQuiz button {
+  width: 280px;
+  height: 75px;
+  font-size: var(--font-size-h3);
+}
+
+/* Medium and small screens */
+@media screen and (max-width: 768px) {
+  .welcomeMessage {
+    margin-bottom: var(--space-sm);
+  }
+  .section {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .sectionHeader {
+    margin-bottom: 0;
+    justify-content: flex-start;
+  }
+
+  .startQuiz {
+    justify-content: center;
+  }
+  .difficultySelector {
+    gap: var(--space-md);
+  }
+}
+
+/* Mobile screens */
+@media screen and (max-width: 479px) {
+  .home {
+    gap: var(--space-md);
+  }
+
+  .section {
+    padding: var(--space-sm);
+    margin-bottom: var(--space-sm);
+  }
+
+  .sectionNumber {
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+  }
+
+  .modeSelector {
+    gap: var(--space-sm);
+  }
+
+  .modeSelector button {
+    width: 9rem;
+    height: 3.3rem;
+    padding: var(--space-sm);
+    font-size: var(--font-size-small);
+  }
+
+  .categoryGrid {
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: var(--space-sm);
+  }
+
+  .categoryCard {
+    width: 90px;
+    height: 90px;
+  }
+
+  .mixUpButton {
+    /* width: 100%; */
+    margin-top: var(--space-sm);
+  }
+
+  .difficultySelector {
+    flex-direction: column;
+    width: 100%;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+    justify-content: center;
+    align-items: center;
+  }
+
+  .difficultySelector button {
+    width: 85%;
+    height: 45px;
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-small);
+  }
+
+  .startQuiz button {
+    width: 100%;
+    font-size: var(--font-size-body);
+  }
+}

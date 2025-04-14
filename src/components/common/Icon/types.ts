@@ -3,14 +3,15 @@ export type IconName =
   | 'pause'
   | 'close'
   | 'check'
-  | 'arrow-right'
+  | 'arrowRight'
   | 'person'
   | 'group'
   | 'shuffle'
   | 'menu';
 
-export interface IconProps extends React.SVGAttributes<SVGElement> {
+export interface IconProps {
   name: IconName;
-  size?: 'small' | 'medium' | 'large';
-  color?: 'inherit' | 'primary' | 'secondary';
+  size?: 'small' | 'medium' | 'large'; // Add back size prop
+  color?: 'inherit' | 'primary' | 'secondary'; // Add back color prop
+  className?: string;
 }

@@ -5,21 +5,32 @@ import { MainLayout } from './components/layouts/MainLayout';
 import { RouteTransition } from './components/layouts/RouteTransition';
 import styles from './App.module.css';
 
-const Home = () => (
+const Home = lazy(() => import('./pages/Home'));
+
+const LoadingFallback = () => (
   <RouteTransition>
-    <div>Home Page</div>
+    <div>Loading...</div>
   </RouteTransition>
 );
-const Quiz = () => (
+
+const ErrorFallback = () => (
   <RouteTransition>
-    <div>Quiz Page</div>
+    <div>Error loading page. Please try again.</div>
   </RouteTransition>
 );
-const Results = () => (
-  <RouteTransition>
-    <div>Results Page</div>
-  </RouteTransition>
+
+const Quiz = lazy(() =>
+  import('./pages/Quiz').catch(() => ({
+    default: () => <ErrorFallback />,
+  }))
 );
+
+const Results = lazy(() =>
+  import('./pages/Results').catch(() => ({
+    default: () => <ErrorFallback />,
+  }))
+);
+
 const NotFound = () => (
   <RouteTransition>
     <div>404 - Not Found</div>
@@ -35,7 +46,7 @@ const App: React.FC = () => {
     <div className={styles.appContainer}>
       <MainLayout>
         <AnimatePresence mode="wait">
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<LoadingFallback />}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/quiz" element={<Quiz />} />
