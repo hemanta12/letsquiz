@@ -41,6 +41,7 @@ const Login = lazy(() => import('./components/auth/Login'));
 const SignUp = lazy(() => import('./components/auth/SignUp'));
 const PasswordReset = lazy(() => import('./components/auth/PasswordReset'));
 const PlayerSetup = lazy(() => import('./pages/PlayerSetup'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
 
 const App: React.FC = () => {
   return (
@@ -56,6 +57,7 @@ const App: React.FC = () => {
               <Route path="/signup" element={<SignUp />} />
               <Route path="/reset-password" element={<PasswordReset />} />
               <Route path="/player-setup" element={<PlayerSetup />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

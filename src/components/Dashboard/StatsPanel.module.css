@@ -1,0 +1,33 @@
+.statsRow {
+  width: 100%;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+}
+
+.statCard {
+  background: var(--color-primary);
+  color: white;
+  padding: var(--space-xl);
+  border-radius: 12px;
+  transition: transform 0.2s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-4px);
+}
+
+.statValue {
+  font-size: 32px;
+  font-weight: bold;
+  margin: var(--space-md) 0;
+}
+
+@media (max-width: 1024px) {
+  .stats {
+    grid-template-columns: 1fr;
+  }
+}

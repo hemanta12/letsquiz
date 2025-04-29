@@ -1,0 +1,5 @@
+.dashboard {
+  padding: var(--space-lg);
+  max-width: 1400px;
+  margin: 0 auto;
+}
