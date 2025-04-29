@@ -1,0 +1,82 @@
+.playerManagement {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: var(--space-lg);
+  align-items: center;
+}
+.playerSetup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: var(--space-lg);
+  align-items: center;
+  border: 5px solid var(--color-border);
+}
+
+.playerList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  width: 100%;
+}
+
+.playerInput {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm);
+  width: 100%;
+}
+
+.playerInput > :first-child {
+  flex: 1;
+  min-width: 200px;
+}
+
+.removeButton {
+  width: fit-content;
+  flex-shrink: 0;
+}
+
+.playerInput input {
+  padding: var(--space-md);
+  width: 100%;
+}
+
+.error {
+  color: var(--color-error);
+  text-align: center;
+}
+
+.actions {
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+  align-self: flex-start;
+}
+
+.startButton {
+  width: 100%;
+  max-width: 300px;
+  height: 75px;
+  font-size: var(--font-size-h3);
+  align-items: right;
+}
+
+@media screen and (max-width: 479px) {
+  .playerInput {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+}

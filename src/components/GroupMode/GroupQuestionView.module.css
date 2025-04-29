@@ -1,0 +1,124 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.questionHeader {
+  margin-bottom: 20px;
+}
+
+.question {
+  text-align: center;
+  margin: var(--space-md) 0 0 0;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-lg) 0;
+}
+
+.option {
+  margin: 0 auto;
+  width: 90%;
+  padding: var(--space-lg) var(--space-md);
+  text-align: left;
+  font-size: var(--font-size-h3);
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.option.selected {
+  border: 2px solid var(--color-primary) !important;
+}
+
+.option.correct {
+  background-color: var(--color-correct-light) !important;
+}
+
+.option.incorrect {
+  background-color: rgba(181, 0, 0, 0.1) !important;
+  border-color: var(--color-quit) !important;
+}
+
+.option.wrong {
+  background-color: rgba(181, 0, 0, 0.1) !important;
+  border-color: transparent !important;
+}
+
+.feedback {
+  text-align: center;
+  font-weight: 500;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.playerSelection {
+  margin-top: 20px;
+}
+
+.playerButtons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.scoreBoard {
+  display: flex;
+  justify-content: space-around;
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  background: var(--color-background);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.playerScore {
+  text-align: center;
+  padding: var(--space-sm);
+}
+
+.playerName {
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-xs);
+}
+
+.score {
+  font-size: var(--font-size-h3);
+  color: var(--color-primary);
+}
+
+.pointAnimation {
+  animation: pointPop 0.5s ease-out;
+}
+
+@keyframes pointPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .options {
+    gap: var(--space-md);
+    padding: var(--space-sm) 0;
+  }
+  .option {
+    width: 100%;
+    font-size: var(--font-size-h4);
+    padding: var(--space-xl) var(--space-lg);
+  }
+  .feedback {
+    margin: var(--space-md) auto;
+  }
+}

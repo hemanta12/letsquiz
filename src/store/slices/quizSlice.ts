@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { QuizSettings } from '../../types/quiz.types';
+import { Player } from '../../types/group.types';
 
 export interface Question {
   id: string;
@@ -18,6 +19,8 @@ interface QuizState {
   questions: Question[];
   selectedAnswers: Record<number, string>;
   score: number;
+  currentPlayer?: Player;
+  pointsPerQuestion: number;
 }
 
 // Modify STATIC_QUESTIONS to include difficulty
@@ -133,6 +136,8 @@ const initialState: QuizState = {
   questions: [],
   selectedAnswers: {},
   score: 0,
+  currentPlayer: undefined,
+  pointsPerQuestion: 5,
 };
 
 // Add a comment for backend integration
@@ -215,6 +220,37 @@ export const quizSlice = createSlice({
 
       state.questions = selectedQuestions;
     },
+    setCurrentPlayer: (state, action: PayloadAction<Player>) => {
+      state.currentPlayer = action.payload;
+    },
+    updatePlayerScore: (state, action: PayloadAction<string>) => {
+      if (state.settings?.groupState) {
+        state.settings.groupState.players = state.settings.groupState.players.map((player) => {
+          if (player.id === action.payload) {
+            return {
+              ...player,
+              score: player.score + 5,
+              uiScore: undefined,
+            };
+          }
+          return {
+            ...player,
+            uiScore: undefined,
+          };
+        });
+      }
+    },
+    // Add new action to handle UI-only updates
+    updatePlayers: (state, action: PayloadAction<Player[]>) => {
+      if (state.settings?.groupState) {
+        state.settings.groupState.players = action.payload;
+      }
+    },
+    updateTempScores: (state, action: PayloadAction<Player[]>) => {
+      if (state.settings?.groupState) {
+        state.settings.groupState.players = action.payload;
+      }
+    },
   },
 });
 
@@ -225,6 +261,10 @@ export const {
   updateScore,
   nextQuestion,
   resetQuiz,
-  initializeQuestions, // Add this to exports
+  initializeQuestions,
+  setCurrentPlayer,
+  updatePlayerScore,
+  updatePlayers,
+  updateTempScores,
 } = quizSlice.actions;
 export default quizSlice.reducer;

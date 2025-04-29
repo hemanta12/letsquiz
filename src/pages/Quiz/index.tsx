@@ -9,7 +9,9 @@ import {
   Question,
   initializeQuestions,
   resetQuiz,
+  updatePlayerScore,
 } from '../../store/slices/quizSlice';
+import { GroupQuestionView } from '../../components/GroupMode/GroupQuestionView';
 import styles from './Quiz.module.css';
 
 export const Quiz: React.FC = () => {
@@ -24,6 +26,7 @@ export const Quiz: React.FC = () => {
   const [showFeedback, setShowFeedback] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [showQuitModal, setShowQuitModal] = useState(false);
+  const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
 
   // Redirect if no questions are loaded
   useEffect(() => {
@@ -88,7 +91,15 @@ export const Quiz: React.FC = () => {
   const handleNext = async () => {
     try {
       setIsLoading(true);
+
+      // Update score before moving to next question if in group mode
+      if (mode === 'Group' && selectedPlayer) {
+        dispatch(updatePlayerScore(selectedPlayer));
+      }
+
       setShowFeedback(false);
+      setSelectedPlayer(null);
+
       if (currentQuestion === questions.length - 1) {
         await dispatch(updateScore());
         navigate('/results');
@@ -106,6 +117,14 @@ export const Quiz: React.FC = () => {
     dispatch(resetQuiz());
     navigate('/');
   };
+
+  if (!currentQuestionData) {
+    return (
+      <div className={styles.quiz}>
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.quiz}>
@@ -127,72 +146,107 @@ export const Quiz: React.FC = () => {
         <div className={styles.progressBar} style={{ width: `${progress}%` }} />
       </div>
 
-      <div className={styles.question}>
-        <Typography variant="h2">{currentQuestionData?.text}</Typography>
-      </div>
+      {mode === 'Group' ? (
+        <>
+          <GroupQuestionView
+            questionNumber={currentQuestion + 1}
+            totalQuestions={questions.length}
+            question={currentQuestionData.text}
+            options={currentQuestionData.options}
+            correctAnswer={currentQuestionData.correctAnswer}
+            onAnswerSelect={handleAnswerSelect}
+            showFeedback={showFeedback}
+            selectedAnswer={selectedAnswers[currentQuestion]}
+            onPlayerSelected={setSelectedPlayer}
+            currentScoredPlayer={selectedPlayer}
+          />
+          <div className={styles.actions}>
+            <Button
+              variant="quit"
+              className={styles.quitButton}
+              onClick={() => setShowQuitModal(true)}
+            >
+              Quit
+            </Button>
+            <Button variant="primary" disabled={!hasSelectedAnswer} onClick={handleNext}>
+              {currentQuestion === questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
+            </Button>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className={styles.question}>
+            <Typography variant="h2">{currentQuestionData?.text}</Typography>
+          </div>
 
-      {showFeedback && (
-        <Typography
-          variant="h3"
-          className={styles.feedback}
-          style={{ color: isCorrect ? 'var(--color-easy)' : 'var(--color-quit)' }}
-        >
-          {isCorrect ? 'Correct!' : 'Incorrect!'}
-        </Typography>
-      )}
+          {showFeedback && (
+            <Typography
+              variant="h3"
+              className={styles.feedback}
+              style={{ color: isCorrect ? 'var(--color-easy)' : 'var(--color-quit)' }}
+            >
+              {isCorrect ? 'Correct!' : 'Incorrect!'}
+            </Typography>
+          )}
 
-      <div className={styles.options}>
-        {isLoading ? (
-          <Loading variant="skeleton" />
-        ) : (
-          currentQuestionData?.options.map((option) => {
-            const isSelected = selectedAnswers[currentQuestion] === option;
-            const isCorrectAnswer = option === currentQuestionData.correctAnswer;
-            const showFeedbackStyles = showFeedback && (isSelected || isCorrectAnswer);
+          <div className={styles.options}>
+            {isLoading ? (
+              <Loading variant="skeleton" />
+            ) : (
+              currentQuestionData?.options.map((option) => {
+                const isSelected = selectedAnswers[currentQuestion] === option;
+                const isCorrectAnswer = option === currentQuestionData.correctAnswer;
+                const showFeedbackStyles = showFeedback && (isSelected || isCorrectAnswer);
 
-            let optionClassNames = styles.option;
+                let optionClassNames = styles.option;
 
-            if (showFeedback) {
-              if (isSelected) {
-                optionClassNames += ` ${styles.selected}`;
-                if (isCorrectAnswer) {
-                  optionClassNames += ` ${styles.correct}`;
-                } else {
-                  optionClassNames += ` ${styles.incorrect}`;
+                if (showFeedback) {
+                  if (isSelected) {
+                    optionClassNames += ` ${styles.selected}`;
+                    if (isCorrectAnswer) {
+                      optionClassNames += ` ${styles.correct}`;
+                    } else {
+                      optionClassNames += ` ${styles.incorrect}`;
+                    }
+                  } else if (isCorrectAnswer) {
+                    optionClassNames += ` ${styles.correct}`;
+                  } else {
+                    optionClassNames += ` ${styles.wrong}`;
+                  }
                 }
-              } else if (isCorrectAnswer) {
-                optionClassNames += ` ${styles.correct}`;
-              } else {
-                optionClassNames += ` ${styles.wrong}`;
-              }
-            }
 
-            return (
-              <Button
-                key={option}
-                variant="secondary"
-                className={optionClassNames}
-                onClick={() => handleAnswerSelect(option)}
-                disabled={hasSelectedAnswer}
-                onKeyPress={(e) => handleKeyPress(e, option)}
-                tabIndex={0}
-                aria-selected={isSelected}
-              >
-                {option}
-              </Button>
-            );
-          })
-        )}
-      </div>
+                return (
+                  <Button
+                    key={option}
+                    variant="secondary"
+                    className={optionClassNames}
+                    onClick={() => handleAnswerSelect(option)}
+                    disabled={hasSelectedAnswer}
+                    onKeyPress={(e) => handleKeyPress(e, option)}
+                    tabIndex={0}
+                    aria-selected={isSelected}
+                  >
+                    {option}
+                  </Button>
+                );
+              })
+            )}
+          </div>
 
-      <div className={styles.actions}>
-        <Button variant="quit" className={styles.quitButton} onClick={() => setShowQuitModal(true)}>
-          Quit
-        </Button>
-        <Button variant="primary" disabled={!hasSelectedAnswer} onClick={handleNext}>
-          {currentQuestion === questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
-        </Button>
-      </div>
+          <div className={styles.actions}>
+            <Button
+              variant="quit"
+              className={styles.quitButton}
+              onClick={() => setShowQuitModal(true)}
+            >
+              Quit
+            </Button>
+            <Button variant="primary" disabled={!hasSelectedAnswer} onClick={handleNext}>
+              {currentQuestion === questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
+            </Button>
+          </div>
+        </>
+      )}
 
       <Modal open={showQuitModal} onClose={() => setShowQuitModal(false)} title="Quit Quiz">
         <div className={styles.quitDialog}>

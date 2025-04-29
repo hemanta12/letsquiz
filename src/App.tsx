@@ -40,6 +40,7 @@ const NotFound = () => (
 const Login = lazy(() => import('./components/auth/Login'));
 const SignUp = lazy(() => import('./components/auth/SignUp'));
 const PasswordReset = lazy(() => import('./components/auth/PasswordReset'));
+const PlayerSetup = lazy(() => import('./pages/PlayerSetup'));
 
 const App: React.FC = () => {
   return (
@@ -54,6 +55,7 @@ const App: React.FC = () => {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/reset-password" element={<PasswordReset />} />
+              <Route path="/player-setup" element={<PlayerSetup />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

@@ -1,0 +1,106 @@
+import React, { useState } from 'react';
+import { Player } from '../../../types/group.types';
+import { Button, Input, Typography } from '../../common';
+import styles from './PlayerManagement.module.css';
+
+interface PlayerManagementProps {
+  onPlayersConfirmed: (players: Player[]) => void;
+}
+
+export const PlayerManagement: React.FC<PlayerManagementProps> = ({ onPlayersConfirmed }) => {
+  const [players, setPlayers] = useState<Player[]>([
+    { id: '1', name: '', score: 0, isCurrentTurn: false },
+    { id: '2', name: '', score: 0, isCurrentTurn: false },
+  ]);
+  const [error, setError] = useState<string>('');
+
+  // Validate before confirming
+  const handleConfirm = () => {
+    const filledPlayers = players.filter((p) => p.name.trim());
+    if (filledPlayers.length < 2) {
+      setError('Minimum 2 players required');
+      return;
+    }
+    onPlayersConfirmed(filledPlayers);
+  };
+
+  const handleAddPlayer = () => {
+    if (players.length >= 6) {
+      setError('Maximum 6 players allowed');
+      return;
+    }
+    setPlayers([
+      ...players,
+      { id: `${players.length + 1}`, name: '', score: 0, isCurrentTurn: false },
+    ]);
+    setError('');
+  };
+
+  const handleRemovePlayer = (id: string) => {
+    if (players.length <= 2) {
+      setError('Minimum 2 players required');
+      return;
+    }
+    setPlayers(players.filter((p) => p.id !== id));
+    setError('');
+  };
+
+  const handleNameChange = (id: string, name: string) => {
+    setPlayers(players.map((p) => (p.id === id ? { ...p, name } : p)));
+    setError('');
+  };
+
+  return (
+    <div className={styles.playerManagement}>
+      <div className={styles.playerSetup}>
+        <Typography variant="h2">Group Mode - Player Setup</Typography>
+        <Typography variant="body1">
+          Add players to start the quiz. You can add up to 6 players.
+        </Typography>
+        <div className={styles.playerList}>
+          {players.map((player) => (
+            <div key={player.id} className={styles.playerInput}>
+              <Input
+                placeholder={`Player ${player.id} name`}
+                value={player.name}
+                onChange={(e) => handleNameChange(player.id, e.target.value)}
+              />
+              {(player.name || players.length > 2) && (
+                <Button
+                  variant="secondary"
+                  onClick={() => handleRemovePlayer(player.id)}
+                  disabled={players.length <= 1}
+                  className={styles.removeButton}
+                >
+                  Remove
+                </Button>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {error && (
+          <Typography variant="body2" color="error" className={styles.error}>
+            {error}
+          </Typography>
+        )}
+
+        <div className={styles.actions}>
+          <Button variant="secondary" onClick={handleAddPlayer} disabled={players.length >= 6}>
+            Add another player
+          </Button>
+        </div>
+      </div>
+      <Button
+        variant="primary"
+        onClick={handleConfirm}
+        disabled={players.filter((p) => p.name.trim()).length < 2}
+        className={styles.startButton}
+      >
+        Start Game
+      </Button>
+    </div>
+  );
+};
+
+export default PlayerManagement;

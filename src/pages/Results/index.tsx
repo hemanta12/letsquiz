@@ -9,9 +9,8 @@ import styles from './Results.module.css';
 export const Results: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { score, questions, selectedAnswers, mode, category, difficulty } = useAppSelector(
-    (state) => state.quiz
-  );
+  const { score, questions, mode, category, difficulty } = useAppSelector((state) => state.quiz);
+  const groupState = useAppSelector((state) => state.quiz.settings.groupState);
 
   const totalQuestions = questions.length;
   const correctAnswers = score;
@@ -41,6 +40,11 @@ export const Results: React.FC = () => {
     navigate('/');
   };
 
+  // Create a sorted copy of players array
+  const sortedPlayers = groupState?.players
+    ? [...groupState.players].sort((a, b) => b.score - a.score)
+    : [];
+
   return (
     <motion.div
       className={styles.results}
@@ -48,46 +52,95 @@ export const Results: React.FC = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className={styles.score}>
-        <Typography variant="h2">Quiz Complete!</Typography>
-        <div className={styles.scoreValue}>
-          {score}/{totalQuestions}
-        </div>
-        <Typography variant="h3">{percentage}%</Typography>
-      </div>
+      <Typography variant="h2">Quiz Complete!</Typography>
 
-      <div className={styles.breakdown}>
-        <Card className={`${styles.stat} ${styles.correct}`}>
-          <Typography variant="h3">{correctAnswers}</Typography>
-          <Typography>Correct</Typography>
-        </Card>
-        <Card className={`${styles.stat} ${styles.incorrect}`}>
-          <Typography variant="h3">{incorrectAnswers}</Typography>
-          <Typography>Incorrect</Typography>
-        </Card>
-      </div>
+      {mode === 'Solo' ? (
+        <>
+          <div className={styles.score}>
+            <Typography variant="h2">Quiz Complete!</Typography>
+            <div className={styles.scoreValue}>
+              {score}/{totalQuestions}
+            </div>
+            <Typography variant="h3">{percentage}%</Typography>
+          </div>
 
-      <div className={styles.actions}>
-        {typeof navigator.share === 'function' && (
-          <Button variant="primary" onClick={handleShare} disabled={isSharing}>
-            Share Results
-          </Button>
-        )}
-        <Button variant="secondary" onClick={handlePlayAgain}>
-          Play Again
-        </Button>
-      </div>
+          <div className={styles.breakdown}>
+            <Card className={`${styles.stat} ${styles.correct}`}>
+              <Typography variant="h3">{correctAnswers}</Typography>
+              <Typography>Correct</Typography>
+            </Card>
+            <Card className={`${styles.stat} ${styles.incorrect}`}>
+              <Typography variant="h3">{incorrectAnswers}</Typography>
+              <Typography>Incorrect</Typography>
+            </Card>
+          </div>
 
-      <AnimatePresence>
-        {shareError && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <Typography color="error">{shareError}</Typography>
-            <Button variant="secondary" onClick={() => setShareError(null)}>
-              Dismiss
+          <div className={styles.actions}>
+            {typeof navigator.share === 'function' && (
+              <Button variant="primary" onClick={handleShare} disabled={isSharing}>
+                Share Results
+              </Button>
+            )}
+            <Button variant="secondary" onClick={handlePlayAgain}>
+              Play Again
             </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+
+          <AnimatePresence>
+            {shareError && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <Typography color="error">{shareError}</Typography>
+                <Button variant="secondary" onClick={() => setShareError(null)}>
+                  Dismiss
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>
+      ) : (
+        <>
+          <div className={styles.groupResults}>
+            <Typography variant="h3" className={styles.categoryInfo}>
+              {category} - {difficulty}
+            </Typography>
+
+            {sortedPlayers.map((player, index) => (
+              <div
+                key={player.id}
+                className={`${styles.playerResult} ${index === 0 ? styles.winner : styles.runnerUp}`}
+              >
+                <div
+                  className={`${styles.positionNumber} ${
+                    index < 3 ? styles[`position-${index + 1}`] : styles['position-other']
+                  }`}
+                >
+                  {index + 1}
+                </div>
+                {index === 0 && <div className={styles.winnerLabel}>Winner!</div>}
+                <div className={styles.playerInfo}>
+                  <Typography variant="h3" className={styles.playerName}>
+                    {player.name}
+                  </Typography>
+                  <Typography variant="h3" className={`${styles.playerScore} ${styles.correct}`}>
+                    {player.score} points
+                  </Typography>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.actions}>
+            <Button variant="primary" onClick={handlePlayAgain}>
+              Play Again
+            </Button>
+            {typeof navigator.share === 'function' && (
+              <Button variant="secondary" onClick={handleShare}>
+                Share Results
+              </Button>
+            )}
+          </div>
+        </>
+      )}
     </motion.div>
   );
 };
