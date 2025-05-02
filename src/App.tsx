@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { MainLayout } from './components/layouts/MainLayout';
 import { RouteTransition } from './components/layouts/RouteTransition';
+import ProtectedRoute from './utils/ProtectedRoute';
 import styles from './App.module.css';
 
 const Home = lazy(() => import('./pages/Home'));
@@ -51,13 +52,17 @@ const App: React.FC = () => {
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/quiz" element={<Quiz />} />
-              <Route path="/results" element={<Results />} />
+              {/* Protected Routes */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/player-setup" element={<PlayerSetup />} />
+                <Route path="/quiz" element={<Quiz />} />
+                <Route path="/results" element={<Results />} />
+              </Route>
+              {/* Public Routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/reset-password" element={<PasswordReset />} />
-              <Route path="/player-setup" element={<PlayerSetup />} />
-              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

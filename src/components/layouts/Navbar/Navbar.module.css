@@ -67,6 +67,20 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+.dashboardLink {
+  color: white;
+  text-decoration: none;
+  font-size: var(--font-size-body);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  margin-right: var(--space-md);
+}
+
+.dashboardLink:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
 @media (max-width: 768px) {
   .mobileMenuButton {
     display: block;

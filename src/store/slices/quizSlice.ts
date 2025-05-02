@@ -1,14 +1,8 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { QuizSettings } from '../../types/quiz.types';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { QuizSettings, GroupQuizSession, GroupPlayer } from '../../types/quiz.types';
 import { Player } from '../../types/group.types';
-
-export interface Question {
-  id: string;
-  text: string;
-  options: string[];
-  correctAnswer: string;
-  difficulty: 'Easy' | 'Medium' | 'Quiz Genius'; // Add difficulty
-}
+import QuizService from '../../services/quizService';
+import { FetchQuestionsRequest, Question, FetchQuestionsResponse } from '../../types/api.types';
 
 interface QuizState {
   settings: QuizSettings;
@@ -21,107 +15,11 @@ interface QuizState {
   score: number;
   currentPlayer?: Player;
   pointsPerQuestion: number;
+  loading: boolean;
+  error: string | null;
+  isGroupMode: boolean;
+  groupSession: GroupQuizSession | null;
 }
-
-// Modify STATIC_QUESTIONS to include difficulty
-const STATIC_QUESTIONS: Record<string, Question[]> = {
-  History: [
-    {
-      id: 'hist1',
-      text: 'Who was the first president of United States of America?',
-      options: ['Donald Trump', 'Barack Obama', 'George Washington', 'Abraham Lincoln'],
-      correctAnswer: 'George Washington',
-      difficulty: 'Easy',
-    },
-    {
-      id: 'hist2',
-      text: 'In which year did World War II end?',
-      options: ['1943', '1944', '1945', '1946'],
-      correctAnswer: '1945',
-      difficulty: 'Medium',
-    },
-  ],
-  Science: [
-    {
-      id: 'sci1',
-      text: 'What is the chemical symbol for Gold?',
-      options: ['Au', 'Ag', 'Fe', 'Cu'],
-      correctAnswer: 'Au',
-      difficulty: 'Easy',
-    },
-    {
-      id: 'sci2',
-      text: 'Which planet is known as the Red Planet?',
-      options: ['Venus', 'Mars', 'Jupiter', 'Saturn'],
-      correctAnswer: 'Mars',
-      difficulty: 'Medium',
-    },
-  ],
-  Geography: [
-    {
-      id: 'geo1',
-      text: 'What is the capital of Japan?',
-      options: ['Seoul', 'Beijing', 'Tokyo', 'Bangkok'],
-      correctAnswer: 'Tokyo',
-      difficulty: 'Easy',
-    },
-    {
-      id: 'geo2',
-      text: 'Which is the largest ocean on Earth?',
-      options: ['Atlantic', 'Indian', 'Arctic', 'Pacific'],
-      correctAnswer: 'Pacific',
-      difficulty: 'Medium',
-    },
-  ],
-  Movies: [
-    {
-      id: 'mov1',
-      text: 'Which film won the Academy Award for Best Picture in 2024?',
-      options: ['Barbie', 'Oppenheimer', 'Poor Things', 'Killers of the Flower Moon'],
-      correctAnswer: 'Oppenheimer',
-      difficulty: 'Quiz Genius',
-    },
-    {
-      id: 'mov2',
-      text: 'Who played Iron Man in the Marvel Cinematic Universe?',
-      options: ['Chris Evans', 'Robert Downey Jr.', 'Chris Hemsworth', 'Mark Ruffalo'],
-      correctAnswer: 'Robert Downey Jr.',
-      difficulty: 'Medium',
-    },
-  ],
-  Sports: [
-    {
-      id: 'spt1',
-      text: 'Which country won the FIFA World Cup 2022?',
-      options: ['France', 'Brazil', 'Argentina', 'Germany'],
-      correctAnswer: 'Argentina',
-      difficulty: 'Medium',
-    },
-    {
-      id: 'spt2',
-      text: 'In which sport is the Davis Cup awarded?',
-      options: ['Football', 'Tennis', 'Cricket', 'Basketball'],
-      correctAnswer: 'Tennis',
-      difficulty: 'Easy',
-    },
-  ],
-  Trivia: [
-    {
-      id: 'trv1',
-      text: 'What is the most spoken language in the world?',
-      options: ['English', 'Spanish', 'Hindi', 'Mandarin Chinese'],
-      correctAnswer: 'Mandarin Chinese',
-      difficulty: 'Medium',
-    },
-    {
-      id: 'trv2',
-      text: 'How many sides does a hexagon have?',
-      options: ['5', '6', '7', '8'],
-      correctAnswer: '6',
-      difficulty: 'Easy',
-    },
-  ],
-};
 
 const initialState: QuizState = {
   settings: {
@@ -138,11 +36,45 @@ const initialState: QuizState = {
   score: 0,
   currentPlayer: undefined,
   pointsPerQuestion: 5,
+  loading: false,
+  error: null,
+  isGroupMode: false,
+  groupSession: null,
 };
 
-// Add a comment for backend integration
-// TODO: Remove STATIC_QUESTIONS when connecting to backend
-// For now, allowing question repetition for testing purposes
+// Async thunk for fetching quiz questions
+export const fetchQuizQuestions = createAsyncThunk<
+  FetchQuestionsResponse,
+  FetchQuestionsRequest,
+  { rejectValue: string }
+>('quiz/fetchQuizQuestions', async (params: FetchQuestionsRequest, { rejectWithValue }) => {
+  try {
+    const response = await QuizService.fetchQuestions(params);
+    return response;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data?.detail || error.message);
+  }
+});
+
+export const startGroupQuiz = createAsyncThunk(
+  'quiz/startGroupQuiz',
+  async (
+    {
+      players,
+      category,
+      difficulty,
+    }: {
+      players: string[];
+      category: string;
+      difficulty: string;
+    },
+    { dispatch }
+  ) => {
+    const session = await QuizService.createGroupSession(players, category, difficulty);
+    const { questions } = await QuizService.fetchQuestions({ category, difficulty });
+    return { session, questions };
+  }
+);
 
 export const quizSlice = createSlice({
   name: 'quiz',
@@ -154,75 +86,33 @@ export const quizSlice = createSlice({
       state.category = action.payload.category;
       state.difficulty = action.payload.difficulty;
     },
-    setQuestions: (state, action: PayloadAction<Question[]>) => {
-      state.questions = action.payload;
-    },
+    // selectAnswer reducer
     selectAnswer: (state, action: PayloadAction<{ questionIndex: number; answer: string }>) => {
       state.selectedAnswers[action.payload.questionIndex] = action.payload.answer;
     },
+    // updateScore reducer
     updateScore: (state) => {
       state.score = Object.entries(state.selectedAnswers).reduce((score, [index, answer]) => {
-        return score + (answer === state.questions[Number(index)].correctAnswer ? 1 : 0);
+        return score + (answer === state.questions[Number(index)].correct_answer ? 1 : 0);
       }, 0);
     },
-    nextQuestion: (state) => {
+    // nextQuestion reducer
+    nextQuestion: (state, action: PayloadAction<Question | undefined>) => {
+      if (action.payload) {
+        // Add the preloaded question to the questions array
+        state.questions.push(action.payload);
+      }
       if (state.currentQuestion < state.questions.length - 1) {
         state.currentQuestion += 1;
       }
     },
+    // resetQuiz reducer
     resetQuiz: () => initialState,
-    initializeQuestions: (state, action: PayloadAction<number>) => {
-      const selectedQuestions: Question[] = [];
-
-      if (state.category === 'all') {
-        // Mix Up mode - distribute evenly across categories
-        const categories = Object.keys(STATIC_QUESTIONS);
-        const questionsPerCategory = Math.floor(action.payload / categories.length);
-        const remainder = action.payload % categories.length;
-
-        // Filter questions by difficulty first
-        categories.forEach((category) => {
-          const categoryQuestions = STATIC_QUESTIONS[category].filter(
-            (q) => q.difficulty === state.difficulty
-          );
-
-          for (let i = 0; i < questionsPerCategory; i++) {
-            if (categoryQuestions.length > 0) {
-              selectedQuestions.push(categoryQuestions[i % categoryQuestions.length]);
-            }
-          }
-        });
-
-        // Handle remainder
-        for (let i = 0; i < remainder; i++) {
-          const randomCategory = categories[Math.floor(Math.random() * categories.length)];
-          const categoryQuestions = STATIC_QUESTIONS[randomCategory].filter(
-            (q) => q.difficulty === state.difficulty
-          );
-          if (categoryQuestions.length > 0) {
-            selectedQuestions.push(
-              categoryQuestions[Math.floor(Math.random() * categoryQuestions.length)]
-            );
-          }
-        }
-      } else {
-        // Single category mode
-        const categoryQuestions = STATIC_QUESTIONS[state.category].filter(
-          (q) => q.difficulty === state.difficulty
-        );
-
-        for (let i = 0; i < action.payload; i++) {
-          if (categoryQuestions.length > 0) {
-            selectedQuestions.push(categoryQuestions[i % categoryQuestions.length]);
-          }
-        }
-      }
-
-      state.questions = selectedQuestions;
-    },
+    // setCurrentPlayer reducer
     setCurrentPlayer: (state, action: PayloadAction<Player>) => {
       state.currentPlayer = action.payload;
     },
+    // updatePlayerScore
     updatePlayerScore: (state, action: PayloadAction<string>) => {
       if (state.settings?.groupState) {
         state.settings.groupState.players = state.settings.groupState.players.map((player) => {
@@ -240,31 +130,75 @@ export const quizSlice = createSlice({
         });
       }
     },
-    // Add new action to handle UI-only updates
+    // updatePlayers reducer
     updatePlayers: (state, action: PayloadAction<Player[]>) => {
       if (state.settings?.groupState) {
         state.settings.groupState.players = action.payload;
       }
     },
+    // updateTempScores reducer
     updateTempScores: (state, action: PayloadAction<Player[]>) => {
       if (state.settings?.groupState) {
         state.settings.groupState.players = action.payload;
       }
     },
+    setGroupMode: (state, action: PayloadAction<boolean>) => {
+      state.isGroupMode = action.payload;
+    },
+    nextPlayer: (state) => {
+      if (!state.groupSession) return;
+      const currentIndex = state.groupSession.players.findIndex(
+        (p) => p.id === state.groupSession?.currentPlayer
+      );
+      const nextIndex = (currentIndex + 1) % state.groupSession.players.length;
+      state.groupSession.currentPlayer = state.groupSession.players[nextIndex].id;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+
+      .addCase(fetchQuizQuestions.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchQuizQuestions.fulfilled,
+        (state, action: PayloadAction<FetchQuestionsResponse>) => {
+          state.loading = false;
+          state.questions = action.payload.questions;
+          state.error = null;
+          state.currentQuestion = 0;
+          state.selectedAnswers = {};
+          state.score = 0;
+        }
+      )
+      .addCase(fetchQuizQuestions.rejected, (state, action) => {
+        state.loading = false;
+        state.questions = [];
+        state.error = action.payload as string;
+        state.currentQuestion = 0;
+        state.selectedAnswers = {};
+        state.score = 0;
+      })
+      .addCase(startGroupQuiz.fulfilled, (state, action) => {
+        state.questions = action.payload.questions;
+        state.groupSession = action.payload.session;
+        state.currentQuestion = 0;
+      });
   },
 });
 
 export const {
   setQuizSettings,
-  setQuestions,
   selectAnswer,
   updateScore,
   nextQuestion,
   resetQuiz,
-  initializeQuestions,
   setCurrentPlayer,
   updatePlayerScore,
   updatePlayers,
   updateTempScores,
+  setGroupMode,
+  nextPlayer,
 } = quizSlice.actions;
 export default quizSlice.reducer;

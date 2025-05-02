@@ -1,23 +1,35 @@
 import React from 'react';
 import { Typography, Card } from '../common';
-import { QuizSession, CategoryStats } from '../../types/dashboard.types';
+import { QuizSessionHistory, CategoryStats, UserProfile } from '../../types/api.types';
 import styles from './StatsPanel.module.css';
 
 interface StatsPanelProps {
+  profile: UserProfile;
   stats: CategoryStats[];
-  sessions: QuizSession[];
+  sessions: QuizSessionHistory[];
 }
 
-const StatsPanel: React.FC<StatsPanelProps> = ({ stats, sessions }) => {
+const StatsPanel: React.FC<StatsPanelProps> = ({ profile, stats, sessions }) => {
   const totalQuizzes = sessions.length;
-  const averageScore = Math.round(
-    (sessions.reduce((acc, session) => acc + session.score, 0) / (sessions.length * 10)) * 100
-  );
-  const bestCategory = stats.reduce(
-    (best, curr) =>
-      curr.totalScore / curr.totalQuizzes > best.totalScore / best.totalQuizzes ? curr : best,
-    stats[0]
-  )?.category;
+  const totalScoreSum = sessions.reduce(
+    (acc, session) => acc + (session.score !== null ? session.score : 0),
+    0
+  ); // Handle null score
+  const averageScore =
+    totalQuizzes > 0 ? Math.round((totalScoreSum / (totalQuizzes * 10)) * 100) : 0;
+
+  // Find the best category based on average score
+  const bestCategory = stats.reduce((best, curr) => {
+    const currAvg =
+      curr.totalQuizzes > 0
+        ? (curr.totalScore !== null ? curr.totalScore : 0) / curr.totalQuizzes
+        : 0;
+    const bestAvg =
+      best.totalQuizzes > 0
+        ? (best.totalScore !== null ? best.totalScore : 0) / best.totalQuizzes
+        : 0;
+    return currAvg > bestAvg ? curr : best;
+  }, stats[0])?.category;
 
   return (
     <div className={styles.statsRow}>

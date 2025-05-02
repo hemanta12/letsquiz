@@ -1,12 +1,13 @@
 import React from 'react';
 import { Typography } from '../common';
-import { CategoryStats, QuizSession } from '../../types/dashboard.types';
+import { CategoryStats, QuizSessionHistory, UserProfile } from '../../types/api.types';
 import QuizCard from './QuizCard';
 import styles from './CategoryList.module.css';
 
 type CategoryListProps = {
+  profile: UserProfile;
   categoryStats: CategoryStats[];
-  sessions: QuizSession[];
+  sessions: QuizSessionHistory[];
   expandedCategories: Set<string>;
   expandedSession: number | null;
   onCategoryToggle: (category: string) => void;
@@ -48,7 +49,14 @@ const CategoryList: React.FC<CategoryListProps> = ({
                 <Typography variant="h3">{category.category}</Typography>
                 <Typography variant="body2">
                   {category.totalQuizzes} quizzes | Avg:
-                  {Math.round((category.totalScore / (category.totalQuizzes * 10)) * 100)}%
+                  {category.totalQuizzes > 0
+                    ? Math.round(
+                        ((category.totalScore !== null ? category.totalScore : 0) /
+                          (category.totalQuizzes * 10)) *
+                          100
+                      )
+                    : 0}
+                  %
                 </Typography>
               </div>
             </div>
@@ -69,7 +77,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
           >
             {sessions
               .filter((session) => session.category === category.category)
-              .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+              .sort((a, b) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime())
               .map((session) => (
                 <QuizCard
                   key={session.id}

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Typography, Card } from '../common';
-import { QuizSession } from '../../types/dashboard.types';
+import { QuizSessionHistory } from '../../types/api.types';
 import styles from './RecentActivity.module.css';
 
 type RecentActivityProps = {
-  activities: QuizSession[];
+  activities: QuizSessionHistory[];
   onActivityClick: (sessionId: number) => void;
 };
 
@@ -32,13 +32,13 @@ const RecentActivity: React.FC<RecentActivityProps> = ({ activities, onActivityC
 
   const groupedActivities = activities.reduce(
     (groups, activity) => {
-      const timeGroup = getRelativeTimeGroup(activity.time);
+      const timeGroup = getRelativeTimeGroup(activity.started_at);
       return {
         ...groups,
         [timeGroup]: [...(groups[timeGroup] || []), activity],
       };
     },
-    {} as Record<string, QuizSession[]>
+    {} as Record<string, QuizSessionHistory[]>
   );
 
   return (
@@ -55,18 +55,21 @@ const RecentActivity: React.FC<RecentActivityProps> = ({ activities, onActivityC
                 key={activity.id}
                 className={styles.activityItem}
                 onClick={() => onActivityClick(activity.id)}
-                aria-label={`${activity.category} quiz in ${activity.level} difficulty, scored ${activity.score}/10 on ${formatDate(activity.time)}`}
+                aria-label={`${activity.category} quiz in ${activity.difficulty} difficulty, scored ${activity.score !== null ? activity.score : 'N/A'}/10 on ${formatDate(activity.started_at)}`}
               >
                 <div className={styles.activityContent}>
                   <Typography variant="body1" className={styles.activityTitle}>
-                    {activity.category} - {activity.level}
+                    {activity.category} - {activity.difficulty}
                   </Typography>
                   <Typography variant="body2" className={styles.activityTime}>
-                    {formatDate(activity.time)}
+                    {formatDate(activity.started_at)}
                   </Typography>
                 </div>
                 <div className={styles.scoreInfo}>
-                  <span className={styles.score}>{activity.score}/10</span>
+                  <span className={styles.score}>
+                    {activity.score !== null ? activity.score : 'N/A'}/10
+                  </span>{' '}
+                  {/* Handle null score */}
                 </div>
               </button>
             ))}

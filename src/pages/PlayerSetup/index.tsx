@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/common';
 import PlayerManagement from '../../components/GroupMode/PlayerManagement';
@@ -18,22 +18,25 @@ export const PlayerSetup: React.FC = () => {
     navigate('/');
   };
 
-  const handlePlayersConfirmed = (players: Player[]) => {
-    dispatch(
-      setQuizSettings({
-        mode,
-        category,
-        difficulty,
-        isMixedMode,
-        groupState: {
-          players,
-          currentPlayerIndex: 0,
-          roundNumber: 1,
-        },
-      })
-    );
-    navigate('/quiz');
-  };
+  const handlePlayersConfirmed = useCallback(
+    (players: Player[]) => {
+      dispatch(
+        setQuizSettings({
+          mode,
+          category,
+          difficulty,
+          isMixedMode,
+          groupState: {
+            players,
+            currentPlayerIndex: 0,
+            roundNumber: 1,
+          },
+        })
+      );
+      navigate('/quiz');
+    },
+    [dispatch, mode, category, difficulty, isMixedMode, navigate]
+  );
 
   return (
     <div className={styles.playerSetup}>

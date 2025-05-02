@@ -1,10 +1,10 @@
 import React from 'react';
 import { Typography } from '../common';
-import { QuizSession } from '../../types/dashboard.types';
+import { QuizSessionHistory } from '../../types/api.types';
 import styles from './QuizCard.module.css';
 
 type QuizCardProps = {
-  session: QuizSession;
+  session: QuizSessionHistory;
   isExpanded: boolean;
   onToggle: () => void;
 };
@@ -17,7 +17,9 @@ const QuizCard: React.FC<QuizCardProps> = ({ session, isExpanded, onToggle }) =>
     }
   };
 
-  const scorePercentage = (session.score / 10) * 100;
+  // Handle potential null score
+  const score = session.score !== null ? session.score : 'N/A';
+  const scorePercentage = session.score !== null ? (session.score / 10) * 100 : 0;
 
   return (
     <div
@@ -32,27 +34,32 @@ const QuizCard: React.FC<QuizCardProps> = ({ session, isExpanded, onToggle }) =>
       <div className={styles.quizHeader}>
         <div>
           <Typography variant="h3">Quiz #{session.id}</Typography>
-          <time className={styles.quizTime}>{new Date(session.time).toLocaleDateString()}</time>
+          {/* Use started_at for the date */}
+          <time className={styles.quizTime}>
+            {new Date(session.started_at).toLocaleDateString()}
+          </time>
         </div>
-        <div className={`${styles.difficultyBadge} ${styles[session.level.toLowerCase()]}`}>
-          {session.level}
+        {/* Use difficulty for the badge */}
+        <div className={`${styles.difficultyBadge} ${styles[session.difficulty.toLowerCase()]}`}>
+          {session.difficulty}
         </div>
       </div>
 
       <div className={styles.scoreIndicator}>
         <Typography variant="h3" style={{ color: 'var(--color-primary)' }}>
-          {session.score}/10
+          {score}/10 {/* Display score */}
         </Typography>
         <div className={styles.scoreBar}>
           <div
             className={styles.scoreProgress}
             style={{ width: `${scorePercentage}%` }}
-            aria-label={`Score progress: ${session.score} out of 10`}
+            aria-label={`Score progress: ${score} out of 10`}
           />
         </div>
       </div>
 
-      {isExpanded && (
+      {/* Remove the expanded details section as session.details is not available in QuizSessionHistory */}
+      {/* {isExpanded && (
         <div className={styles.quizDetails} role="region" aria-label="Question details">
           <Typography variant="h3">Questions & Answers</Typography>
           <div className={styles.questionList}>
@@ -80,7 +87,7 @@ const QuizCard: React.FC<QuizCardProps> = ({ session, isExpanded, onToggle }) =>
             ))}
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

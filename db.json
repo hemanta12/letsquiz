@@ -1,0 +1,217 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "email": "testuser@example.com",
+      "password": "1234",
+      "is_premium": false,
+      "quiz_history": [
+        {
+          "id": 101,
+          "category": "History",
+          "difficulty": "Easy",
+          "score": 8,
+          "total_questions": 10,
+          "started_at": "2023-10-26T10:00:00Z",
+          "completed_at": "2023-10-26T10:15:00Z"
+        },
+        {
+          "id": 102,
+          "category": "Science",
+          "difficulty": "Medium",
+          "score": 6,
+          "total_questions": 10,
+          "started_at": "2023-10-25T14:30:00Z",
+          "completed_at": "2023-10-25T14:45:00Z"
+        }
+      ]
+    },
+    {
+      "id": "1620",
+      "email": "hem@hem.com",
+      "password": "1234",
+      "confirmPassword": "1234"
+    }
+  ],
+  "auth": {
+    "login": {
+      "id": 1,
+      "email": "testuser@example.com",
+      "token": "mock-token-1"
+    }
+  },
+  "quizSessions": [],
+  "groupQuizSessions": [
+    {
+      "id": "1",
+      "players": [
+        {
+          "id": 1,
+          "name": "Player 1",
+          "score": 0
+        },
+        {
+          "id": 2,
+          "name": "Player 2",
+          "score": 0
+        }
+      ],
+      "currentQuestion": 0,
+      "totalQuestions": 5,
+      "category": "Mixed",
+      "difficulty": "Easy",
+      "status": "active",
+      "currentPlayer": 1
+    }
+  ],
+  "questions": [
+    {
+      "id": "1",
+      "category": "History",
+      "difficulty": "Easy",
+      "question_text": "What is the capital of France?",
+      "correct_answer": "Paris",
+      "metadata_json": {},
+      "is_seeded": true,
+      "is_fallback": false,
+      "created_by": null,
+      "answer_options": [
+        "London",
+        "Berlin",
+        "Paris",
+        "Madrid"
+      ]
+    },
+    {
+      "id": "2",
+      "category": "Science",
+      "difficulty": "Medium",
+      "question_text": "What is the chemical symbol for water?",
+      "correct_answer": "H2O",
+      "metadata_json": {},
+      "is_seeded": true,
+      "is_fallback": false,
+      "created_by": null,
+      "answer_options": [
+        "O2",
+        "CO2",
+        "H2O",
+        "NaCl"
+      ]
+    },
+    {
+      "id": "3",
+      "category": "Geography",
+      "difficulty": "Easy",
+      "question_text": "Which continent is the Sahara Desert located in?",
+      "correct_answer": "Africa",
+      "metadata_json": {},
+      "is_seeded": true,
+      "is_fallback": false,
+      "created_by": null,
+      "answer_options": [
+        "Asia",
+        "Africa",
+        "Europe",
+        "Australia"
+      ]
+    },
+    {
+      "id": "4",
+      "category": "Literature",
+      "difficulty": "Medium",
+      "question_text": "Who wrote 'To Kill a Mockingbird'?",
+      "correct_answer": "Harper Lee",
+      "metadata_json": {},
+      "is_seeded": true,
+      "is_fallback": false,
+      "created_by": null,
+      "answer_options": [
+        "Ernest Hemingway",
+        "F. Scott Fitzgerald",
+        "Harper Lee",
+        "Jane Austen"
+      ]
+    },
+    {
+      "id": "5",
+      "category": "History",
+      "difficulty": "Quiz Genius",
+      "question_text": "In which year did the Battle of Hastings take place?",
+      "correct_answer": "1066",
+      "metadata_json": {},
+      "is_seeded": true,
+      "is_fallback": false,
+      "created_by": null,
+      "answer_options": [
+        "1066",
+        "1492",
+        "1776",
+        "1812"
+      ]
+    }
+  ],
+  "quizSessionQuestions": [],
+  "categories": [
+    {
+      "id": "1",
+      "name": "History",
+      "description": "Questions about historical events and figures."
+    },
+    {
+      "id": "2",
+      "name": "Science",
+      "description": "Questions about scientific concepts and discoveries."
+    },
+    {
+      "id": "3",
+      "name": "Geography",
+      "description": "Questions about places, countries, and the Earth."
+    },
+    {
+      "id": "4",
+      "name": "Literature",
+      "description": "Questions about books, authors, and poetry."
+    }
+  ],
+  "difficultyLevels": [
+    {
+      "id": "1",
+      "label": "Easy",
+      "description": "Simple questions."
+    },
+    {
+      "id": "2",
+      "label": "Medium",
+      "description": "Moderately challenging questions."
+    },
+    {
+      "id": "3",
+      "label": "Quiz Genius",
+      "description": "Difficult questions."
+    },
+    {
+      "id": "4",
+      "label": "Beginner",
+      "description": "Very simple questions for newcomers."
+    }
+  ],
+  "llmGenerationTasks": [],
+  "leaderboard": [
+    {
+      "id": "571d",
+      "category": "History",
+      "difficulty": "Easy",
+      "players": [
+        {
+          "name": "aaaa",
+          "score": 5
+        },
+        {
+          "name": "bbbb",
+          "score": 0
+        }
+      ]
+    }
+  ]
+}

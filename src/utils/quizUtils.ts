@@ -1,4 +1,4 @@
-import { Question } from '../store/slices/quizSlice';
+import { Question } from '../types/api.types'; // Import Question from api.types
 
 export const distributeQuestions = (
   questionsByCategory: Record<string, Question[]>,

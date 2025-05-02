@@ -5,6 +5,7 @@ import { Button, Typography, Card } from '../../components/common';
 import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
 import { resetQuiz } from '../../store/slices/quizSlice';
 import styles from './Results.module.css';
+import apiClient from '../../services/apiClient';
 
 export const Results: React.FC = () => {
   const navigate = useNavigate();
@@ -19,6 +20,8 @@ export const Results: React.FC = () => {
 
   const [isSharing, setIsSharing] = useState(false);
   const [shareError, setShareError] = useState<string | null>(null);
+  const [isPostingToLeaderboard, setIsPostingToLeaderboard] = useState(false);
+  const [leaderboardError, setLeaderboardError] = useState<string | null>(null);
 
   const handleShare = async () => {
     setIsSharing(true);
@@ -32,6 +35,24 @@ export const Results: React.FC = () => {
       setShareError('Failed to share. Try again?');
     } finally {
       setIsSharing(false);
+    }
+  };
+
+  const handlePostToLeaderboard = async () => {
+    setIsPostingToLeaderboard(true);
+    setLeaderboardError(null);
+    try {
+      await apiClient.post('/leaderboard', {
+        category,
+        difficulty,
+        players: sortedPlayers.map((player) => ({ name: player.name, score: player.score })),
+      });
+      // Optionally show a success message
+    } catch (error) {
+      console.error('Error posting to leaderboard:', error);
+      // Do not set error state, allow user to see results
+    } finally {
+      setIsPostingToLeaderboard(false);
     }
   };
 
@@ -133,6 +154,15 @@ export const Results: React.FC = () => {
             <Button variant="primary" onClick={handlePlayAgain}>
               Play Again
             </Button>
+            {mode === 'Group' && (
+              <Button
+                variant="secondary"
+                onClick={handlePostToLeaderboard}
+                disabled={isPostingToLeaderboard}
+              >
+                {isPostingToLeaderboard ? 'Posting...' : 'Post to Leaderboard'}
+              </Button>
+            )}
             {typeof navigator.share === 'function' && (
               <Button variant="secondary" onClick={handleShare}>
                 Share Results

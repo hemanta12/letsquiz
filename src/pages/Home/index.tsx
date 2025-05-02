@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Card, Typography, Icon } from '../../components/common';
 import { PlayerManagement } from '../../components/GroupMode/PlayerManagement/index';
 import { useAppDispatch } from '../../hooks/reduxHooks';
-import { setQuizSettings } from '../../store/slices/quizSlice';
+import { setQuizSettings, fetchQuizQuestions } from '../../store/slices/quizSlice';
 import styles from './Home.module.css';
 
 const categories = ['History', 'Science', 'Geography', 'Movies', 'Sports', 'Trivia'];
@@ -55,7 +55,7 @@ export const Home: React.FC = () => {
     return true;
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!validateSelections()) return;
 
     dispatch(
@@ -70,20 +70,18 @@ export const Home: React.FC = () => {
     if (selectedMode === 'Group') {
       navigate('/player-setup');
     } else {
-      navigate('/quiz');
+      // Fetch questions before navigating for Solo mode
+      try {
+        await dispatch(
+          fetchQuizQuestions({ category: selectedCategory, difficulty: selectedDifficulty })
+        );
+        navigate('/quiz');
+      } catch (error) {
+        // Handle error fetching questions, maybe display an error message
+        console.error('Error fetching quiz questions:', error);
+        setSelectionError('Failed to load quiz questions. Please try again.');
+      }
     }
-  };
-
-  const handleStartQuiz = () => {
-    dispatch(
-      setQuizSettings({
-        mode: selectedMode,
-        category: selectedCategory,
-        difficulty: selectedDifficulty,
-        isMixedMode: isMixUpMode,
-      })
-    );
-    navigate('/quiz');
   };
 
   return (

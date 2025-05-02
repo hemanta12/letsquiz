@@ -6,19 +6,27 @@ import {
   selectAnswer,
   updateScore,
   nextQuestion as nextQuestionAction,
-  Question,
-  initializeQuestions,
   resetQuiz,
   updatePlayerScore,
 } from '../../store/slices/quizSlice';
+import { Question } from '../../types/api.types';
 import { GroupQuestionView } from '../../components/GroupMode/GroupQuestionView';
 import styles from './Quiz.module.css';
+import QuizService from '../../services/quizService';
 
 export const Quiz: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { currentQuestion, questions, selectedAnswers, mode, category, difficulty } =
-    useAppSelector((state) => state.quiz);
+  const {
+    currentQuestion,
+    questions,
+    selectedAnswers,
+    mode,
+    category,
+    difficulty,
+    loading: quizLoading,
+    error: quizError,
+  } = useAppSelector((state) => state.quiz);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,48 +36,42 @@ export const Quiz: React.FC = () => {
   const [showQuitModal, setShowQuitModal] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
 
-  // Redirect if no questions are loaded
-  useEffect(() => {
-    if (!questions || questions.length === 0) {
-      try {
-        dispatch(initializeQuestions(10)); // Default to 10 questions for now
-      } catch (err) {
-        setError('Error initializing questions');
-        console.error('Error:', err);
-      }
-    }
-  }, [dispatch, questions]);
-
   const preloadNextQuestion = useCallback(async () => {
-    if (currentQuestion < questions.length - 1) {
+    // Only preload if there are more questions to fetch from the API
+    if (currentQuestion < questions.length) {
       try {
-        const nextQuestionData = questions[currentQuestion + 1];
-        if (nextQuestionData) {
-          setPreloadedQuestion(nextQuestionData);
+        // Assuming fetchQuestions fetches one question at a time for preloading
+        const nextQuestionData = await QuizService.fetchQuestions({
+          limit: 1,
+          category: category,
+          difficulty: difficulty,
+        });
+        if (nextQuestionData && nextQuestionData.questions.length > 0) {
+          setPreloadedQuestion(nextQuestionData.questions[0]);
         }
       } catch (error) {
         setError('Error preloading next question');
         console.error('Error:', error);
       }
     }
-  }, [currentQuestion, questions]);
+  }, [currentQuestion, questions.length, category, difficulty]);
 
   useEffect(() => {
     preloadNextQuestion();
   }, [preloadNextQuestion]);
 
-  const progress = ((currentQuestion + 1) / questions.length) * 100;
+  const progress = questions.length > 0 ? ((currentQuestion + 1) / questions.length) * 100 : 0;
   const currentQuestionData = questions[currentQuestion];
   const hasSelectedAnswer = selectedAnswers[currentQuestion] !== undefined;
 
   const handleAnswerSelect = async (answer: string) => {
-    if (!hasSelectedAnswer && !isLoading) {
+    if (!hasSelectedAnswer && !isLoading && !quizLoading) {
       try {
         setIsLoading(true);
         await dispatch(selectAnswer({ questionIndex: currentQuestion, answer }));
 
         // Show feedback
-        const correct = answer === currentQuestionData?.correctAnswer;
+        const correct = answer === currentQuestionData?.correct_answer;
         setIsCorrect(correct);
         setShowFeedback(true);
 
@@ -104,7 +106,27 @@ export const Quiz: React.FC = () => {
         await dispatch(updateScore());
         navigate('/results');
       } else {
-        await dispatch(nextQuestionAction());
+        // Use the preloaded question if available, otherwise fetch the next question
+        if (preloadedQuestion) {
+          dispatch(nextQuestionAction(preloadedQuestion));
+          setPreloadedQuestion(null); // Clear preloaded question after using it
+        } else {
+          // Fallback: Fetch the next question if not preloaded
+          // This case should ideally not be hit if preloading works correctly
+          // but is included for robustness.
+          const nextQuestionData = await QuizService.fetchQuestions({
+            limit: 1,
+            category: category,
+            difficulty: difficulty,
+          });
+          if (nextQuestionData && nextQuestionData.questions.length > 0) {
+            dispatch(nextQuestionAction(nextQuestionData.questions[0]));
+          } else {
+            // Handle case where no more questions are available from API
+            await dispatch(updateScore());
+            navigate('/results');
+          }
+        }
       }
     } catch (err) {
       setError('Error moving to next question');
@@ -118,7 +140,16 @@ export const Quiz: React.FC = () => {
     navigate('/');
   };
 
-  if (!currentQuestionData) {
+  // Show loading if either local loading or quiz slice loading is true, or if no questions are loaded yet
+  if (isLoading || quizLoading || !currentQuestionData) {
+    // Fallback for group mode when no questions are available
+    if (mode === 'Group' && questions.length === 0) {
+      return (
+        <div className={styles.quiz}>
+          <Typography variant="h3">No quiz data available for this mode.</Typography>
+        </div>
+      );
+    }
     return (
       <div className={styles.quiz}>
         <Loading />
@@ -126,13 +157,19 @@ export const Quiz: React.FC = () => {
     );
   }
 
+  // Display error if either local error or quiz slice error exists
+  if (error || quizError) {
+    return (
+      <div className={styles.quiz}>
+        <Typography variant="body2" color="error" className={styles.error}>
+          {error || quizError}
+        </Typography>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.quiz}>
-      {error && (
-        <Typography variant="body2" color="error" className={styles.error}>
-          {error}
-        </Typography>
-      )}
       <div className={styles.header}>
         <Typography variant="body1">
           {mode} - {difficulty} - {category}
@@ -151,9 +188,9 @@ export const Quiz: React.FC = () => {
           <GroupQuestionView
             questionNumber={currentQuestion + 1}
             totalQuestions={questions.length}
-            question={currentQuestionData.text}
-            options={currentQuestionData.options}
-            correctAnswer={currentQuestionData.correctAnswer}
+            question={currentQuestionData.question_text}
+            options={currentQuestionData.answer_options}
+            correctAnswer={currentQuestionData.correct_answer}
             onAnswerSelect={handleAnswerSelect}
             showFeedback={showFeedback}
             selectedAnswer={selectedAnswers[currentQuestion]}
@@ -176,7 +213,8 @@ export const Quiz: React.FC = () => {
       ) : (
         <>
           <div className={styles.question}>
-            <Typography variant="h2">{currentQuestionData?.text}</Typography>
+            <Typography variant="h2">{currentQuestionData?.question_text}</Typography>{' '}
+            {/* Use question_text */}
           </div>
 
           {showFeedback && (
@@ -193,9 +231,10 @@ export const Quiz: React.FC = () => {
             {isLoading ? (
               <Loading variant="skeleton" />
             ) : (
-              currentQuestionData?.options.map((option) => {
+              currentQuestionData?.answer_options.map((option: string) => {
+                // Use answer_options and explicitly type option
                 const isSelected = selectedAnswers[currentQuestion] === option;
-                const isCorrectAnswer = option === currentQuestionData.correctAnswer;
+                const isCorrectAnswer = option === currentQuestionData.correct_answer;
                 const showFeedbackStyles = showFeedback && (isSelected || isCorrectAnswer);
 
                 let optionClassNames = styles.option;
@@ -221,7 +260,7 @@ export const Quiz: React.FC = () => {
                     variant="secondary"
                     className={optionClassNames}
                     onClick={() => handleAnswerSelect(option)}
-                    disabled={hasSelectedAnswer}
+                    disabled={hasSelectedAnswer || isLoading || quizLoading}
                     onKeyPress={(e) => handleKeyPress(e, option)}
                     tabIndex={0}
                     aria-selected={isSelected}
@@ -241,7 +280,11 @@ export const Quiz: React.FC = () => {
             >
               Quit
             </Button>
-            <Button variant="primary" disabled={!hasSelectedAnswer} onClick={handleNext}>
+            <Button
+              variant="primary"
+              disabled={!hasSelectedAnswer || isLoading || quizLoading}
+              onClick={handleNext}
+            >
               {currentQuestion === questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
             </Button>
           </div>
