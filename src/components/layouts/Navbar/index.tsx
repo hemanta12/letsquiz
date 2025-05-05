@@ -1,15 +1,17 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../store/store';
 import { logout } from '../../../store/slices/authSlice';
 import styles from './Navbar.module.css';
+import Icon from '../../common/Icon';
 
 export const Navbar: React.FC = () => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { profile: user } = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     dispatch(logout());
@@ -20,18 +22,32 @@ export const Navbar: React.FC = () => {
     <nav className={styles.navbar}>
       <div className={styles.container}>
         <Link to="/" className={styles.logo}>
-          LetsQuiz
+          <Icon name="group" size="medium" color="inherit" className={styles.logoIcon} /> LetsQuiz
         </Link>
         <div className={styles.authSection}>
           {isAuthenticated ? (
             <>
-              <Link to="/dashboard" className={styles.dashboardLink}>
+              <Link
+                to="/dashboard"
+                className={`${styles.dashboardLink} ${isAuthenticated ? styles.dashboardLinkAuthenticated : ''} ${location.pathname === '/dashboard' ? styles.dashboardLinkActive : ''}`} // Added active class
+              >
                 Dashboard
               </Link>
-              <span className={styles.welcomeMessage}>Welcome, {user?.email || 'User'}!</span>
-              <button onClick={handleLogout} className={styles.logoutButton}>
-                Logout
-              </button>
+              <div className={styles.authenticatedUserGroup}>
+                {' '}
+                <span className={styles.welcomeMessage}>
+                  <Icon
+                    name="person"
+                    size="small"
+                    color="secondary"
+                    className={styles.welcomeIcon}
+                  />{' '}
+                  Welcome, {user?.email || 'User'}!
+                </span>
+                <button onClick={handleLogout} className={styles.logoutButton}>
+                  Logout
+                </button>
+              </div>
             </>
           ) : (
             <Link to="/login" className={styles.loginLink}>

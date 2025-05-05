@@ -1,31 +1,38 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import UserService from '../../services/userService';
 import { UserProfile, FetchLeaderboardResponse, LeaderboardEntry } from '../../types/api.types';
+import { QuizSession } from '../../types/dashboard.types';
+import { loginUser } from './authSlice';
 
 interface UserState {
   profile: UserProfile | null;
   leaderboard: LeaderboardEntry[];
+  selectedDetailedSession: QuizSession | null;
   loadingProfile: boolean;
   loadingLeaderboard: boolean;
+  loadingSelectedDetailedSession: boolean;
   errorProfile: string | null;
   errorLeaderboard: string | null;
+  errorSelectedDetailedSession: string | null;
 }
 
 const initialState: UserState = {
-  profile: null,
+  profile: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : null,
   leaderboard: [],
+  selectedDetailedSession: null, // Initialize selectedDetailedSession
   loadingProfile: false,
   loadingLeaderboard: false,
+  loadingSelectedDetailedSession: false, // Initialize loading state
   errorProfile: null,
   errorLeaderboard: null,
+  errorSelectedDetailedSession: null, // Initialize error state
 };
 
-// Async thunk for fetching user profile
-export const fetchUserProfile = createAsyncThunk<UserProfile, void, { rejectValue: string }>(
+export const fetchUserProfile = createAsyncThunk<UserProfile, number, { rejectValue: string }>(
   'user/fetchUserProfile',
-  async (_, { rejectWithValue }) => {
+  async (userId, { rejectWithValue }) => {
     try {
-      const response = await UserService.fetchUserProfile();
+      const response = await UserService.fetchUserProfile(userId.toString());
       return response;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.detail || error.message);
@@ -33,7 +40,6 @@ export const fetchUserProfile = createAsyncThunk<UserProfile, void, { rejectValu
   }
 );
 
-// Async thunk for fetching leaderboard
 export const fetchLeaderboard = createAsyncThunk<
   FetchLeaderboardResponse,
   void,
@@ -47,13 +53,66 @@ export const fetchLeaderboard = createAsyncThunk<
   }
 });
 
+export const fetchSingleDetailedQuizSession = createAsyncThunk<
+  QuizSession | undefined,
+  number,
+  { rejectValue: string }
+>('user/fetchSingleDetailedQuizSession', async (sessionId, { getState, rejectWithValue }) => {
+  try {
+    const state = getState() as { user: UserState };
+    const userId = state.user.profile?.id;
+
+    if (!userId) {
+      throw new Error('User not authenticated or user ID not available');
+    }
+
+    const quizHistory = await UserService.fetchUserQuizHistory(userId.toString());
+
+    const session = quizHistory.find((session: QuizSession) => session.id === sessionId);
+
+    if (session) {
+      return session;
+    } else {
+      return undefined;
+    }
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data?.detail || error.message);
+  }
+});
+
 const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {},
+  reducers: {
+    clearSelectedDetailedSession: (state) => {
+      state.selectedDetailedSession = null;
+      state.errorSelectedDetailedSession = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
-      // Handle fetchUserProfile thunk states
+      .addCase(fetchSingleDetailedQuizSession.pending, (state) => {
+        state.loadingSelectedDetailedSession = true;
+        state.errorSelectedDetailedSession = null;
+        state.selectedDetailedSession = null;
+      })
+      .addCase(
+        fetchSingleDetailedQuizSession.fulfilled,
+        (state, action: PayloadAction<QuizSession | undefined>) => {
+          state.loadingSelectedDetailedSession = false;
+          state.selectedDetailedSession = action.payload || null;
+          state.errorSelectedDetailedSession = null;
+        }
+      )
+      .addCase(
+        fetchSingleDetailedQuizSession.rejected,
+        (state, action: PayloadAction<string | undefined>) => {
+          state.loadingSelectedDetailedSession = false;
+          state.selectedDetailedSession = null;
+          state.errorSelectedDetailedSession =
+            action.payload || 'Failed to fetch detailed quiz session';
+        }
+      )
       .addCase(fetchUserProfile.pending, (state) => {
         state.loadingProfile = true;
         state.errorProfile = null;
@@ -68,7 +127,6 @@ const userSlice = createSlice({
         state.profile = null;
         state.errorProfile = action.payload || 'Failed to fetch user profile';
       })
-      // Handle fetchLeaderboard thunk states
       .addCase(fetchLeaderboard.pending, (state) => {
         state.loadingLeaderboard = true;
         state.errorLeaderboard = null;
@@ -89,6 +147,5 @@ const userSlice = createSlice({
   },
 });
 
-// Export actions and reducer
-// export const { someAction } = userSlice.actions; // Export any reducers if added
+export const { clearSelectedDetailedSession } = userSlice.actions;
 export default userSlice.reducer;

@@ -6,34 +6,19 @@ import {
   SignupResponse,
   PasswordResetRequest,
   PasswordResetResponse,
+  SetNewPasswordResponse,
   UserProfile,
 } from '../types/api.types';
 
 class AuthService {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
-      // Use the correct login endpoint
-      const response = await apiClient.post('/login', credentials);
+      const response = await apiClient.get('/users', { params: { email: credentials.email } });
 
-      if (response.data) {
-        const token = response.data.token || `mock-token-${response.data.id}`;
-        setAuthToken(token);
-        return {
-          token,
-          user: {
-            id: response.data.id,
-            email: response.data.email,
-            is_premium: response.data.is_premium || false,
-          },
-        };
-      }
-      throw new Error('Invalid response from server');
-    } catch (error: any) {
-      if (error.response?.status === 404) {
-        // Fallback to users endpoint if auth/login is not found
-        const users = await apiClient.get('/users', { params: credentials });
-        if (users.data && users.data.length > 0) {
-          const user = users.data[0];
+      if (response.data && response.data.length > 0) {
+        const user = response.data[0];
+
+        if (user.password === credentials.password) {
           const token = `mock-token-${user.id}`;
           setAuthToken(token);
           return {
@@ -44,39 +29,59 @@ class AuthService {
               is_premium: user.is_premium || false,
             },
           };
+        } else {
+          throw new Error('Login failed: Invalid credentials');
         }
+      } else {
+        throw new Error('Login failed: User not found');
       }
-      throw new Error('Login failed: Invalid credentials');
+    } catch (error: any) {
+      console.error('Login error:', error);
+      throw new Error(`Login failed: ${error.message || 'An error occurred'}`);
     }
   }
 
   async signup(credentials: SignupRequest): Promise<SignupResponse> {
-    // Mock signup: POST request to /users
-    const response = await apiClient.post('/users', credentials);
-    // Assuming JSON Server returns the created user data on success
-    // For mock, we can return a simple success message
-    return { message: 'Signup successful' };
+    try {
+      const response = await apiClient.post('/users', credentials);
+      return { message: 'Signup successful' };
+    } catch (error: any) {
+      throw new Error(`Signup failed: ${error.message || 'An error occurred'}`);
+    }
   }
 
   async resetPassword(email: string): Promise<PasswordResetResponse> {
-    // Mock password reset: This endpoint doesn't have a direct equivalent in default JSON Server
-    // We can simulate a successful response for the mock
-    console.log(`Mock password reset requested for email: ${email}`);
-    return { message: 'Password reset instructions sent (mock)' };
+    try {
+      // Mock password reset
+      console.log(`Mock password reset requested for email: ${email}`);
+      return { message: 'Password reset instructions sent (mock)' };
+    } catch (error: any) {
+      throw new Error(`Password reset failed: ${error.message || 'An error occurred'}`);
+    }
   }
 
-  // Assuming verify account is still needed and uses a token
+  async setNewPassword(token: string, password: string): Promise<SetNewPasswordResponse> {
+    try {
+      // Mock set new password
+      console.log(`Mock set new password with token: ${token} and password: ${password}`);
+      return { message: 'Password has been reset successfully (mock)' };
+    } catch (error: any) {
+      throw new Error(`Set new password failed: ${error.message || 'An error occurred'}`);
+    }
+  }
+
   async verifyAccount(token: string): Promise<any> {
-    // Define a proper type for verify account response
-    // This endpoint doesn't have a direct equivalent in default JSON Server
-    console.log(`Mock account verification with token: ${token}`);
-    return { message: 'Account verified (mock)' };
+    try {
+      // Mock account verification
+      console.log(`Mock account verification with token: ${token}`);
+      return { message: 'Account verified (mock)' };
+    } catch (error: any) {
+      throw new Error(`Account verification failed: ${error.message || 'An error occurred'}`);
+    }
   }
 
   logout(): void {
     setAuthToken(null);
-    // Also remove refresh token if implemented
-    // setRefreshToken(null);
   }
 }
 

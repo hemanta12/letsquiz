@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography, Card } from '../common';
-import { QuizSessionHistory, CategoryStats, UserProfile } from '../../types/api.types';
+import { CategoryStats, UserProfile, QuizSessionHistory } from '../../types/api.types';
 import styles from './StatsPanel.module.css';
 
 interface StatsPanelProps {
@@ -14,7 +14,7 @@ const StatsPanel: React.FC<StatsPanelProps> = ({ profile, stats, sessions }) => 
   const totalScoreSum = sessions.reduce(
     (acc, session) => acc + (session.score !== null ? session.score : 0),
     0
-  ); // Handle null score
+  );
   const averageScore =
     totalQuizzes > 0 ? Math.round((totalScoreSum / (totalQuizzes * 10)) * 100) : 0;
 

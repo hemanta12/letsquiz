@@ -1,4 +1,5 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
+
 import {
   LoginRequest,
   LoginResponse,
@@ -10,9 +11,6 @@ import {
   FetchQuestionsResponse,
   SubmitAnswerRequest,
   SubmitAnswerResponse,
-  UserProfile,
-  FetchLeaderboardResponse,
-  ErrorResponse,
 } from '../types/api.types';
 
 const API_BASE_URL = 'http://localhost:9000';
@@ -24,7 +22,6 @@ const apiClient = axios.create({
   },
 });
 
-// Request interceptor to add the auth token
 apiClient.interceptors.request.use(
   (config) => {
     const token = getAuthToken();
@@ -38,41 +35,32 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Response interceptor for refresh token logic
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config;
 
-    // If the error is 401 and it's not the refresh token request itself
     if (error.response?.status === 401 && originalRequest && !(originalRequest as any)._isRetry) {
-      (originalRequest as any)._isRetry = true; // Mark the request as being retried
+      (originalRequest as any)._isRetry = true;
 
       try {
-        // Attempt to refresh the token (mock call)
-        // In a real application, this would call your backend's refresh endpoint
-        const refreshToken = getRefreshToken(); // Assuming you have a getRefreshToken function
+        const refreshToken = getRefreshToken();
         const refreshResponse = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
 
-        const newAccessToken = refreshResponse.data.accessToken; // Assuming the response contains a new access token
-        setAuthToken(newAccessToken); // Update the stored access token
+        const newAccessToken = refreshResponse.data.accessToken;
+        setAuthToken(newAccessToken);
 
-        // Retry the original request with the new token
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return apiClient(originalRequest);
       } catch (refreshError) {
-        // If refresh fails, remove the tokens and redirect to login
         setAuthToken(null);
-        setRefreshToken(null); // Assuming you have a setRefreshToken function
+        setRefreshToken(null);
 
         console.error('Unable to refresh token, logging out:', refreshError);
-        // Redirect to login page - this might need to be handled outside the interceptor
-        // window.location.href = '/login';
         return Promise.reject(refreshError);
       }
     }
 
-    // Handle other errors
     if (error.response) {
       console.error('API Error:', error.response.data);
       console.error('Status:', error.response.status);
@@ -87,7 +75,6 @@ apiClient.interceptors.response.use(
   }
 );
 
-// Helper functions for token management
 export const setAuthToken = (token: string | null): void => {
   if (token) {
     localStorage.setItem('authToken', token);
@@ -100,7 +87,6 @@ export const getAuthToken = (): string | null => {
   return localStorage.getItem('authToken');
 };
 
-// Mock refresh token functions (replace with actual implementation)
 const setRefreshToken = (token: string | null): void => {
   if (token) {
     localStorage.setItem('refreshToken', token);
@@ -113,9 +99,8 @@ const getRefreshToken = (): string | null => {
   return localStorage.getItem('refreshToken');
 };
 
-// Authentication API calls
 export const login = (data: LoginRequest): Promise<AxiosResponse<LoginResponse>> => {
-  return apiClient.post('/user/login/', data);
+  return apiClient.post('/login', data);
 };
 
 export const signup = (data: SignupRequest): Promise<AxiosResponse<SignupResponse>> => {
@@ -128,7 +113,6 @@ export const passwordReset = (
   return apiClient.post('/user/password-reset/', data);
 };
 
-// Quiz API calls
 export const fetchQuestions = (
   params?: FetchQuestionsRequest
 ): Promise<AxiosResponse<FetchQuestionsResponse>> => {
@@ -139,15 +123,6 @@ export const submitAnswer = (
   data: SubmitAnswerRequest
 ): Promise<AxiosResponse<SubmitAnswerResponse>> => {
   return apiClient.post('/score/', data);
-};
-
-// User Data API calls
-export const fetchUserProfile = (): Promise<AxiosResponse<UserProfile>> => {
-  return apiClient.get('/user/');
-};
-
-export const fetchLeaderboard = (): Promise<AxiosResponse<FetchLeaderboardResponse>> => {
-  return apiClient.get('/leaderboard/');
 };
 
 export default apiClient;

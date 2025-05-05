@@ -1,3 +1,5 @@
+import { QuizSession } from '../types/dashboard.types';
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -15,6 +17,7 @@ export interface LoginResponse {
 export interface SignupRequest {
   email: string;
   password: string;
+  name: string;
 }
 
 export interface SignupResponse {
@@ -26,6 +29,10 @@ export interface PasswordResetRequest {
 }
 
 export interface PasswordResetResponse {
+  message: string;
+}
+
+export interface SetNewPasswordResponse {
   message: string;
 }
 
@@ -83,7 +90,7 @@ export interface UserProfile {
   email: string;
   is_premium: boolean;
   date_joined: string;
-  quiz_history: QuizSessionHistory[];
+  quiz_history: QuizSession[];
 }
 
 export interface LeaderboardEntry {

@@ -11,13 +11,25 @@ type RecentActivityProps = {
 const RecentActivity: React.FC<RecentActivityProps> = ({ activities, onActivityClick }) => {
   const getRelativeTimeGroup = (dateString: string) => {
     const date = new Date(dateString);
-    const now = new Date();
-    const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+    const today = new Date();
+
+    // strip time components to get local‐midnight
+    const localToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    const msInDay = 24 * 60 * 60 * 1000;
+    const diffDays = Math.round((localToday.getTime() - localDate.getTime()) / msInDay);
 
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Yesterday';
-    if (diffDays <= 7) return 'Last Week';
-    if (diffDays <= 30) return 'Last Month';
+    // Check if the date is in the current month and year, but not today or yesterday
+    if (
+      date.getFullYear() === today.getFullYear() &&
+      date.getMonth() === today.getMonth() &&
+      diffDays > 1 // Exclude today and yesterday
+    ) {
+      return 'This Month';
+    }
     return 'Earlier';
   };
 
@@ -30,9 +42,12 @@ const RecentActivity: React.FC<RecentActivityProps> = ({ activities, onActivityC
     }).format(date);
   };
 
-  const groupedActivities = activities.reduce(
+  // Filter out activities with null completed_at before grouping
+  const completedActivities = activities.filter((activity) => activity.completed_at !== null);
+
+  const groupedActivities = completedActivities.reduce(
     (groups, activity) => {
-      const timeGroup = getRelativeTimeGroup(activity.started_at);
+      const timeGroup = getRelativeTimeGroup(activity.completed_at as string);
       return {
         ...groups,
         [timeGroup]: [...(groups[timeGroup] || []), activity],
@@ -42,41 +57,49 @@ const RecentActivity: React.FC<RecentActivityProps> = ({ activities, onActivityC
   );
 
   return (
-    <Card className={styles.recentActivityCard}>
-      <div className={styles.recentActivityHeader}>
-        <Typography variant="h3">Recent Activity</Typography>
-      </div>
-      <div className={styles.recentActivityContent}>
-        {Object.entries(groupedActivities).map(([group, groupActivities]) => (
-          <div key={group} className={styles.activityGroup}>
-            <div className={styles.activityDate}>{group}</div>
-            {groupActivities.map((activity) => (
-              <button
-                key={activity.id}
-                className={styles.activityItem}
-                onClick={() => onActivityClick(activity.id)}
-                aria-label={`${activity.category} quiz in ${activity.difficulty} difficulty, scored ${activity.score !== null ? activity.score : 'N/A'}/10 on ${formatDate(activity.started_at)}`}
-              >
-                <div className={styles.activityContent}>
-                  <Typography variant="body1" className={styles.activityTitle}>
-                    {activity.category} - {activity.difficulty}
-                  </Typography>
-                  <Typography variant="body2" className={styles.activityTime}>
-                    {formatDate(activity.started_at)}
-                  </Typography>
-                </div>
-                <div className={styles.scoreInfo}>
-                  <span className={styles.score}>
-                    {activity.score !== null ? activity.score : 'N/A'}/10
-                  </span>{' '}
-                  {/* Handle null score */}
-                </div>
-              </button>
-            ))}
-          </div>
-        ))}
-      </div>
-    </Card>
+    <>
+      <Card className={styles.recentActivityCard}>
+        <div className={styles.recentActivityHeader}>
+          <Typography variant="h3">Recent Activity</Typography>
+        </div>
+        <div className={styles.recentActivityContent}>
+          {['Today', 'Yesterday', 'This Month', 'Earlier'].map((group) => {
+            const groupActivities: QuizSessionHistory[] | undefined = groupedActivities[group];
+            if (!groupActivities || groupActivities.length === 0) {
+              return null;
+            }
+            return (
+              <div key={group} className={styles.activityGroup}>
+                <div className={styles.activityDate}>{group}</div>
+                {groupActivities.map((activity: QuizSessionHistory) => (
+                  <button
+                    key={activity.id}
+                    className={styles.activityItem}
+                    onClick={() => onActivityClick(activity.id)}
+                    aria-label={`${activity.category} quiz in ${activity.difficulty} difficulty, scored ${activity.score !== null ? activity.score : 'N/A'}/10 on ${formatDate(activity.completed_at as string)}`}
+                  >
+                    <div className={styles.activityContent}>
+                      <Typography variant="body1" className={styles.activityTitle}>
+                        {activity.category || 'Unknown Category'} -{' '}
+                        {activity.difficulty || 'Unknown Difficulty'}
+                      </Typography>
+                      <Typography variant="body2" className={styles.activityTime}>
+                        {formatDate(activity.completed_at as string)}
+                      </Typography>
+                    </div>
+                    <div className={styles.scoreInfo}>
+                      <span className={styles.score}>
+                        {activity.score !== null ? activity.score : 'N/A'}/10
+                      </span>{' '}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+    </>
   );
 };
 

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import AuthService from '../../services/authService';
+import { AppDispatch, RootState } from '../store';
 import {
   LoginRequest,
   SignupRequest,
@@ -33,17 +34,18 @@ const initialState: AuthState = {
 };
 
 // Async thunk for login
-export const loginUser = createAsyncThunk<LoginResponse, LoginRequest>(
-  'auth/loginUser',
-  async (credentials: LoginRequest, { rejectWithValue }) => {
-    try {
-      const response = await AuthService.login(credentials);
-      return response;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.detail || error.message);
-    }
+export const loginUser = createAsyncThunk<
+  LoginResponse,
+  LoginRequest,
+  { dispatch: AppDispatch; state: RootState; rejectValue: string }
+>('auth/loginUser', async (credentials: LoginRequest, { dispatch, getState, rejectWithValue }) => {
+  try {
+    const response = await AuthService.login(credentials);
+    return response;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data?.detail || error.message);
   }
-);
+});
 
 // Async thunk for signup
 export const signupUser = createAsyncThunk<SignupResponse, SignupRequest, { rejectValue: string }>(
@@ -95,18 +97,19 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action: PayloadAction<LoginResponse>) => {
-        state.loading = false;
-        state.isAuthenticated = true;
-        state.user = action.payload.user;
-        localStorage.setItem('user', JSON.stringify(action.payload.user));
-        localStorage.setItem('isAuthenticated', 'true');
-      })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.isAuthenticated = false;
         state.user = null;
         state.error = action.payload as string;
+      })
+      .addCase(loginUser.fulfilled, (state, action: PayloadAction<LoginResponse>) => {
+        state.loading = false;
+        state.isAuthenticated = true;
+        state.user = action.payload.user;
+        state.error = null;
+        localStorage.setItem('user', JSON.stringify(action.payload.user));
+        localStorage.setItem('isAuthenticated', 'true');
       })
       // Signup
       .addCase(signupUser.pending, (state) => {

@@ -4,6 +4,7 @@ import authReducer from './slices/authSlice';
 import quizReducer from './slices/quizSlice';
 import uiReducer from './slices/uiSlice';
 import userReducer from './slices/userSlice';
+import groupQuizReducer from './slices/groupQuizSlice';
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     quiz: quizReducer,
     ui: uiReducer,
     user: userReducer,
+    groupQuiz: groupQuizReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

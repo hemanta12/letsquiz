@@ -4,6 +4,7 @@ import { Button, Card, Typography, Icon } from '../../components/common';
 import { PlayerManagement } from '../../components/GroupMode/PlayerManagement/index';
 import { useAppDispatch } from '../../hooks/reduxHooks';
 import { setQuizSettings, fetchQuizQuestions } from '../../store/slices/quizSlice';
+import QuizService from '../../services/quizService';
 import styles from './Home.module.css';
 
 const categories = ['History', 'Science', 'Geography', 'Movies', 'Sports', 'Trivia'];
@@ -23,6 +24,7 @@ export const Home: React.FC = () => {
   const [isMixUpMode, setIsMixUpMode] = useState(false);
   const [showPlayerSetup, setShowPlayerSetup] = useState(false);
   const [selectionError, setSelectionError] = useState('');
+  const [noDataError, setNoDataError] = useState(false);
 
   const handleMixUp = useCallback(() => {
     setSelectedCategory(isMixUpMode ? '' : 'all');
@@ -56,30 +58,58 @@ export const Home: React.FC = () => {
   };
 
   const handleContinue = async () => {
+    setNoDataError(false);
+    setSelectionError('');
     if (!validateSelections()) return;
 
-    dispatch(
-      setQuizSettings({
-        mode: selectedMode,
-        category: selectedCategory,
-        difficulty: selectedDifficulty,
-        isMixedMode: isMixUpMode,
-      })
-    );
-
     if (selectedMode === 'Group') {
-      navigate('/player-setup');
-    } else {
-      // Fetch questions before navigating for Solo mode
       try {
-        await dispatch(
-          fetchQuizQuestions({ category: selectedCategory, difficulty: selectedDifficulty })
+        const isDataAvailable = await QuizService.checkQuizDataAvailability(
+          selectedCategory,
+          selectedDifficulty
         );
-        navigate('/quiz');
+        if (isDataAvailable) {
+          dispatch(
+            setQuizSettings({
+              mode: selectedMode,
+              category: selectedCategory,
+              difficulty: selectedDifficulty,
+              isMixedMode: isMixUpMode,
+            })
+          );
+          navigate('/player-setup');
+        } else {
+          setNoDataError(true);
+        }
       } catch (error) {
-        // Handle error fetching questions, maybe display an error message
-        console.error('Error fetching quiz questions:', error);
-        setSelectionError('Failed to load quiz questions. Please try again.');
+        console.error('Error checking quiz data availability:', error);
+        setSelectionError('An error occurred while checking quiz data availability.');
+      }
+    } else {
+      try {
+        const isDataAvailable = await QuizService.checkQuizDataAvailability(
+          selectedCategory,
+          selectedDifficulty
+        );
+        if (isDataAvailable) {
+          dispatch(
+            setQuizSettings({
+              mode: selectedMode,
+              category: selectedCategory,
+              difficulty: selectedDifficulty,
+              isMixedMode: isMixUpMode,
+            })
+          );
+          await dispatch(
+            fetchQuizQuestions({ category: selectedCategory, difficulty: selectedDifficulty })
+          );
+          navigate('/quiz');
+        } else {
+          setNoDataError(true);
+        }
+      } catch (error) {
+        console.error('Error checking or fetching solo quiz data:', error);
+        setSelectionError('An error occurred while setting up the solo quiz.');
       }
     }
   };
@@ -174,9 +204,10 @@ export const Home: React.FC = () => {
             </div>
           </div>
 
-          {selectionError && (
+          {(selectionError || noDataError) && (
             <Typography variant="body2" className={styles.error}>
-              {selectionError}
+              {selectionError ||
+                'No quiz data available for the selected category and difficulty.'}{' '}
             </Typography>
           )}
 

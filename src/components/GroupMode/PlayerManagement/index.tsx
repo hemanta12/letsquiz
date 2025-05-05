@@ -1,56 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import apiClient from '../../../services/apiClient';
 import { Player } from '../../../types/group.types';
 import { Button, Input, Typography } from '../../common';
 import styles from './PlayerManagement.module.css';
-import { fetchQuizQuestions } from '../../../store/slices/quizSlice';
-import { RootState, AppDispatch } from '../../../store/store';
+import { RootState } from '../../../store/store';
 
 interface PlayerManagementProps {
   onPlayersConfirmed: (players: Player[]) => void;
 }
 
 export const PlayerManagement: React.FC<PlayerManagementProps> = ({ onPlayersConfirmed }) => {
-  const dispatch: AppDispatch = useDispatch();
-  const navigate = useNavigate();
-  const { category, difficulty, loading, questions } = useSelector(
-    (state: RootState) => state.quiz
-  );
+  const { loading } = useSelector((state: RootState) => state.quiz);
 
   const [players, setPlayers] = useState<Player[]>([
     { id: '1', name: '', score: 0, isCurrentTurn: false },
     { id: '2', name: '', score: 0, isCurrentTurn: false },
   ]);
   const [error, setError] = useState<string>('');
-  const [playersConfirmed, setPlayersConfirmed] = useState(false);
 
-  // Validate before confirming
-  const handleConfirm = async () => {
+  // Validate before confirming and call the prop
+  const handleConfirm = () => {
     const filledPlayers = players.filter((p) => p.name.trim());
     if (filledPlayers.length < 2) {
       setError('Minimum 2 players required');
       return;
     }
-    try {
-      // Save session data
-      await apiClient.post('/sessions', { players: filledPlayers });
-      setPlayersConfirmed(true);
-      dispatch(fetchQuizQuestions({ category, difficulty }));
-    } catch (error) {
-      console.error('Error saving session data:', error);
-      // Continue to the next step even if saving fails
-      setPlayersConfirmed(true);
-      dispatch(fetchQuizQuestions({ category, difficulty }));
-    }
+    setError('');
+    onPlayersConfirmed(filledPlayers);
   };
-
-  useEffect(() => {
-    if (playersConfirmed && !loading && questions.length > 0) {
-      onPlayersConfirmed(players.filter((p) => p.name.trim()));
-    }
-  }, [playersConfirmed, loading, questions, onPlayersConfirmed]);
 
   const handleAddPlayer = () => {
     if (players.length >= 6) {

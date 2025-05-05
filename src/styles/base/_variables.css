@@ -13,6 +13,8 @@
   --color-primary-dark: #5549d9;
   --color-secondary-dark: #9691e0;
   --color-correct-light: rgb(131, 168, 146);
+  --color-success-light: #d4edda; /* Light green for correct answers */
+  --color-danger-light: #f8d7da; /* Light red for incorrect answers */
 
   /* Difficulty Colors */
   --color-easy: #007a33;

@@ -1,0 +1,102 @@
+.container {
+  padding: var(--space-lg);
+  font-family: var(--font-family-primary);
+  color: var(--color-text-primary);
+  background-color: var(--color-background-secondary);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--box-shadow-md);
+}
+
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 2px solid var(--color-primary);
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.titleInBar {
+  font-size: var(--font-size-h4);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin: 0;
+  flex-grow: 1;
+}
+
+.dateInBar {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.scoreInBar {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  background-color: #7b68ee;
+  color: var(--color-background);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--border-radius-sm);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.questionDetailItem {
+  margin-bottom: var(--space-md);
+  padding: var(--space-md);
+  background-color: var(--color-background-primary);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--box-shadow-sm);
+}
+
+.questionDetailItem.correct {
+  background-color: var(--color-success-light);
+  border-color: var(--color-success);
+}
+
+.questionDetailItem.incorrect {
+  background-color: var(--color-danger-light);
+  border-color: var(--color-danger);
+}
+
+.questionDetailItem:last-child {
+  margin-bottom: 0;
+}
+
+.questionText {
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-sm);
+  color: var(--color-text-primary);
+}
+
+.answersContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.answerBlock {
+  flex: 1;
+  padding: var(--space-sm);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-base);
+  background-color: var(--color-background-secondary);
+}
+
+.label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  margin-right: var(--space-xs);
+}
+
+.answerText {
+  color: var(--color-text-primary);
+  word-break: break-word;
+}

@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Card, Input, Button, Typography } from '../../common';
+import { Card, Input, Button, Typography, Loading } from '../../common';
 import authService from '../../../services/authService';
 import styles from './SignUp.module.css';
 
 export const SignUp: React.FC = () => {
   const [formData, setFormData] = useState({
     email: '',
+    name: '',
     password: '',
     confirmPassword: '',
   });
+
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,11 +23,18 @@ export const SignUp: React.FC = () => {
       return;
     }
 
+    setLoading(true);
     try {
-      await authService.signup(formData);
+      await authService.signup({
+        email: formData.email,
+        name: formData.name,
+        password: formData.password,
+      });
       navigate('/login', { state: { message: 'Account created successfully!' } });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,6 +52,13 @@ export const SignUp: React.FC = () => {
           required
         />
         <Input
+          type="text"
+          label="Name"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          required
+        />
+        <Input
           type="password"
           label="Password"
           value={formData.password}
@@ -55,14 +72,18 @@ export const SignUp: React.FC = () => {
           onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
           required
         />
+        :start_line:70 -------
         {error && <Typography className={styles.error}>{error}</Typography>}
-        <Button type="submit" variant="primary">
-          Sign Up
+        <Button type="submit" variant="primary" disabled={loading}>
+          {' '}
+          {/* Disable button when loading */}
+          {loading ? 'Signing Up...' : 'Sign Up'}
         </Button>
       </form>
       <Link to="/login" className={styles.link}>
-        Already have an account? Login
+        Already have an account? Login :start_line:77 -------
       </Link>
+      {loading && <Loading />}
     </Card>
   );
 };

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Card, Input, Button, Typography } from '../../common';
+import { Card, Input, Button, Typography, Loading } from '../../common';
 import { useAppDispatch, useAppSelector } from '../../../hooks/reduxHooks';
 import { loginUser } from '../../../store/slices/authSlice';
+import { fetchUserProfile } from '../../../store/slices/userSlice';
 import styles from './Login.module.css';
 
 export const Login: React.FC = () => {
@@ -20,8 +21,14 @@ export const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Dispatch the loginUser thunk
-    dispatch(loginUser({ email, password }));
+    // Dispatch the loginUser thunk and await its completion
+    const resultAction = await dispatch(loginUser({ email, password }));
+
+    // Check if login was successful and dispatch fetchUserProfile
+    if (loginUser.fulfilled.match(resultAction)) {
+      const userId = resultAction.payload.user.id;
+      dispatch(fetchUserProfile(userId));
+    }
   };
 
   return (
@@ -47,7 +54,6 @@ export const Login: React.FC = () => {
         {error && <Typography className={styles.error}>{error}</Typography>}{' '}
         <Button type="submit" variant="primary" className={styles.submitButton} disabled={loading}>
           {' '}
-          {/* Disable button when loading */}
           {loading ? 'Logging in...' : 'Login'}
         </Button>
       </form>
@@ -55,6 +61,7 @@ export const Login: React.FC = () => {
         <Link to="/reset-password">Forgot Password?</Link>
         <Link to="/signup">Don't have an account? Sign up</Link>
       </div>
+      {loading && <Loading />}
     </Card>
   );
 };

@@ -31,16 +31,6 @@ server.post('/login', (req, res) => {
   }
 });
 
-// Custom sessions route
-server.post('/sessions', (req, res) => {
-  const sessionData = req.body;
-  if (!router.db.has('sessions').value()) {
-    router.db.set('sessions', []).write(); // if 'sessions' not initialized
-  }
-  router.db.get('sessions').push(sessionData).write();
-  res.status(201).json(sessionData);
-});
-
 // Use default JSON Server router
 server.use(router);
 

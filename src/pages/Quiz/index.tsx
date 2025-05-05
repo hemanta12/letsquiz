@@ -7,8 +7,9 @@ import {
   updateScore,
   nextQuestion as nextQuestionAction,
   resetQuiz,
-  updatePlayerScore,
+  fetchQuizQuestions,
 } from '../../store/slices/quizSlice';
+import { updatePlayerScore } from '../../store/slices/groupQuizSlice';
 import { Question } from '../../types/api.types';
 import { GroupQuestionView } from '../../components/GroupMode/GroupQuestionView';
 import styles from './Quiz.module.css';
@@ -37,10 +38,8 @@ export const Quiz: React.FC = () => {
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
 
   const preloadNextQuestion = useCallback(async () => {
-    // Only preload if there are more questions to fetch from the API
     if (currentQuestion < questions.length) {
       try {
-        // Assuming fetchQuestions fetches one question at a time for preloading
         const nextQuestionData = await QuizService.fetchQuestions({
           limit: 1,
           category: category,
@@ -57,6 +56,12 @@ export const Quiz: React.FC = () => {
   }, [currentQuestion, questions.length, category, difficulty]);
 
   useEffect(() => {
+    if (questions.length === 0 && !quizLoading && !quizError) {
+      dispatch(fetchQuizQuestions({ category, difficulty, limit: 10 }));
+    }
+  }, [dispatch, category, difficulty, questions.length, quizLoading, quizError]);
+
+  useEffect(() => {
     preloadNextQuestion();
   }, [preloadNextQuestion]);
 
@@ -70,7 +75,6 @@ export const Quiz: React.FC = () => {
         setIsLoading(true);
         await dispatch(selectAnswer({ questionIndex: currentQuestion, answer }));
 
-        // Show feedback
         const correct = answer === currentQuestionData?.correct_answer;
         setIsCorrect(correct);
         setShowFeedback(true);
@@ -94,9 +98,8 @@ export const Quiz: React.FC = () => {
     try {
       setIsLoading(true);
 
-      // Update score before moving to next question if in group mode
       if (mode === 'Group' && selectedPlayer) {
-        dispatch(updatePlayerScore(selectedPlayer));
+        dispatch(updatePlayerScore({ playerId: Number(selectedPlayer), score: 5 }));
       }
 
       setShowFeedback(false);
@@ -106,14 +109,10 @@ export const Quiz: React.FC = () => {
         await dispatch(updateScore());
         navigate('/results');
       } else {
-        // Use the preloaded question if available, otherwise fetch the next question
         if (preloadedQuestion) {
           dispatch(nextQuestionAction(preloadedQuestion));
-          setPreloadedQuestion(null); // Clear preloaded question after using it
+          setPreloadedQuestion(null);
         } else {
-          // Fallback: Fetch the next question if not preloaded
-          // This case should ideally not be hit if preloading works correctly
-          // but is included for robustness.
           const nextQuestionData = await QuizService.fetchQuestions({
             limit: 1,
             category: category,
@@ -122,7 +121,6 @@ export const Quiz: React.FC = () => {
           if (nextQuestionData && nextQuestionData.questions.length > 0) {
             dispatch(nextQuestionAction(nextQuestionData.questions[0]));
           } else {
-            // Handle case where no more questions are available from API
             await dispatch(updateScore());
             navigate('/results');
           }
@@ -140,19 +138,32 @@ export const Quiz: React.FC = () => {
     navigate('/');
   };
 
-  // Show loading if either local loading or quiz slice loading is true, or if no questions are loaded yet
-  if (isLoading || quizLoading || !currentQuestionData) {
-    // Fallback for group mode when no questions are available
-    if (mode === 'Group' && questions.length === 0) {
-      return (
-        <div className={styles.quiz}>
-          <Typography variant="h3">No quiz data available for this mode.</Typography>
-        </div>
-      );
-    }
+  if (isLoading || quizLoading) {
     return (
       <div className={styles.quiz}>
         <Loading />
+      </div>
+    );
+  }
+
+  // Handle case where no questions are available after loading
+  if (!quizLoading && questions.length === 0) {
+    return (
+      <div className={styles.quiz}>
+        <Typography variant="h3">
+          Sorry, no quiz data available for this category and difficulty.
+        </Typography>
+      </div>
+    );
+  }
+
+  // Display error if either local error or quiz slice error exists
+  if (error || quizError) {
+    return (
+      <div className={styles.quiz}>
+        <Typography variant="body2" color="error" className={styles.error}>
+          {error || quizError}
+        </Typography>
       </div>
     );
   }
@@ -214,7 +225,6 @@ export const Quiz: React.FC = () => {
         <>
           <div className={styles.question}>
             <Typography variant="h2">{currentQuestionData?.question_text}</Typography>{' '}
-            {/* Use question_text */}
           </div>
 
           {showFeedback && (
@@ -232,7 +242,6 @@ export const Quiz: React.FC = () => {
               <Loading variant="skeleton" />
             ) : (
               currentQuestionData?.answer_options.map((option: string) => {
-                // Use answer_options and explicitly type option
                 const isSelected = selectedAnswers[currentQuestion] === option;
                 const isCorrectAnswer = option === currentQuestionData.correct_answer;
                 const showFeedbackStyles = showFeedback && (isSelected || isCorrectAnswer);

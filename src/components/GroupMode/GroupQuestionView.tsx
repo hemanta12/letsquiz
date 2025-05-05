@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Player } from '../../types/group.types';
+import { GroupPlayer } from '../../types/quiz.types';
 import { Button } from '../common/Button';
 import { Typography } from '../common/Typography';
 import styles from './GroupQuestionView.module.css';
+import { setTempPlayerScore } from '../../store/slices/groupQuizSlice';
 
 interface GroupQuestionViewProps {
   questionNumber: number;
@@ -31,27 +32,25 @@ export const GroupQuestionView: React.FC<GroupQuestionViewProps> = ({
   currentScoredPlayer,
 }) => {
   const dispatch = useDispatch();
-  const players = useSelector((state: any) => state.quiz.settings.groupState?.players || []);
+  const players = useSelector((state: any) => state.groupQuiz.groupSession?.players || []);
 
-  const handlePlayerScore = (playerId: string) => {
+  const handlePlayerScore = (playerId: number) => {
+    // Expect number for playerId
     if (showFeedback) {
-      const updatedPlayers = players.map((player: Player) => ({
-        ...player,
-        uiScore: player.id === playerId ? player.score + 5 : player.score,
-      }));
-      dispatch({ type: 'quiz/updateTempScores', payload: updatedPlayers });
-      onPlayerSelected(playerId);
+      // Dispatch setTempPlayerScore for real-time UI update
+      dispatch(setTempPlayerScore({ playerId: playerId, tempScore: 5 }));
+      onPlayerSelected(playerId.toString());
     }
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.scoreBoard}>
-        {players.map((player: Player) => (
+        {players.map((player: GroupPlayer) => (
           <div key={player.id} className={styles.playerScore}>
             <div className={styles.playerName}>{player.name}</div>
             <div className={styles.score}>
-              {player.uiScore !== undefined ? player.uiScore : player.score}
+              {player.uiScore !== undefined ? player.uiScore : player.score}{' '}
             </div>
           </div>
         ))}
@@ -111,7 +110,7 @@ export const GroupQuestionView: React.FC<GroupQuestionViewProps> = ({
       <div className={styles.playerSelection}>
         <Typography variant="h3">Who got it right? (5 points)</Typography>
         <div className={styles.playerButtons}>
-          {players.map((player: Player) => (
+          {players.map((player: GroupPlayer) => (
             <Button
               key={player.id}
               variant="secondary"
@@ -119,7 +118,7 @@ export const GroupQuestionView: React.FC<GroupQuestionViewProps> = ({
               disabled={!showFeedback}
             >
               {player.name}
-              {currentScoredPlayer === player.id && ' (Selected)'}
+              {currentScoredPlayer === player.id.toString() && ' (Selected)'}{' '}
             </Button>
           ))}
         </div>

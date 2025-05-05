@@ -1,7 +1,8 @@
 .navbar {
   background-color: var(--color-primary);
-  padding: var(--space-md) 0;
+  padding: var(--space-lg) 0;
   color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .container {
@@ -14,20 +15,66 @@
 }
 
 .logo {
-  font-size: var(--font-size-h3);
-  font-weight: 700;
+  font-size: var(--font-size-h2);
+  font-weight: 900;
   color: white;
   text-decoration: none;
-  transition: opacity 0.2s;
+  transition: color 0.2s ease-in-out;
 }
 
 .logo:hover {
-  opacity: 0.9;
+  color: var(--color-secondary-light);
+}
+
+.logoIcon {
+  margin-right: var(--space-xs);
+  vertical-align: middle;
 }
 
 .menuItems {
   display: flex;
   gap: var(--space-lg);
+}
+.authSection {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.authenticatedUserGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.welcomeIcon {
+  margin-right: var(--space-xs);
+  vertical-align: middle;
+}
+.welcomeMessage {
+  color: var(--color-secondary-light);
+  font-style: italic;
+  font-weight: bold;
+}
+
+.logoutButton {
+  color: var(--color-error);
+  background-color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  padding: var(--space-md) var(--space-xxl);
+  font: bolder;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: var(--font-size-body);
+  padding: var(--space-md) var(--space-xxl);
+  transition: background-color 0.3s ease-in-out;
+}
+
+.logoutButton:hover {
+  background-color: var(--color-quit);
+  color: white;
 }
 
 .menuItem {
@@ -56,10 +103,11 @@
 
 .loginLink {
   color: white;
+  background-color: var(--color-easy);
+  border-radius: 8px;
   text-decoration: none;
   font-size: var(--font-size-body);
-  padding: var(--space-sm) var(--space-md);
-  border-radius: 4px;
+  padding: var(--space-md) var(--space-xxl);
   transition: background-color 0.2s;
 }
 
@@ -72,13 +120,14 @@
   text-decoration: none;
   font-size: var(--font-size-body);
   padding: var(--space-sm) var(--space-md);
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s ease-in-out;
   margin-right: var(--space-md);
 }
 
 .dashboardLink:hover {
   background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 @media (max-width: 768px) {

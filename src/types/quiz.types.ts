@@ -16,6 +16,7 @@ export interface GroupPlayer {
   id: number;
   name: string;
   score: number;
+  uiScore?: number;
 }
 
 export interface GroupQuizSession {

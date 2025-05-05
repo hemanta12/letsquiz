@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { QuizSettings, GroupQuizSession, GroupPlayer } from '../../types/quiz.types';
-import { Player } from '../../types/group.types';
+import { QuizSettings } from '../../types/quiz.types';
 import QuizService from '../../services/quizService';
 import { FetchQuestionsRequest, Question, FetchQuestionsResponse } from '../../types/api.types';
+import { setGroupSession, setGroupMode, setCurrentPlayer } from './groupQuizSlice';
 
 interface QuizState {
   settings: QuizSettings;
@@ -13,12 +13,9 @@ interface QuizState {
   questions: Question[];
   selectedAnswers: Record<number, string>;
   score: number;
-  currentPlayer?: Player;
   pointsPerQuestion: number;
   loading: boolean;
   error: string | null;
-  isGroupMode: boolean;
-  groupSession: GroupQuizSession | null;
 }
 
 const initialState: QuizState = {
@@ -34,12 +31,9 @@ const initialState: QuizState = {
   questions: [],
   selectedAnswers: {},
   score: 0,
-  currentPlayer: undefined,
   pointsPerQuestion: 5,
   loading: false,
   error: null,
-  isGroupMode: false,
-  groupSession: null,
 };
 
 // Async thunk for fetching quiz questions
@@ -50,29 +44,37 @@ export const fetchQuizQuestions = createAsyncThunk<
 >('quiz/fetchQuizQuestions', async (params: FetchQuestionsRequest, { rejectWithValue }) => {
   try {
     const response = await QuizService.fetchQuestions(params);
+    console.log('fetchQuizQuestions thunk - response:', response);
     return response;
   } catch (error: any) {
+    console.error('fetchQuizQuestions thunk - error:', error);
     return rejectWithValue(error.response?.data?.detail || error.message);
   }
 });
 
-export const startGroupQuiz = createAsyncThunk(
+export const startGroupQuiz = createAsyncThunk<
+  { questions: Question[] },
+  { players: string[]; category: string; difficulty: string },
+  { rejectValue: string }
+>(
   'quiz/startGroupQuiz',
-  async (
-    {
-      players,
-      category,
-      difficulty,
-    }: {
-      players: string[];
-      category: string;
-      difficulty: string;
-    },
-    { dispatch }
-  ) => {
-    const session = await QuizService.createGroupSession(players, category, difficulty);
-    const { questions } = await QuizService.fetchQuestions({ category, difficulty });
-    return { session, questions };
+  async ({ players, category, difficulty }, { dispatch, rejectWithValue }) => {
+    try {
+      const session = await QuizService.createGroupSession(players, category, difficulty);
+      dispatch(setGroupSession(session));
+      dispatch(setGroupMode(true));
+      // Assuming the first player in the session is the starting player
+      if (session.players.length > 0) {
+        dispatch(setCurrentPlayer(session.players[0]));
+      }
+      const { questions } = await QuizService.fetchQuestions({ category, difficulty });
+      return { questions };
+    } catch (error: any) {
+      dispatch(setGroupMode(false));
+      dispatch(setGroupSession(null));
+      dispatch(setCurrentPlayer(undefined));
+      return rejectWithValue(error.message || 'Failed to start group quiz');
+    }
   }
 );
 
@@ -108,51 +110,6 @@ export const quizSlice = createSlice({
     },
     // resetQuiz reducer
     resetQuiz: () => initialState,
-    // setCurrentPlayer reducer
-    setCurrentPlayer: (state, action: PayloadAction<Player>) => {
-      state.currentPlayer = action.payload;
-    },
-    // updatePlayerScore
-    updatePlayerScore: (state, action: PayloadAction<string>) => {
-      if (state.settings?.groupState) {
-        state.settings.groupState.players = state.settings.groupState.players.map((player) => {
-          if (player.id === action.payload) {
-            return {
-              ...player,
-              score: player.score + 5,
-              uiScore: undefined,
-            };
-          }
-          return {
-            ...player,
-            uiScore: undefined,
-          };
-        });
-      }
-    },
-    // updatePlayers reducer
-    updatePlayers: (state, action: PayloadAction<Player[]>) => {
-      if (state.settings?.groupState) {
-        state.settings.groupState.players = action.payload;
-      }
-    },
-    // updateTempScores reducer
-    updateTempScores: (state, action: PayloadAction<Player[]>) => {
-      if (state.settings?.groupState) {
-        state.settings.groupState.players = action.payload;
-      }
-    },
-    setGroupMode: (state, action: PayloadAction<boolean>) => {
-      state.isGroupMode = action.payload;
-    },
-    nextPlayer: (state) => {
-      if (!state.groupSession) return;
-      const currentIndex = state.groupSession.players.findIndex(
-        (p) => p.id === state.groupSession?.currentPlayer
-      );
-      const nextIndex = (currentIndex + 1) % state.groupSession.players.length;
-      state.groupSession.currentPlayer = state.groupSession.players[nextIndex].id;
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -164,12 +121,22 @@ export const quizSlice = createSlice({
       .addCase(
         fetchQuizQuestions.fulfilled,
         (state, action: PayloadAction<FetchQuestionsResponse>) => {
+          console.log('fetchQuizQuestions.fulfilled - action.payload:', action.payload);
           state.loading = false;
           state.questions = action.payload.questions;
-          state.error = null;
+          console.log('fetchQuizQuestions.fulfilled - state.loading:', state.loading);
+          console.log(
+            'fetchQuizQuestions.fulfilled - questions length:',
+            action.payload.questions.length
+          );
           state.currentQuestion = 0;
           state.selectedAnswers = {};
           state.score = 0;
+          if (state.questions.length === 0) {
+            state.error = 'No questions found for the selected criteria.';
+          } else {
+            state.error = null;
+          }
         }
       )
       .addCase(fetchQuizQuestions.rejected, (state, action) => {
@@ -182,23 +149,11 @@ export const quizSlice = createSlice({
       })
       .addCase(startGroupQuiz.fulfilled, (state, action) => {
         state.questions = action.payload.questions;
-        state.groupSession = action.payload.session;
         state.currentQuestion = 0;
       });
   },
 });
 
-export const {
-  setQuizSettings,
-  selectAnswer,
-  updateScore,
-  nextQuestion,
-  resetQuiz,
-  setCurrentPlayer,
-  updatePlayerScore,
-  updatePlayers,
-  updateTempScores,
-  setGroupMode,
-  nextPlayer,
-} = quizSlice.actions;
+export const { setQuizSettings, selectAnswer, updateScore, nextQuestion, resetQuiz } =
+  quizSlice.actions;
 export default quizSlice.reducer;

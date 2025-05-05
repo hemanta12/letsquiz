@@ -22,22 +22,38 @@ class QuizService {
     }
 
     console.log(`Fetching questions from API for key: ${cacheKey}`);
-    // Change endpoint to /questions and pass params for filtering
-    const response = await apiClient.get('/questions', { params });
-    // Assuming JSON Server returns an array of questions directly for GET /questions
-    const fetchedQuestions = response.data; // JSON Server returns array directly
+    try {
+      const response = await apiClient.get('/questions', { params });
+      const fetchedQuestions = response.data;
 
-    // Store data in cache
-    questionCache[cacheKey] = fetchedQuestions;
+      // Store data in cache
+      questionCache[cacheKey] = fetchedQuestions;
 
-    return { questions: fetchedQuestions };
+      return { questions: fetchedQuestions };
+    } catch (error: any) {
+      throw new Error(`Failed to fetch questions: ${error.message || 'An error occurred'}`);
+    }
+  }
+
+  async checkQuizDataAvailability(category: string, difficulty: string): Promise<boolean> {
+    try {
+      const response = await apiClient.get('/questions', {
+        params: { category, difficulty, _limit: 1 },
+      });
+      return response.data.length > 0;
+    } catch (error: any) {
+      console.error('Error checking quiz data availability:', error);
+      return false;
+    }
   }
 
   async submitAnswer(data: SubmitAnswerRequest): Promise<SubmitAnswerResponse> {
-    // Assuming submitting an answer involves updating a quiz session or score
-    // This endpoint might need adjustment based on your db.json structure for scores/sessions
-    const response = await apiClient.post('/score/', data); // Keep as POST to /score for now based on previous plan
-    return response.data;
+    try {
+      const response = await apiClient.post('/score/', data);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(`Failed to submit answer: ${error.message || 'An error occurred'}`);
+    }
   }
 
   async createGroupSession(
@@ -45,33 +61,45 @@ class QuizService {
     category: string,
     difficulty: string
   ): Promise<GroupQuizSession> {
-    const response = await apiClient.post('/groupQuizSessions', {
-      players: players.map((name, index) => ({
-        id: index + 1,
-        name,
-        score: 0,
-      })),
-      currentQuestion: 0,
-      totalQuestions: 5,
-      category,
-      difficulty,
-      status: 'active',
-      currentPlayer: 1,
-    });
-    return response.data;
+    try {
+      const response = await apiClient.post('/groupQuizSessions', {
+        players: players.map((name, index) => ({
+          id: index + 1,
+          name,
+          score: 0,
+        })),
+        currentQuestion: 0,
+        totalQuestions: 5,
+        category,
+        difficulty,
+        status: 'active',
+        currentPlayer: 1,
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(`Failed to create group session: ${error.message || 'An error occurred'}`);
+    }
   }
 
   async updateGroupSession(
     sessionId: number,
     data: Partial<GroupQuizSession>
   ): Promise<GroupQuizSession> {
-    const response = await apiClient.patch(`/groupQuizSessions/${sessionId}`, data);
-    return response.data;
+    try {
+      const response = await apiClient.patch(`/groupQuizSessions/${sessionId}`, data);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(`Failed to update group session: ${error.message || 'An error occurred'}`);
+    }
   }
 
   async getGroupSession(sessionId: number): Promise<GroupQuizSession> {
-    const response = await apiClient.get(`/groupQuizSessions/${sessionId}`);
-    return response.data;
+    try {
+      const response = await apiClient.get(`/groupQuizSessions/${sessionId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(`Failed to get group session: ${error.message || 'An error occurred'}`);
+    }
   }
 }
 

@@ -11,7 +11,7 @@ export const Results: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { score, questions, mode, category, difficulty } = useAppSelector((state) => state.quiz);
-  const groupState = useAppSelector((state) => state.quiz.settings.groupState);
+  const groupSession = useAppSelector((state) => state.groupQuiz.groupSession);
 
   const totalQuestions = questions.length;
   const correctAnswers = score;
@@ -47,10 +47,8 @@ export const Results: React.FC = () => {
         difficulty,
         players: sortedPlayers.map((player) => ({ name: player.name, score: player.score })),
       });
-      // Optionally show a success message
     } catch (error) {
       console.error('Error posting to leaderboard:', error);
-      // Do not set error state, allow user to see results
     } finally {
       setIsPostingToLeaderboard(false);
     }
@@ -61,9 +59,8 @@ export const Results: React.FC = () => {
     navigate('/');
   };
 
-  // Create a sorted copy of players array
-  const sortedPlayers = groupState?.players
-    ? [...groupState.players].sort((a, b) => b.score - a.score)
+  const sortedPlayers = groupSession?.players
+    ? [...groupSession.players].sort((a, b) => b.score - a.score)
     : [];
 
   return (

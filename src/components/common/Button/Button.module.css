@@ -19,6 +19,7 @@
 
 .primary:hover:not(:disabled) {
   background-color: var(--color-primary-dark);
+  transform: translateY(-2px);
 }
 
 .secondary {
@@ -28,6 +29,7 @@
 
 .secondary:hover:not(:disabled) {
   background-color: var(--color-secondary-dark);
+  transform: translateY(-2px);
 }
 
 .quit {
@@ -43,6 +45,7 @@
 
 .text:hover:not(:disabled) {
   color: var(--color-primary-dark);
+  transform: translateY(-2px);
 }
 
 .small {
@@ -61,7 +64,6 @@
 }
 
 .button:disabled {
-  /* opacity: 0.6; */
   background-color: var(--color-disabled);
   cursor: not-allowed;
 }

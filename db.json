@@ -13,7 +13,59 @@
           "score": 8,
           "total_questions": 10,
           "started_at": "2023-10-26T10:00:00Z",
-          "completed_at": "2023-10-26T10:15:00Z"
+          "completed_at": "2023-10-26T10:15:00Z",
+          "details": [
+            {
+              "question": "What year did the Titanic sink?",
+              "userAnswer": "1912",
+              "correctAnswer": "1912"
+            },
+            {
+              "question": "Who was the first president of the United States?",
+              "userAnswer": "George Washington",
+              "correctAnswer": "George Washington"
+            },
+            {
+              "question": "In which year did World War I begin?",
+              "userAnswer": "1914",
+              "correctAnswer": "1914"
+            },
+            {
+              "question": "What was the primary cause of the Punic Wars?",
+              "userAnswer": "Control of trade routes in the Mediterranean",
+              "correctAnswer": "Control of trade routes in the Mediterranean"
+            },
+            {
+              "question": "Who was the last pharaoh of Ancient Egypt?",
+              "userAnswer": "Cleopatra VII",
+              "correctAnswer": "Cleopatra VII"
+            },
+            {
+              "question": "What document declared the independence of the United States?",
+              "userAnswer": "Declaration of Independence",
+              "correctAnswer": "Declaration of Independence"
+            },
+            {
+              "question": "Which empire was ruled by Genghis Khan?",
+              "userAnswer": "Mongol Empire",
+              "correctAnswer": "Mongol Empire"
+            },
+            {
+              "question": "What was the name of the ship that brought the Pilgrims to America?",
+              "userAnswer": "Mayflower",
+              "correctAnswer": "Mayflower"
+            },
+            {
+              "question": "Who was the main figure of the Protestant Reformation?",
+              "userAnswer": "Martin Luther",
+              "correctAnswer": "John Calvin"
+            },
+            {
+              "question": "What ancient civilization built the pyramids of Giza?",
+              "userAnswer": "Roman",
+              "correctAnswer": "Egyptian"
+            }
+          ]
         },
         {
           "id": 102,
@@ -22,7 +74,486 @@
           "score": 6,
           "total_questions": 10,
           "started_at": "2023-10-25T14:30:00Z",
-          "completed_at": "2023-10-25T14:45:00Z"
+          "completed_at": "2023-10-25T14:45:00Z",
+          "details": [
+            {
+              "question": "What is the chemical symbol for gold?",
+              "userAnswer": "Au",
+              "correctAnswer": "Au"
+            },
+            {
+              "question": "What is the largest organ in the human body?",
+              "userAnswer": "Skin",
+              "correctAnswer": "Skin"
+            },
+            {
+              "question": "What is the process by which plants make their own food?",
+              "userAnswer": "Photosynthesis",
+              "correctAnswer": "Photosynthesis"
+            },
+            {
+              "question": "What is the unit of electrical resistance?",
+              "userAnswer": "Ohm",
+              "correctAnswer": "Ohm"
+            },
+            {
+              "question": "What is the hardest natural substance on Earth?",
+              "userAnswer": "Diamond",
+              "correctAnswer": "Diamond"
+            },
+            {
+              "question": "What is the study of fungi called?",
+              "userAnswer": "Mycology",
+              "correctAnswer": "Mycology"
+            },
+            {
+              "question": "What is the chemical formula for table salt?",
+              "userAnswer": "NaCl",
+              "correctAnswer": "NaCl"
+            },
+            {
+              "question": "What is the force that pulls objects towards the center of the Earth?",
+              "userAnswer": "Gravity",
+              "correctAnswer": "Magnetism"
+            },
+            {
+              "question": "What is the boiling point of water in Celsius?",
+              "userAnswer": "100",
+              "correctAnswer": "100"
+            },
+            {
+              "question": "What is the smallest unit of matter?",
+              "userAnswer": "Atom",
+              "correctAnswer": "Molecule"
+            }
+          ]
+        },
+        {
+          "id": 103,
+          "category": "Geography",
+          "difficulty": "Easy",
+          "score": 9,
+          "total_questions": 10,
+          "started_at": "2023-10-24T11:00:00Z",
+          "completed_at": "2023-10-24T11:12:00Z",
+          "details": [
+            {
+              "question": "What is the capital of Japan?",
+              "userAnswer": "Tokyo",
+              "correctAnswer": "Tokyo"
+            },
+            {
+              "question": "Which is the longest river in the world?",
+              "userAnswer": "Nile",
+              "correctAnswer": "Nile"
+            },
+            {
+              "question": "What is the highest mountain in the world?",
+              "userAnswer": "Mount Everest",
+              "correctAnswer": "Mount Everest"
+            },
+            {
+              "question": "Which ocean is the largest?",
+              "userAnswer": "Pacific Ocean",
+              "correctAnswer": "Pacific Ocean"
+            },
+            {
+              "question": "What is the capital of Australia?",
+              "userAnswer": "Canberra",
+              "correctAnswer": "Canberra"
+            },
+            {
+              "question": "Which country is known as the Land of the Rising Sun?",
+              "userAnswer": "Japan",
+              "correctAnswer": "Japan"
+            },
+            {
+              "question": "What is the largest desert in the world?",
+              "userAnswer": "Sahara Desert",
+              "correctAnswer": "Antarctica"
+            },
+            {
+              "question": "Which is the smallest continent?",
+              "userAnswer": "Australia",
+              "correctAnswer": "Australia"
+            },
+            {
+              "question": "What is the capital of Canada?",
+              "userAnswer": "Ottawa",
+              "correctAnswer": "Ottawa"
+            },
+            {
+              "question": "Which sea is located between Europe and Africa?",
+              "userAnswer": "Mediterranean Sea",
+              "correctAnswer": "Mediterranean Sea"
+            }
+          ]
+        },
+        {
+          "id": 104,
+          "category": "Literature",
+          "difficulty": "Medium",
+          "score": 7,
+          "total_questions": 10,
+          "started_at": "2023-10-23T09:00:00Z",
+          "completed_at": "2023-10-23T09:10:00Z",
+          "details": [
+            {
+              "question": "Who wrote 'Romeo and Juliet'?",
+              "userAnswer": "William Shakespeare",
+              "correctAnswer": "William Shakespeare"
+            },
+            {
+              "question": "What is the name of the protagonist in 'Pride and Prejudice'?",
+              "userAnswer": "Elizabeth Bennet",
+              "correctAnswer": "Elizabeth Bennet"
+            },
+            {
+              "question": "Who wrote '1984'?",
+              "userAnswer": "George Orwell",
+              "correctAnswer": "George Orwell"
+            },
+            {
+              "question": "What is the name of the whale in 'Moby Dick'?",
+              "userAnswer": "Moby Dick",
+              "correctAnswer": "Moby Dick"
+            },
+            {
+              "question": "Who wrote 'The Great Gatsby'?",
+              "userAnswer": "F. Scott Fitzgerald",
+              "correctAnswer": "F. Scott Fitzgerald"
+            },
+            {
+              "question": "What is the name of the wizard in 'The Lord of the Rings'?",
+              "userAnswer": "Gandalf",
+              "correctAnswer": "Gandalf"
+            },
+            {
+              "question": "Who wrote 'Harry Potter and the Sorcerer's Stone'?",
+              "userAnswer": "J.K. Rowling",
+              "correctAnswer": "J.K. Rowling"
+            },
+            {
+              "question": "What is the name of the fictional detective created by Arthur Conan Doyle?",
+              "userAnswer": "Sherlock Holmes",
+              "correctAnswer": "Hercule Poirot"
+            },
+            {
+              "question": "Who wrote 'The Odyssey'?",
+              "userAnswer": "Homer",
+              "correctAnswer": "Homer"
+            },
+            {
+              "question": "What is the name of the protagonist in 'Jane Eyre'?",
+              "userAnswer": "Jane Eyre",
+              "correctAnswer": "Catherine Earnshaw"
+            }
+          ]
+        },
+        {
+          "id": 105,
+          "category": "History",
+          "difficulty": "Quiz Genius",
+          "score": 5,
+          "total_questions": 10,
+          "started_at": "2023-10-22T16:00:00Z",
+          "completed_at": "2025-05-01T16:20:00Z",
+          "details": [
+            {
+              "question": "What year did the Battle of Agincourt take place?",
+              "userAnswer": "1415",
+              "correctAnswer": "1415"
+            },
+            {
+              "question": "Who was the first Roman Emperor?",
+              "userAnswer": "Augustus",
+              "correctAnswer": "Augustus"
+            },
+            {
+              "question": "What was the name of the ship Charles Darwin sailed on?",
+              "userAnswer": "HMS Beagle",
+              "correctAnswer": "HMS Beagle"
+            },
+            {
+              "question": "In which year did the French Revolution begin?",
+              "userAnswer": "1789",
+              "correctAnswer": "1789"
+            },
+            {
+              "question": "Who was the leader of the Soviet Union during World War II?",
+              "userAnswer": "Joseph Stalin",
+              "correctAnswer": "Joseph Stalin"
+            },
+            {
+              "question": "What was the name of the treaty that ended World War I?",
+              "userAnswer": "Treaty of Versailles",
+              "correctAnswer": "Treaty of Versailles"
+            },
+            {
+              "question": "Who was the first female Prime Minister of the United Kingdom?",
+              "userAnswer": "Margaret Thatcher",
+              "correctAnswer": "Theresa May"
+            },
+            {
+              "question": "What was the name of the ancient trade route connecting East and West?",
+              "userAnswer": "Silk Road",
+              "correctAnswer": "Silk Road"
+            },
+            {
+              "question": "Who was the famous Carthaginian general who crossed the Alps with elephants?",
+              "userAnswer": "Hannibal",
+              "correctAnswer": "Scipio Africanus"
+            },
+            {
+              "question": "What year did the Berlin Wall fall?",
+              "userAnswer": "1989",
+              "correctAnswer": "1991"
+            }
+          ]
+        },
+        {
+          "id": 106,
+          "score": 9,
+          "totalQuestions": 10,
+          "completed_at": "2025-05-04T14:00:00Z",
+          "category": "History",
+          "difficulty": "Easy",
+          "started_at": "2025-05-04T14:00:00Z",
+          "details": [
+            {
+              "question": "Who was the first emperor of Rome?",
+              "userAnswer": "Augustus",
+              "correctAnswer": "Augustus"
+            },
+            {
+              "question": "In what year did the Declaration of Independence take place?",
+              "userAnswer": "1776",
+              "correctAnswer": "1776"
+            },
+            {
+              "question": "What was the name of the ship that sank in 1912?",
+              "userAnswer": "Titanic",
+              "correctAnswer": "Titanic"
+            },
+            {
+              "question": "Who was the leader of Nazi Germany during World War II?",
+              "userAnswer": "Adolf Hitler",
+              "correctAnswer": "Adolf Hitler"
+            },
+            {
+              "question": "What ancient civilization built the pyramids?",
+              "userAnswer": "Egyptian",
+              "correctAnswer": "Egyptian"
+            },
+            {
+              "question": "Who was the first president of the United States?",
+              "userAnswer": "George Washington",
+              "correctAnswer": "George Washington"
+            },
+            {
+              "question": "In what year did the Berlin Wall fall?",
+              "userAnswer": "1989",
+              "correctAnswer": "1989"
+            },
+            {
+              "question": "What was the name of the war fought between the North and South in the United States?",
+              "userAnswer": "Civil War",
+              "correctAnswer": "Civil War"
+            },
+            {
+              "question": "Who was the famous queen of Egypt who had a relationship with Julius Caesar and Mark Antony?",
+              "userAnswer": "Cleopatra",
+              "correctAnswer": "Nefertiti"
+            },
+            {
+              "question": "What year did World War II end?",
+              "userAnswer": "1945",
+              "correctAnswer": "1945"
+            }
+          ]
+        },
+        {
+          "id": 107,
+          "score": 7,
+          "totalQuestions": 10,
+          "completed_at": "2025-05-03T10:00:00Z",
+          "category": "Science",
+          "difficulty": "Medium",
+          "started_at": "2025-05-03T10:00:00Z",
+          "details": [
+            {
+              "question": "What is the chemical symbol for oxygen?",
+              "userAnswer": "O",
+              "correctAnswer": "O"
+            },
+            {
+              "question": "What is the process of a liquid turning into a gas?",
+              "userAnswer": "Evaporation",
+              "correctAnswer": "Evaporation"
+            },
+            {
+              "question": "What is the center of an atom called?",
+              "userAnswer": "Nucleus",
+              "correctAnswer": "Nucleus"
+            },
+            {
+              "question": "What is the unit of force?",
+              "userAnswer": "Newton",
+              "correctAnswer": "Newton"
+            },
+            {
+              "question": "What is the study of the universe called?",
+              "userAnswer": "Astronomy",
+              "correctAnswer": "Astronomy"
+            },
+            {
+              "question": "What is the chemical formula for carbon dioxide?",
+              "userAnswer": "CO2",
+              "correctAnswer": "CO2"
+            },
+            {
+              "question": "What is the largest planet in our solar system?",
+              "userAnswer": "Jupiter",
+              "correctAnswer": "Jupiter"
+            },
+            {
+              "question": "What is the process of a gas turning into a liquid?",
+              "userAnswer": "Condensation",
+              "correctAnswer": "Sublimation"
+            },
+            {
+              "question": "What is the basic unit of life?",
+              "userAnswer": "Cell",
+              "correctAnswer": "Cell"
+            },
+            {
+              "question": "What is the speed of light?",
+              "userAnswer": "299,792,458 meters per second",
+              "correctAnswer": "300,000 kilometers per second"
+            }
+          ]
+        },
+        {
+          "id": 108,
+          "score": 8,
+          "totalQuestions": 10,
+          "completed_at": "2025-04-15T11:00:00Z",
+          "category": "Geography",
+          "difficulty": "Easy",
+          "started_at": "2025-04-15T11:00:00Z",
+          "details": [
+            {
+              "question": "What is the capital of France?",
+              "userAnswer": "Paris",
+              "correctAnswer": "Paris"
+            },
+            {
+              "question": "Which continent is the largest by land area?",
+              "userAnswer": "Asia",
+              "correctAnswer": "Asia"
+            },
+            {
+              "question": "What is the longest mountain range in the world?",
+              "userAnswer": "Andes",
+              "correctAnswer": "Andes"
+            },
+            {
+              "question": "What is the capital of Italy?",
+              "userAnswer": "Rome",
+              "correctAnswer": "Rome"
+            },
+            {
+              "question": "Which country is known as the Land of the Midnight Sun?",
+              "userAnswer": "Norway",
+              "correctAnswer": "Norway"
+            },
+            {
+              "question": "What is the largest island in the world?",
+              "userAnswer": "Greenland",
+              "correctAnswer": "Greenland"
+            },
+            {
+              "question": "What is the capital of Spain?",
+              "userAnswer": "Madrid",
+              "correctAnswer": "Madrid"
+            },
+            {
+              "question": "Which river flows through London?",
+              "userAnswer": "Thames",
+              "correctAnswer": "Seine"
+            },
+            {
+              "question": "What is the capital of Germany?",
+              "userAnswer": "Berlin",
+              "correctAnswer": "Berlin"
+            },
+            {
+              "question": "Which desert is the largest hot desert in the world?",
+              "userAnswer": "Sahara Desert",
+              "correctAnswer": "Sahara Desert"
+            }
+          ]
+        },
+        {
+          "id": 109,
+          "score": 6,
+          "totalQuestions": 10,
+          "completed_at": "2024-12-01T12:00:00Z",
+          "category": "Literature",
+          "difficulty": "Medium",
+          "started_at": "2024-12-01T12:00:00Z",
+          "details": [
+            {
+              "question": "Who wrote 'Hamlet'?",
+              "userAnswer": "William Shakespeare",
+              "correctAnswer": "William Shakespeare"
+            },
+            {
+              "question": "What is the name of the protagonist in 'To Kill a Mockingbird'?",
+              "userAnswer": "Scout Finch",
+              "correctAnswer": "Scout Finch"
+            },
+            {
+              "question": "Who wrote 'The Catcher in the Rye'?",
+              "userAnswer": "J.D. Salinger",
+              "correctAnswer": "J.D. Salinger"
+            },
+            {
+              "question": "What is the name of the ship in 'Twenty Thousand Leagues Under the Seas'?",
+              "userAnswer": "Nautilus",
+              "correctAnswer": "Nautilus"
+            },
+            {
+              "question": "Who wrote 'Pride and Prejudice'?",
+              "userAnswer": "Jane Austen",
+              "correctAnswer": "Jane Austen"
+            },
+            {
+              "question": "What is the name of the antagonist in 'The Lord of the Rings'?",
+              "userAnswer": "Sauron",
+              "correctAnswer": "Sauron"
+            },
+            {
+              "question": "Who wrote 'The Hobbit'?",
+              "userAnswer": "J.R.R. Tolkien",
+              "correctAnswer": "J.R.R. Tolkien"
+            },
+            {
+              "question": "What is the name of the fictional city where Batman operates?",
+              "userAnswer": "Gotham City",
+              "correctAnswer": "Metropolis"
+            },
+            {
+              "question": "Who wrote 'Don Quixote'?",
+              "userAnswer": "Miguel de Cervantes",
+              "correctAnswer": "Miguel de Cervantes"
+            },
+            {
+              "question": "What is the name of the protagonist in 'The Adventures of Huckleberry Finn'?",
+              "userAnswer": "Huckleberry Finn",
+              "correctAnswer": "Tom Sawyer"
+            }
+          ]
         }
       ]
     },
@@ -30,7 +561,8 @@
       "id": "1620",
       "email": "hem@hem.com",
       "password": "1234",
-      "confirmPassword": "1234"
+      "confirmPassword": "1234",
+      "quiz_history": []
     }
   ],
   "auth": {
@@ -40,7 +572,6 @@
       "token": "mock-token-1"
     }
   },
-  "quizSessions": [],
   "groupQuizSessions": [
     {
       "id": "1",
@@ -59,6 +590,111 @@
       "currentQuestion": 0,
       "totalQuestions": 5,
       "category": "Mixed",
+      "difficulty": "Easy",
+      "status": "active",
+      "currentPlayer": 1
+    },
+    {
+      "id": "7746",
+      "players": [
+        {
+          "id": 1,
+          "name": "qwer",
+          "score": 0
+        },
+        {
+          "id": 2,
+          "name": "ewqw",
+          "score": 0
+        }
+      ],
+      "currentQuestion": 0,
+      "totalQuestions": 5,
+      "category": "Sports",
+      "difficulty": "Medium",
+      "status": "active",
+      "currentPlayer": 1
+    },
+    {
+      "id": "2a15",
+      "players": [
+        {
+          "id": 1,
+          "name": "qqqq",
+          "score": 0
+        },
+        {
+          "id": 2,
+          "name": "wwwww",
+          "score": 0
+        }
+      ],
+      "currentQuestion": 0,
+      "totalQuestions": 5,
+      "category": "Sports",
+      "difficulty": "Medium",
+      "status": "active",
+      "currentPlayer": 1
+    },
+    {
+      "id": "6242",
+      "players": [
+        {
+          "id": 1,
+          "name": "aaaa",
+          "score": 0
+        },
+        {
+          "id": 2,
+          "name": "eeee",
+          "score": 0
+        }
+      ],
+      "currentQuestion": 0,
+      "totalQuestions": 5,
+      "category": "Sports",
+      "difficulty": "Quiz Genius",
+      "status": "active",
+      "currentPlayer": 1
+    },
+    {
+      "id": "ad8d",
+      "players": [
+        {
+          "id": 1,
+          "name": "aaaa",
+          "score": 0
+        },
+        {
+          "id": 2,
+          "name": "fffff",
+          "score": 0
+        }
+      ],
+      "currentQuestion": 0,
+      "totalQuestions": 5,
+      "category": "Science",
+      "difficulty": "Medium",
+      "status": "active",
+      "currentPlayer": 1
+    },
+    {
+      "id": "7759",
+      "players": [
+        {
+          "id": 1,
+          "name": "aaaa",
+          "score": 0
+        },
+        {
+          "id": 2,
+          "name": "bbbb",
+          "score": 0
+        }
+      ],
+      "currentQuestion": 0,
+      "totalQuestions": 5,
+      "category": "History",
       "difficulty": "Easy",
       "status": "active",
       "currentPlayer": 1
@@ -184,16 +820,6 @@
       "id": "2",
       "label": "Medium",
       "description": "Moderately challenging questions."
-    },
-    {
-      "id": "3",
-      "label": "Quiz Genius",
-      "description": "Difficult questions."
-    },
-    {
-      "id": "4",
-      "label": "Beginner",
-      "description": "Very simple questions for newcomers."
     }
   ],
   "llmGenerationTasks": [],
@@ -204,12 +830,14 @@
       "difficulty": "Easy",
       "players": [
         {
-          "name": "aaaa",
-          "score": 5
+          "id": 1,
+          "name": "Player 1",
+          "score": 10
         },
         {
-          "name": "bbbb",
-          "score": 0
+          "id": 2,
+          "name": "Player 2",
+          "score": 8
         }
       ]
     }
