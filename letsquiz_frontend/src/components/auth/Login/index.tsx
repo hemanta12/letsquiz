@@ -22,7 +22,7 @@ export const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Dispatch the loginUser thunk and await its completion
-    const resultAction = await dispatch(loginUser({ email, password }));
+    const resultAction = await dispatch(loginUser({ email: email, password: password }));
 
     // Check if login was successful and dispatch fetchUserProfile
     if (loginUser.fulfilled.match(resultAction)) {

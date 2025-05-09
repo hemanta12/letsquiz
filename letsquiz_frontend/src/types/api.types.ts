@@ -17,7 +17,7 @@ export interface LoginResponse {
 export interface SignupRequest {
   email: string;
   password: string;
-  name: string;
+  username: string; // Changed from 'name' to 'username' to match backend
 }
 
 export interface SignupResponse {

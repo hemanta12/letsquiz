@@ -13,28 +13,26 @@ import {
 class AuthService {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
-      const response = await apiClient.get('/users', { params: { email: credentials.email } });
+      // Send email as 'username' to match backend serializer expectation
+      const response = await apiClient.post('/auth/login/', {
+        email: credentials.email,
+        password: credentials.password,
+      });
+      const { access, refresh, user_id } = response.data;
 
-      if (response.data && response.data.length > 0) {
-        const user = response.data[0];
+      // Store tokens
+      setAuthToken(access);
+      setRefreshToken(refresh);
 
-        if (user.password === credentials.password) {
-          const token = `mock-token-${user.id}`;
-          setAuthToken(token);
-          return {
-            token,
-            user: {
-              id: user.id,
-              email: user.email,
-              is_premium: user.is_premium || false,
-            },
-          };
-        } else {
-          throw new Error('Login failed: Invalid credentials');
-        }
-      } else {
-        throw new Error('Login failed: User not found');
-      }
+      // Return the response data including user_id
+      return {
+        token: access,
+        user: {
+          id: user_id,
+          email: credentials.email, // Assuming email is part of credentials
+          is_premium: false, // This might need to be fetched separately or included in the response
+        },
+      };
     } catch (error: any) {
       console.error('Login error:', error);
       throw new Error(`Login failed: ${error.message || 'An error occurred'}`);
@@ -43,7 +41,8 @@ class AuthService {
 
   async signup(credentials: SignupRequest): Promise<SignupResponse> {
     try {
-      const response = await apiClient.post('/users', credentials);
+      // Assuming the backend signup endpoint is '/auth/signup/'
+      const response = await apiClient.post('/signup/', credentials);
       return { message: 'Signup successful' };
     } catch (error: any) {
       throw new Error(`Signup failed: ${error.message || 'An error occurred'}`);
@@ -52,9 +51,9 @@ class AuthService {
 
   async resetPassword(email: string): Promise<PasswordResetResponse> {
     try {
-      // Mock password reset
-      console.log(`Mock password reset requested for email: ${email}`);
-      return { message: 'Password reset instructions sent (mock)' };
+      // Assuming the backend password reset request endpoint is '/auth/password-reset/'
+      const response = await apiClient.post('/auth/password-reset/', { email });
+      return { message: 'Password reset instructions sent.' };
     } catch (error: any) {
       throw new Error(`Password reset failed: ${error.message || 'An error occurred'}`);
     }
@@ -62,9 +61,9 @@ class AuthService {
 
   async setNewPassword(token: string, password: string): Promise<SetNewPasswordResponse> {
     try {
-      // Mock set new password
-      console.log(`Mock set new password with token: ${token} and password: ${password}`);
-      return { message: 'Password has been reset successfully (mock)' };
+      // Assuming the backend set new password endpoint is '/auth/set-new-password/'
+      const response = await apiClient.post('/auth/set-new-password/', { token, password });
+      return { message: 'Password has been reset successfully.' };
     } catch (error: any) {
       throw new Error(`Set new password failed: ${error.message || 'An error occurred'}`);
     }
@@ -72,9 +71,9 @@ class AuthService {
 
   async verifyAccount(token: string): Promise<any> {
     try {
-      // Mock account verification
-      console.log(`Mock account verification with token: ${token}`);
-      return { message: 'Account verified (mock)' };
+      // Assuming the backend account verification endpoint is '/auth/verify-account/'
+      const response = await apiClient.post('/auth/verify-account/', { token });
+      return { message: 'Account successfully activated.' };
     } catch (error: any) {
       throw new Error(`Account verification failed: ${error.message || 'An error occurred'}`);
     }
@@ -82,7 +81,21 @@ class AuthService {
 
   logout(): void {
     setAuthToken(null);
+    setRefreshToken(null);
   }
 }
+
+// Helper functions to manage refresh token in localStorage
+export const setRefreshToken = (token: string | null): void => {
+  if (token) {
+    localStorage.setItem('refreshToken', token);
+  } else {
+    localStorage.removeItem('refreshToken');
+  }
+};
+
+export const getRefreshToken = (): string | null => {
+  return localStorage.getItem('refreshToken');
+};
 
 export default new AuthService();

@@ -1,0 +1,36 @@
+# Fly.io configuration for the LetsQuiz backend
+
+app = "your-fly-app-name" # Replace with your desired Fly.io app name
+primary_region = "iad" # Choose your primary region
+
+[build]
+  builder = "paketobuildpacks/builder-jammy-base" # Or use the Dockerfile build
+  # buildpacks = ["heroku/python"] # Example buildpack if not using Dockerfile
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  max_machines_running = 10
+
+# Example Postgres add-on configuration
+# [env]
+#   DATABASE_URL = "postgres://user:password@host:port/database" # This will be set as a secret
+
+# Example Redis add-on configuration
+# [env]
+#   REDIS_URL = "redis://host:port/db" # This will be set as a secret
+
+# Example volume for persistent storage (if needed)
+# [mounts]
+#   source="my_volume"
+#   destination="/data"
+
+# Example secrets (set via `fly secrets set`)
+# SECRET_KEY = "your_django_secret_key"
+# DATABASE_URL = "postgres://user:password@host:port/database"
+# REDIS_URL = "redis://host:port/db"
+# SENTRY_DSN = "your_sentry_dsn"
+# JWT_SECRET_KEY = "your_jwt_secret_key"

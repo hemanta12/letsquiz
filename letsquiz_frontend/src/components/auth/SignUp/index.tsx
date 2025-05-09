@@ -27,7 +27,7 @@ export const SignUp: React.FC = () => {
     try {
       await authService.signup({
         email: formData.email,
-        name: formData.name,
+        username: formData.name, // Use 'username' to match backend serializer
         password: formData.password,
       });
       navigate('/login', { state: { message: 'Account created successfully!' } });

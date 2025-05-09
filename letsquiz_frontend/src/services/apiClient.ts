@@ -1,4 +1,5 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
+import { getRefreshToken, setRefreshToken } from './authService'; // Import token functions from authService
 
 import {
   LoginRequest,
@@ -13,7 +14,7 @@ import {
   SubmitAnswerResponse,
 } from '../types/api.types';
 
-const API_BASE_URL = 'http://localhost:9000';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -40,27 +41,47 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config;
 
+    // Check for 401 error and if it's not a retry of the refresh request
     if (error.response?.status === 401 && originalRequest && !(originalRequest as any)._isRetry) {
-      (originalRequest as any)._isRetry = true;
+      (originalRequest as any)._isRetry = true; // Mark the original request as retried
 
       try {
         const refreshToken = getRefreshToken();
-        const refreshResponse = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
+        if (!refreshToken) {
+          // No refresh token available, cannot refresh
+          return Promise.reject(error);
+        }
 
-        const newAccessToken = refreshResponse.data.accessToken;
+        // Attempt to refresh the token
+        const refreshResponse = await axios.post(`${API_BASE_URL}/auth/refresh/`, {
+          refresh: refreshToken,
+        }); // Use '/auth/refresh/' with trailing slash
+
+        const newAccessToken = refreshResponse.data.access; // Simple JWT returns 'access' and 'refresh'
+        const newRefreshToken = refreshResponse.data.refresh;
+
+        // Store the new tokens
         setAuthToken(newAccessToken);
+        setRefreshToken(newRefreshToken);
 
+        // Update the authorization header for the original request with the new access token
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
+        // Retry the original request with the new token
         return apiClient(originalRequest);
       } catch (refreshError) {
+        // Refresh failed, clear tokens and log out
         setAuthToken(null);
         setRefreshToken(null);
 
         console.error('Unable to refresh token, logging out:', refreshError);
+        // Redirect to login page or show an error message
+        // You might want to dispatch a logout action here
         return Promise.reject(refreshError);
       }
     }
 
+    // Handle other API errors
     if (error.response) {
       console.error('API Error:', error.response.data);
       console.error('Status:', error.response.status);
@@ -87,30 +108,22 @@ export const getAuthToken = (): string | null => {
   return localStorage.getItem('authToken');
 };
 
-const setRefreshToken = (token: string | null): void => {
-  if (token) {
-    localStorage.setItem('refreshToken', token);
-  } else {
-    localStorage.removeItem('refreshToken');
-  }
-};
-
-const getRefreshToken = (): string | null => {
-  return localStorage.getItem('refreshToken');
-};
+// Removed local setRefreshToken and getRefreshToken as they are now imported from authService
 
 export const login = (data: LoginRequest): Promise<AxiosResponse<LoginResponse>> => {
-  return apiClient.post('/login', data);
+  // This login function is now handled in authService.ts
+  // Keeping it here for potential future direct use or as a placeholder
+  return apiClient.post('/auth/login/', data); // Use '/auth/login/' with trailing slash
 };
 
 export const signup = (data: SignupRequest): Promise<AxiosResponse<SignupResponse>> => {
-  return apiClient.post('/user/signup/', data);
+  return apiClient.post('/auth/signup/', data); // Assuming the backend signup endpoint is '/auth/signup/'
 };
 
 export const passwordReset = (
   data: PasswordResetRequest
 ): Promise<AxiosResponse<PasswordResetResponse>> => {
-  return apiClient.post('/user/password-reset/', data);
+  return apiClient.post('/auth/password-reset/', data); // Assuming the backend password reset request endpoint is '/auth/password-reset/'
 };
 
 export const fetchQuestions = (

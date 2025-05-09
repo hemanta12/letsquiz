@@ -24,11 +24,8 @@ const Dashboard: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
   useEffect(() => {
-    if (isAuthenticated && !profile && !loadingProfile) {
-      const userId = auth.user?.id;
-      if (userId) {
-        dispatch(fetchUserProfile(userId));
-      }
+    if (isAuthenticated && !profile && !loadingProfile && auth.user && auth.user.id > 0) {
+      dispatch(fetchUserProfile(auth.user.id));
     }
   }, [dispatch, isAuthenticated, profile, loadingProfile, auth]);
 

@@ -1,0 +1,19 @@
+.venv/
+
+# Django-specific ignores
+*.pyc
+__pycache__/
+db.sqlite3
+media/
+static/
+.env.local
+.env
+
+# Test and coverage
+htmlcov/
+.coverage
+.pytest_cache/
+
+# IDE specific files (if not in root .gitignore)
+.vscode/
+.idea/

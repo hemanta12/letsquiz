@@ -1,0 +1,214 @@
+[
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What is the chemical symbol for water?",
+    "correct_answer": "H2O",
+    "metadata_json": {}
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What is the largest organ in the human body?",
+    "correct_answer": "Skin",
+    "metadata_json": {}
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What force keeps us on the ground?",
+    "correct_answer": "Gravity",
+    "metadata_json": {}
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What is the process by which plants make their food?",
+    "correct_answer": "Photosynthesis",
+    "metadata_json": {}
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What is the boiling point of water in Celsius?",
+    "correct_answer": "100",
+    "metadata_json": {}
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What is the nearest planet to the sun?",
+    "correct_answer": "Mercury",
+    "metadata_json": {}
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What is the main gas that makes up the Earth's atmosphere?",
+    "correct_answer": "Nitrogen",
+    "metadata_json": {}
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What is the hardest natural substance on Earth?",
+    "correct_answer": "Diamond",
+    "metadata_json": {}
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What is the unit of electrical resistance?",
+    "correct_answer": "Ohm",
+    "metadata_json": {}
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What is the chemical symbol for gold?",
+    "correct_answer": "Au",
+    "metadata_json": {}
+  },
+
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "In what year did World War II end?",
+    "correct_answer": "1945",
+    "metadata_json": {}
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Who was the first emperor of Rome?",
+    "correct_answer": "Augustus",
+    "metadata_json": {}
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "The Magna Carta was signed in what year?",
+    "correct_answer": "1215",
+    "metadata_json": {}
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Which ancient civilization built the pyramids?",
+    "correct_answer": "Egyptians",
+    "metadata_json": {}
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Who was the leader of the Soviet Union during the Cuban Missile Crisis?",
+    "correct_answer": "Nikita Khrushchev",
+    "metadata_json": {}
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "The Renaissance period originated in which country?",
+    "correct_answer": "Italy",
+    "metadata_json": {}
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "What was the primary cause of the Cold War?",
+    "correct_answer": "Ideological conflict between the USA and USSR",
+    "metadata_json": {}
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Who was Joan of Arc?",
+    "correct_answer": "A French heroine and military leader",
+    "metadata_json": {}
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "The Declaration of Independence was adopted in what year?",
+    "correct_answer": "1776",
+    "metadata_json": {}
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Which empire was ruled by Genghis Khan?",
+    "correct_answer": "Mongol Empire",
+    "metadata_json": {}
+  },
+
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "What is the capital of France?",
+    "correct_answer": "Paris",
+    "metadata_json": {}
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "What is the longest river in the world?",
+    "correct_answer": "Nile",
+    "metadata_json": {}
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "Which continent is the Sahara Desert located on?",
+    "correct_answer": "Africa",
+    "metadata_json": {}
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "What is the highest mountain in the world?",
+    "correct_answer": "Mount Everest",
+    "metadata_json": {}
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "What is the largest ocean on Earth?",
+    "correct_answer": "Pacific Ocean",
+    "metadata_json": {}
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "Which country is known as the Land of the Rising Sun?",
+    "correct_answer": "Japan",
+    "metadata_json": {}
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "What is the capital of Italy?",
+    "correct_answer": "Rome",
+    "metadata_json": {}
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "Which is the smallest continent?",
+    "correct_answer": "Australia",
+    "metadata_json": {}
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "What is the currency of the United Kingdom?",
+    "correct_answer": "Pound Sterling",
+    "metadata_json": {}
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "What is the largest country in the world by land area?",
+    "correct_answer": "Russia",
+    "metadata_json": {}
+  }
+]
