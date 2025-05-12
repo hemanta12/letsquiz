@@ -1,27 +1,58 @@
-from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
-from django.conf import settings # Import settings
+from rest_framework.exceptions import AuthenticationFailed
+import logging
 
+logger = logging.getLogger(__name__)
 User = get_user_model()
 
-class CustomModelBackend(ModelBackend):
+class CustomModelBackend:
     def authenticate(self, request, username=None, password=None, **kwargs):
+        """
+        Custom authentication backend that uses email as username.
+        Handles all authentication cases with proper error handling and logging.
+        """
+        # Validate input parameters
+        if not username:
+            logger.warning("Authentication attempt with missing email")
+            raise AuthenticationFailed("Email is required")
+            
+        if not password:
+            logger.warning(f"Authentication attempt with missing password for email: {username}")
+            raise AuthenticationFailed("Password is required")
+
         try:
-            # Use the configured USERNAME_FIELD for lookup
-            user = User.objects.get(**{User.USERNAME_FIELD: username})
-            if user.check_password(password) and self.user_can_authenticate(user):
-                return user
-            else:
-                pass # Authentication failed
+            # Attempt to get user by email
+            user = User.objects.get(email=username)
+            
+            # Validate password
+            try:
+                if not user.check_password(password):
+                    logger.warning(f"Failed login attempt: Invalid password for user: {username}")
+                    raise AuthenticationFailed("Invalid email or password")
+            except Exception as e:
+                logger.error(f"Password validation error for user {username}: {str(e)}")
+                raise AuthenticationFailed("Unable to validate credentials")
+                
+            # Check if user is active
+            if not user.is_active:
+                logger.warning(f"Login attempt by inactive user: {username}")
+                raise AuthenticationFailed("Your account has been deactivated. Please contact support.")
+                
+            # Successful authentication
+            logger.info(f"Successful authentication for user: {username}")
+            return user
+            
         except User.DoesNotExist:
-            # Authentication failed
-            pass
+            # Log failed attempt but return generic message to user
+            logger.warning(f"Failed login attempt: No user found with email: {username}")
+            raise AuthenticationFailed("Invalid email or password")
+            
+        except AuthenticationFailed:
+            # Re-raise AuthenticationFailed exceptions
+            raise
+            
         except Exception as e:
-            # Handle other potential exceptions during authentication
-            pass
-
-        return None
-
-    def user_can_authenticate(self, user):
-        # Check if the user is active. This is the default behavior of ModelBackend.
-        return user.is_active
+            # Log unexpected errors but return generic message to user
+            logger.error(f"Unexpected error during authentication for {username}: {str(e)}", 
+                        exc_info=True)
+            raise AuthenticationFailed("An error occurred during authentication. Please try again later.")

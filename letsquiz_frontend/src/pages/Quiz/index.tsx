@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button, Typography, Loading, Modal } from '../../components/common';
+import { ErrorBoundary } from '../../components/common/ErrorBoundary';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
 import {
   selectAnswer,
@@ -19,15 +20,18 @@ export const Quiz: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const {
-    currentQuestion,
+    currentQuestionIndex,
     questions,
     selectedAnswers,
     mode,
     category,
+    categoryId,
     difficulty,
     loading: quizLoading,
     error: quizError,
   } = useAppSelector((state) => state.quiz);
+
+  const isGuest = useAppSelector((state) => state.auth.isGuest);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,11 +42,11 @@ export const Quiz: React.FC = () => {
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
 
   const preloadNextQuestion = useCallback(async () => {
-    if (currentQuestion < questions.length) {
+    if (currentQuestionIndex < questions.length) {
       try {
         const nextQuestionData = await QuizService.fetchQuestions({
           limit: 1,
-          category: category,
+          category: categoryId, // Use categoryId
           difficulty: difficulty,
         });
         if (nextQuestionData && nextQuestionData.questions.length > 0) {
@@ -53,31 +57,42 @@ export const Quiz: React.FC = () => {
         console.error('Error:', error);
       }
     }
-  }, [currentQuestion, questions.length, category, difficulty]);
+  }, [currentQuestionIndex, questions.length, categoryId, difficulty]);
 
   useEffect(() => {
     if (questions.length === 0 && !quizLoading && !quizError) {
-      dispatch(fetchQuizQuestions({ category, difficulty, limit: 10 }));
+      dispatch(fetchQuizQuestions({ category: categoryId, difficulty, limit: 10 }));
     }
-  }, [dispatch, category, difficulty, questions.length, quizLoading, quizError]);
+  }, [dispatch, categoryId, difficulty, questions.length, quizLoading, quizError]);
 
   useEffect(() => {
     preloadNextQuestion();
   }, [preloadNextQuestion]);
 
-  const progress = questions.length > 0 ? ((currentQuestion + 1) / questions.length) * 100 : 0;
-  const currentQuestionData = questions[currentQuestion];
-  const hasSelectedAnswer = selectedAnswers[currentQuestion] !== undefined;
+  const progress = questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
+  const currentQuestionData = questions[currentQuestionIndex];
+  const hasSelectedAnswer = selectedAnswers[currentQuestionIndex] !== undefined;
 
   const handleAnswerSelect = async (answer: string) => {
     if (!hasSelectedAnswer && !isLoading && !quizLoading) {
       try {
         setIsLoading(true);
-        await dispatch(selectAnswer({ questionIndex: currentQuestion, answer }));
+        console.log('[Quiz] Selecting answer:', {
+          questionIndex: currentQuestionIndex,
+          isGuest,
+          questionId: currentQuestionData?.id,
+        });
+
+        await dispatch(selectAnswer({ questionIndex: currentQuestionIndex, answer }));
 
         const correct = answer === currentQuestionData?.correct_answer;
         setIsCorrect(correct);
         setShowFeedback(true);
+
+        console.log('[Quiz] Answer processed:', {
+          correct,
+          progress: `${currentQuestionIndex + 1}/${questions.length}`,
+        });
 
         await preloadNextQuestion();
       } catch (err) {
@@ -97,6 +112,12 @@ export const Quiz: React.FC = () => {
   const handleNext = async () => {
     try {
       setIsLoading(true);
+      console.log('[Quiz] Moving to next question:', {
+        currentQuestionIndex,
+        totalQuestions: questions.length,
+        mode,
+        isGuest,
+      });
 
       if (mode === 'Group' && selectedPlayer) {
         dispatch(updatePlayerScore({ playerId: Number(selectedPlayer), score: 5 }));
@@ -105,26 +126,18 @@ export const Quiz: React.FC = () => {
       setShowFeedback(false);
       setSelectedPlayer(null);
 
-      if (currentQuestion === questions.length - 1) {
+      // Check if the current question is the last one (index 9 for 10 questions)
+      if (currentQuestionIndex === 9) {
+        console.log('[Quiz] Completing quiz:', {
+          totalQuestions: questions.length,
+          answeredQuestions: Object.keys(selectedAnswers).length,
+        });
         await dispatch(updateScore());
         navigate('/results');
       } else {
-        if (preloadedQuestion) {
-          dispatch(nextQuestionAction(preloadedQuestion));
-          setPreloadedQuestion(null);
-        } else {
-          const nextQuestionData = await QuizService.fetchQuestions({
-            limit: 1,
-            category: category,
-            difficulty: difficulty,
-          });
-          if (nextQuestionData && nextQuestionData.questions.length > 0) {
-            dispatch(nextQuestionAction(nextQuestionData.questions[0]));
-          } else {
-            await dispatch(updateScore());
-            navigate('/results');
-          }
-        }
+        // Move to the next question
+        dispatch(nextQuestionAction());
+        await preloadNextQuestion();
       }
     } catch (err) {
       setError('Error moving to next question');
@@ -162,18 +175,7 @@ export const Quiz: React.FC = () => {
     return (
       <div className={styles.quiz}>
         <Typography variant="body2" color="error" className={styles.error}>
-          {error || quizError}
-        </Typography>
-      </div>
-    );
-  }
-
-  // Display error if either local error or quiz slice error exists
-  if (error || quizError) {
-    return (
-      <div className={styles.quiz}>
-        <Typography variant="body2" color="error" className={styles.error}>
-          {error || quizError}
+          {error || quizError || 'An unexpected error occurred'}
         </Typography>
       </div>
     );
@@ -186,7 +188,7 @@ export const Quiz: React.FC = () => {
           {mode} - {difficulty} - {category}
         </Typography>
         <Typography variant="body1">
-          Question {currentQuestion + 1}/{questions.length}
+          Question {currentQuestionIndex + 1}/{questions.length}
         </Typography>
       </div>
 
@@ -197,14 +199,14 @@ export const Quiz: React.FC = () => {
       {mode === 'Group' ? (
         <>
           <GroupQuestionView
-            questionNumber={currentQuestion + 1}
+            questionNumber={currentQuestionIndex + 1}
             totalQuestions={questions.length}
             question={currentQuestionData.question_text}
             options={currentQuestionData.answer_options}
             correctAnswer={currentQuestionData.correct_answer}
             onAnswerSelect={handleAnswerSelect}
             showFeedback={showFeedback}
-            selectedAnswer={selectedAnswers[currentQuestion]}
+            selectedAnswer={selectedAnswers[currentQuestionIndex]}
             onPlayerSelected={setSelectedPlayer}
             currentScoredPlayer={selectedPlayer}
           />
@@ -217,7 +219,7 @@ export const Quiz: React.FC = () => {
               Quit
             </Button>
             <Button variant="primary" disabled={!hasSelectedAnswer} onClick={handleNext}>
-              {currentQuestion === questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
+              {currentQuestionIndex === 9 ? 'Finish Quiz' : 'Next Question'}
             </Button>
           </div>
         </>
@@ -241,8 +243,8 @@ export const Quiz: React.FC = () => {
             {isLoading ? (
               <Loading variant="skeleton" />
             ) : (
-              currentQuestionData?.answer_options.map((option: string) => {
-                const isSelected = selectedAnswers[currentQuestion] === option;
+              currentQuestionData?.answer_options?.map((option: string) => {
+                const isSelected = selectedAnswers[currentQuestionIndex] === option;
                 const isCorrectAnswer = option === currentQuestionData.correct_answer;
                 const showFeedbackStyles = showFeedback && (isSelected || isCorrectAnswer);
 
@@ -294,7 +296,7 @@ export const Quiz: React.FC = () => {
               disabled={!hasSelectedAnswer || isLoading || quizLoading}
               onClick={handleNext}
             >
-              {currentQuestion === questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
+              {currentQuestionIndex === 9 ? 'Finish Quiz' : 'Next Question'}
             </Button>
           </div>
         </>
@@ -317,4 +319,10 @@ export const Quiz: React.FC = () => {
   );
 };
 
-export default Quiz;
+export default function QuizWithErrorBoundary() {
+  return (
+    <ErrorBoundary>
+      <Quiz />
+    </ErrorBoundary>
+  );
+}

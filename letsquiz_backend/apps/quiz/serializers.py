@@ -1,51 +1,73 @@
-from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
-from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.contrib.auth.password_validation import validate_password
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
-from django.contrib.auth.password_validation import validate_password
 
-from letsquiz_backend.apps.quiz.models import Question, Category, DifficultyLevel, QuizSession, QuizSessionQuestion
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer # Import the base serializer
+import logging
+from rest_framework import serializers
+from rest_framework.exceptions import ValidationError, AuthenticationFailed
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from letsquiz_backend.apps.quiz.models import (
+    Question,
+    Category,
+    DifficultyLevel,
+    QuizSession,
+    QuizSessionQuestion
+)
 
 User = get_user_model()
 
-from django.contrib.auth import authenticate # Import authenticate
-from rest_framework import serializers
-from rest_framework.exceptions import ValidationError, AuthenticationFailed # Import AuthenticationFailed
-from django.contrib.auth import get_user_model
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils.http import urlsafe_base64_decode
-from django.utils.encoding import force_str
-from django.contrib.auth.password_validation import validate_password
 
-from letsquiz_backend.apps.quiz.models import Question, Category, DifficultyLevel, QuizSession, QuizSessionQuestion
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer # Import the base serializer
-
+User = get_user_model()
+logger = logging.getLogger(__name__)
 
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-
+    id = serializers.IntegerField(read_only=True)
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
+    
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'is_premium', 'password')
-        read_only_fields = ('id', 'is_premium') # is_premium will be set internally
+        fields = ('id', 'email', 'is_premium', 'password')
+        read_only_fields = ('id', 'is_premium')
+
+    def validate_password(self, value):
+        if len(value) < 4:
+            raise serializers.ValidationError("Password must be at least 4 characters long.")
+        return value
+
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("A user with this email already exists.")
+        return value
+
+    def to_representation(self, instance):
+        """
+        """
+        logger.info(f"[UserSerializer] Serializing user instance: {instance.id}, {instance.email}")
+        data = super().to_representation(instance)
+        logger.info(f"[UserSerializer] Serialized data: {data}")
+        return data
 
     def create(self, validated_data):
+        email = validated_data.get('email')
+        username = email.split('@')[0]
+        password = validated_data.get('password')
+        
         user = User.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data.get('email', ''), # Email might be optional depending on requirements
-            password=validated_data['password'],
+            username=username,
+            email=email,
+            password=password
         )
         return user
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'is_premium') # Include fields for user profile
-        read_only_fields = ('id', 'username', 'email', 'is_premium') # All fields should be read-only for a profile view
+        fields = ('id', 'username', 'email', 'is_premium')
+        read_only_fields = ('id', 'username', 'email', 'is_premium')
 
 class PasswordResetRequestSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -117,15 +139,13 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ('id', 'category', 'difficulty', 'question_text', 'correct_answer', 'metadata_json')
-        # Note: 'correct_answer' is included here for simplicity in seeding/fetching seeded questions.
-        # For actual quiz sessions, you would likely use a different serializer that excludes the correct answer.
+        fields = ('id', 'category', 'difficulty', 'question_text', 'correct_answer', 'answer_options', 'metadata_json')
 
 class QuizSessionStartSerializer(serializers.Serializer):
     category_id = serializers.IntegerField(required=False, allow_null=True)
     difficulty_id = serializers.IntegerField(required=False, allow_null=True)
     count = serializers.IntegerField(min_value=1)
-    mode = serializers.ChoiceField(choices=['solo', 'group']) # Define possible modes
+    mode = serializers.ChoiceField(choices=['solo', 'group'])
 
     def validate_category_id(self, value):
         if value is not None:
@@ -143,10 +163,7 @@ class QuizSessionStartSerializer(serializers.Serializer):
                 raise ValidationError("Invalid difficulty ID.")
             return value
 
-    # Add validation for 'count' and 'mode' if needed beyond min_value and choices
-
 class QuizSessionQuestionSerializer(serializers.ModelSerializer):
-    # Use the existing QuestionSerializer to represent the question details
     question = QuestionSerializer(read_only=True)
 
     class Meta:
@@ -154,9 +171,7 @@ class QuizSessionQuestionSerializer(serializers.ModelSerializer):
         fields = ('id', 'question', 'selected_answer', 'is_correct', 'answered_at')
 
 class QuizSessionSerializer(serializers.ModelSerializer):
-    # Use the existing UserSerializer to represent the user details
     user = UserSerializer(read_only=True)
-    # Use the QuizSessionQuestionSerializer to represent questions in the session
     session_questions = QuizSessionQuestionSerializer(many=True, read_only=True)
 
     class Meta:
@@ -165,7 +180,7 @@ class QuizSessionSerializer(serializers.ModelSerializer):
 
 class AnswerSubmissionSerializer(serializers.Serializer):
     question_id = serializers.IntegerField()
-    selected_answer = serializers.CharField(max_length=255) # Assuming answer is a string
+    selected_answer = serializers.CharField(max_length=255)
 
     def validate_question_id(self, value):
         try:
@@ -175,10 +190,9 @@ class AnswerSubmissionSerializer(serializers.Serializer):
         return value
 
 class UserStatsSerializer(serializers.Serializer):
-    total_quizzes = serializers.IntegerField()
-    total_questions_answered = serializers.IntegerField()
-    total_correct_answers = serializers.IntegerField()
-    overall_accuracy = serializers.FloatField() # Represent accuracy as a float
+    overall_stats = serializers.DictField()
+    category_stats = serializers.DictField()
+    difficulty_stats = serializers.DictField(required=False)
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -188,15 +202,41 @@ class LoginSerializer(serializers.Serializer):
         email = data.get('email')
         password = data.get('password')
 
-        if email and password:
+        if not email or not password:
+            raise ValidationError({
+                'error': 'Must include "email" and "password".',
+                'code': 'missing_fields'
+            })
+
+        user = None
+        try:
             user = authenticate(request=self.context.get('request'), username=email, password=password)
+
             if user:
                 if not user.is_active:
-                    raise AuthenticationFailed('Account disabled.')
-                data['user'] = user
-            else:
-                raise AuthenticationFailed('Invalid credentials.')
-        else:
-            raise AuthenticationFailed('Must include "email" and "password".')
+                    raise AuthenticationFailed('User account is disabled.', code='account_disabled')
 
+                data['user'] = user
+                return data
+            else:
+                raise AuthenticationFailed('Invalid credentials.', code='invalid_credentials')
+
+        except AuthenticationFailed as e:
+            raise AuthenticationFailed(e.detail, code=e.code if hasattr(e, 'code') else 'authentication_failed')
+
+        except Exception as e:
+            raise AuthenticationFailed('An unexpected error occurred during authentication.', code='server_error')
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        user_serializer = UserSerializer(self.user)
+        data['user'] = user_serializer.data
+        
         return data
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        return token

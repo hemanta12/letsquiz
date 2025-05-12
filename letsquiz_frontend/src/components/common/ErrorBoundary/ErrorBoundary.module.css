@@ -1,0 +1,21 @@
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  background-color: var(--color-background-light);
+  border-radius: 8px;
+  max-width: 500px;
+  margin: 2rem auto;
+}
+
+.errorMessage {
+  margin: 1rem 0;
+  color: var(--color-text-secondary);
+}
+
+.resetButton {
+  margin-top: 1rem;
+}

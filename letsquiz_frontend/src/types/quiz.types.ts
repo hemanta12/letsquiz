@@ -3,6 +3,7 @@ import { GroupGameState } from './group.types';
 export interface QuizSettings {
   mode: 'Solo' | 'Group';
   category: string;
+  categoryId?: number | null;
   difficulty: string;
   isMixedMode?: boolean;
   groupState?: GroupGameState;
@@ -28,4 +29,7 @@ export interface GroupQuizSession {
   difficulty: string;
   status: 'active' | 'completed';
   currentPlayer: number;
+  createdAt: string;
+  lastActive: string;
+  timeoutAt: string;
 }

@@ -17,7 +17,7 @@ interface UserState {
 }
 
 const initialState: UserState = {
-  profile: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : null,
+  profile: null,
   leaderboard: [],
   selectedDetailedSession: null, // Initialize selectedDetailedSession
   loadingProfile: false,
@@ -28,11 +28,11 @@ const initialState: UserState = {
   errorSelectedDetailedSession: null, // Initialize error state
 };
 
-export const fetchUserProfile = createAsyncThunk<UserProfile, number, { rejectValue: string }>(
+export const fetchUserProfile = createAsyncThunk<UserProfile, string, { rejectValue: string }>(
   'user/fetchUserProfile',
   async (userId, { rejectWithValue }) => {
     try {
-      const response = await UserService.fetchUserProfile(userId.toString());
+      const response = await UserService.fetchUserProfile(userId);
       return response;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.detail || error.message);

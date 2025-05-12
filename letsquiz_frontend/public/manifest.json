@@ -1,0 +1,12 @@
+{
+  "short_name": "LetsQuiz",
+  "name": "LetsQuiz - Interactive Quiz Application",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff",
+  "description": "An interactive quiz application with solo and group modes",
+  "orientation": "portrait",
+  "scope": "/",
+  "categories": ["education", "games"]
+}

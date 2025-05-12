@@ -1,12 +1,19 @@
 import { QuizSession } from '../types/dashboard.types';
 
+export interface GuestProgress {
+  quizzes: number;
+  totalScore: number;
+  lastQuizDate: string | null;
+}
+
 export interface LoginRequest {
   email: string;
   password: string;
+  guestData?: GuestProgress;
 }
 
 export interface LoginResponse {
-  token: string;
+  access: string;
   user: {
     id: number;
     email: string;
@@ -14,10 +21,32 @@ export interface LoginResponse {
   };
 }
 
+export interface UserStatsResponse {
+  overall_stats: {
+    total_quizzes: number;
+    total_score: number;
+    accuracy: number;
+  };
+  category_stats: Record<
+    string,
+    {
+      correct: number;
+      total: number;
+    }
+  >;
+  difficulty_stats: Record<
+    string,
+    {
+      correct: number;
+      total: number;
+    }
+  >;
+}
+
 export interface SignupRequest {
   email: string;
   password: string;
-  username: string; // Changed from 'name' to 'username' to match backend
+  username: string;
 }
 
 export interface SignupResponse {
@@ -55,7 +84,7 @@ export interface Question {
 }
 
 export interface FetchQuestionsRequest {
-  category?: string;
+  category?: number | null;
   difficulty?: string;
   limit?: number;
 }

@@ -1,17 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.conf import settings # Import settings to reference AUTH_USER_MODEL
+from django.conf import settings 
 
 # Define the User model extending Django's AbstractUser
 class User(AbstractUser):
-    # Inherits standard fields like username, first_name, last_name, email, password, is_active, is_staff, is_superuser, date_joined, last_login
-    user_name = models.CharField(max_length=150, unique=True, blank=True, null=True) # Adding user_name as per ERD
-    is_premium = models.BooleanField(default=False) # Adding is_premium as per ERD
+   
+    email = models.EmailField(unique=True) 
+    is_premium = models.BooleanField(default=False)
 
-    USERNAME_FIELD = 'email' # Use email for authentication
-    REQUIRED_FIELDS = ['username'] # Keep username as a required field
+    USERNAME_FIELD = 'email'  
+    REQUIRED_FIELDS = [] 
 
-    # You can add related_name to avoid clashes if you have other models with ForeignKey to User
+    
     groups = models.ManyToManyField(
         'auth.Group',
         verbose_name='groups',
@@ -30,7 +30,7 @@ class User(AbstractUser):
     )
 
     def __str__(self):
-        return self.username # Or self.user_name if preferred
+        return self.username
 
 # Define the Category model
 class Category(models.Model):
@@ -42,7 +42,7 @@ class Category(models.Model):
 
 # Define the DifficultyLevel model
 class DifficultyLevel(models.Model):
-    label = models.CharField(max_length=50, unique=True) # Using label as per ERD
+    label = models.CharField(max_length=50, unique=True)
     description = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -53,41 +53,47 @@ class Question(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='questions')
     difficulty = models.ForeignKey(DifficultyLevel, on_delete=models.CASCADE, related_name='questions')
     question_text = models.TextField()
-    correct_answer = models.CharField(max_length=255) # Assuming correct answer is a string
-    metadata_json = models.JSONField(blank=True, null=True) # Using JSONField for metadata
-    is_seeded = models.BooleanField(default=False) # Flag for originally seeded questions
-    is_fallback = models.BooleanField(default=False) # Flag for fallback questions
+    correct_answer = models.CharField(max_length=255)
+    answer_options = models.JSONField(default=list) 
+    metadata_json = models.JSONField(blank=True, null=True) 
+    is_seeded = models.BooleanField(default=False) 
+    is_fallback = models.BooleanField(default=False) 
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, # Reference the custom User model
-        on_delete=models.SET_NULL, # Set to NULL if user is deleted
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name='created_questions'
     )
 
     def __str__(self):
-        return f"{self.question_text[:50]}..." # Display first 50 chars of question text
+        return f"{self.question_text[:50]}..." 
 
 # Define the QuizSession model
 class QuizSession(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='quiz_sessions')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='quiz_sessions', null=True, blank=True)  
     started_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     score = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"Session {self.id} for {self.user.username}"
+        return f"Session {self.id} for {self.user.username if self.user else 'Guest'}"
+
+    @property
+    def is_completed(self):
+        """Check if all questions in the session have been answered."""
+        return self.session_questions.filter(answered_at__isnull=True).count() == 0
 
 # Define the QuizSessionQuestion model (Intermediate model for M2M relationship with extra data)
 class QuizSessionQuestion(models.Model):
     quiz_session = models.ForeignKey(QuizSession, on_delete=models.CASCADE, related_name='session_questions')
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='session_answers')
-    selected_answer = models.CharField(max_length=255, blank=True, null=True) # Store the selected answer
-    is_correct = models.BooleanField(default=False) # Whether the selected answer was correct
-    answered_at = models.DateTimeField(null=True, blank=True) # Timestamp when the answer was submitted
+    selected_answer = models.CharField(max_length=255, blank=True, null=True) 
+    is_correct = models.BooleanField(default=False) 
+    answered_at = models.DateTimeField(null=True, blank=True) 
 
     class Meta:
-        unique_together = ('quiz_session', 'question') # Ensure a question is only answered once per session
+        unique_together = ('quiz_session', 'question') 
 
     def __str__(self):
         return f"Session {self.quiz_session.id} - Question {self.question.id}"
@@ -104,8 +110,8 @@ class LLMGenerationTask(models.Model):
         ('Failed', 'Failed'),
     ]
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
-    retry_count = models.IntegerField(default=0) # Field to record retry count
-    task_result = models.JSONField(blank=True, null=True) # Store task result/error details
+    retry_count = models.IntegerField(default=0) 
+    task_result = models.JSONField(blank=True, null=True) 
 
     def __str__(self):
         return f"LLM Task {self.id} - Status: {self.status}"

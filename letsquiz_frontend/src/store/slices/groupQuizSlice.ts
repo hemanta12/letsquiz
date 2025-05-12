@@ -7,6 +7,7 @@ interface GroupQuizState {
   currentPlayer?: GroupPlayer;
   loading: boolean;
   error: string | null;
+  sessionTimeoutId?: NodeJS.Timeout;
 }
 
 const initialState: GroupQuizState = {
@@ -15,6 +16,7 @@ const initialState: GroupQuizState = {
   currentPlayer: undefined,
   loading: false,
   error: null,
+  sessionTimeoutId: undefined,
 };
 
 export const groupQuizSlice = createSlice({
@@ -25,7 +27,29 @@ export const groupQuizSlice = createSlice({
       state.isGroupMode = action.payload;
     },
     setGroupSession: (state, action: PayloadAction<GroupQuizSession | null>) => {
+      // Clear existing timeout if any
+      if (state.sessionTimeoutId) {
+        clearTimeout(state.sessionTimeoutId);
+        state.sessionTimeoutId = undefined;
+      }
+
       state.groupSession = action.payload;
+
+      // Set new timeout if session exists
+      if (action.payload) {
+        const timeoutAt = new Date(action.payload.timeoutAt).getTime();
+        const now = Date.now();
+        const timeoutDuration = Math.max(0, timeoutAt - now);
+
+        if (timeoutDuration > 0) {
+          state.sessionTimeoutId = setTimeout(() => {
+            // Handle session timeout
+            state.groupSession = null;
+            state.isGroupMode = false;
+            state.error = 'Group session has timed out';
+          }, timeoutDuration);
+        }
+      }
     },
     setCurrentPlayer: (state, action: PayloadAction<GroupPlayer | undefined>) => {
       state.currentPlayer = action.payload;
@@ -38,6 +62,10 @@ export const groupQuizSlice = createSlice({
             ? { ...player, score: player.score + action.payload.score }
             : player
         );
+
+        // Update session activity timestamps
+        state.groupSession.lastActive = new Date().toISOString();
+        state.groupSession.timeoutAt = new Date(Date.now() + 30 * 60 * 1000).toISOString();
       }
     },
     // Reducer for setting temporary score for UI display
@@ -80,7 +108,13 @@ export const groupQuizSlice = createSlice({
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
-    resetGroupQuiz: () => initialState,
+    resetGroupQuiz: (state) => {
+      // Clear timeout if exists
+      if (state.sessionTimeoutId) {
+        clearTimeout(state.sessionTimeoutId);
+      }
+      return initialState;
+    },
   },
   extraReducers: (builder) => {
     // Add extraReducers for any async thunks defined in this slice later

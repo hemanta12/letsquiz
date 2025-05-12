@@ -2,9 +2,8 @@ export type QuizSession = {
   id: number;
   score: number;
   started_at: string;
-  completed_at: string;
+  completed_at: string | null;
   category: string;
-
   difficulty: string;
   details: { question: string; userAnswer: string; correctAnswer: string }[];
 };

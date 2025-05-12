@@ -48,6 +48,11 @@ export const groupActivitiesByDate = (activities: QuizSession[]) => {
 
   return activities.reduce(
     (groups, activity) => {
+      // Skip activities without completion date
+      if (!activity.completed_at) {
+        return groups;
+      }
+
       const activityDate = new Date(activity.completed_at).setHours(0, 0, 0, 0);
       let group =
         activityDate === today

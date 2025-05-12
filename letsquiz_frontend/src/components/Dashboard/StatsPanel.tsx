@@ -1,52 +1,61 @@
 import React from 'react';
 import { Typography, Card } from '../common';
-import { CategoryStats, UserProfile, QuizSessionHistory } from '../../types/api.types';
+import { UserProfile, QuizSessionHistory, UserStatsResponse } from '../../types/api.types';
 import styles from './StatsPanel.module.css';
 
 interface StatsPanelProps {
   profile: UserProfile;
-  stats: CategoryStats[];
   sessions: QuizSessionHistory[];
+  userApiStats: UserStatsResponse | null;
 }
 
-const StatsPanel: React.FC<StatsPanelProps> = ({ profile, stats, sessions }) => {
-  const totalQuizzes = sessions.length;
-  const totalScoreSum = sessions.reduce(
-    (acc, session) => acc + (session.score !== null ? session.score : 0),
-    0
-  );
-  const averageScore =
-    totalQuizzes > 0 ? Math.round((totalScoreSum / (totalQuizzes * 10)) * 100) : 0;
+const StatsPanel: React.FC<StatsPanelProps> = ({ profile, sessions, userApiStats }) => {
+  const overallStats = userApiStats?.overall_stats;
+  const categoryStats = userApiStats?.category_stats;
 
-  // Find the best category based on average score
-  const bestCategory = stats.reduce((best, curr) => {
-    const currAvg =
-      curr.totalQuizzes > 0
-        ? (curr.totalScore !== null ? curr.totalScore : 0) / curr.totalQuizzes
-        : 0;
-    const bestAvg =
-      best.totalQuizzes > 0
-        ? (best.totalScore !== null ? best.totalScore : 0) / best.totalQuizzes
-        : 0;
-    return currAvg > bestAvg ? curr : best;
-  }, stats[0])?.category;
+  const totalQuizzes = overallStats?.total_quizzes ?? sessions.length;
+  const averageScore =
+    overallStats?.accuracy ??
+    (sessions.length > 0
+      ? Math.round(
+          (sessions.reduce((acc, s) => acc + (s.score ?? 0), 0) / (sessions.length * 10)) * 100
+        )
+      : 0);
+
+  // Calculate best category from category stats
+  let bestCategoryDisplay = 'N/A';
+  if (categoryStats) {
+    const bestCat = Object.entries(categoryStats).reduce(
+      (best, [catName, catData]) => {
+        const currentAccuracy = catData.total > 0 ? (catData.correct / catData.total) * 100 : 0;
+        if (currentAccuracy > best.accuracy) {
+          return { name: catName, accuracy: currentAccuracy };
+        }
+        return best;
+      },
+      { name: 'N/A', accuracy: 0 }
+    );
+    bestCategoryDisplay = bestCat.name;
+  }
 
   return (
-    <div className={styles.statsRow}>
+    <div className={styles.statsContainer}>
       <Card className={styles.statCard}>
-        <Typography variant="h1">Overall Stats</Typography>
-        <div className={styles.stats}>
-          <div>
+        <Typography variant="h3" className={styles.statTitle}>
+          Overall Stats
+        </Typography>
+        <div className={styles.statsRow}>
+          <div className={styles.statItem}>
             <Typography variant="body2">Total Quizzes</Typography>
             <div className={styles.statValue}>{totalQuizzes}</div>
           </div>
-          <div>
+          <div className={styles.statItem}>
             <Typography variant="body2">Average Score</Typography>
-            <div className={styles.statValue}>{averageScore}%</div>
+            <div className={styles.statValue}>{averageScore.toFixed(0)}%</div>
           </div>
-          <div>
+          <div className={styles.statItem}>
             <Typography variant="body2">Best Category</Typography>
-            <div className={styles.statValue}>{bestCategory || 'N/A'}</div>
+            <div className={styles.statValue}>{bestCategoryDisplay}</div>
           </div>
         </div>
       </Card>

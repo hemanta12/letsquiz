@@ -13,6 +13,8 @@ interface UIState {
   modals: {
     quitQuiz: boolean;
     shareError: boolean;
+    upgradePrompt: boolean;
+    questionLimit: boolean;
   };
   feedback: FeedbackState;
   sharing: {
@@ -27,6 +29,8 @@ const initialState: UIState = {
   modals: {
     quitQuiz: false,
     shareError: false,
+    upgradePrompt: false,
+    questionLimit: false,
   },
   feedback: {
     show: false,

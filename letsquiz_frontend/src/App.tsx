@@ -53,20 +53,26 @@ const App: React.FC = () => {
         <AnimatePresence mode="wait">
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
+              {/* Public Routes - No auth required */}
               <Route path="/" element={<Home />} />
-              {/* Protected Routes */}
-              <Route element={<ProtectedRoute />}>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/player-setup" element={<PlayerSetup />} />
-                <Route path="/quiz" element={<Quiz />} />
-                <Route path="/results" element={<Results />} />
-                <Route path="/change-password" element={<ChangePassword />} />
-              </Route>
-              {/* Public Routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/reset-password" element={<PasswordReset />} />
               <Route path="/set-new-password" element={<SetNewPassword />} />
+
+              {/* Auth Required Routes - Only logged in users */}
+              <Route element={<ProtectedRoute requireAuth={true} />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/change-password" element={<ChangePassword />} />
+              </Route>
+
+              {/* Mixed Access Routes - Both guest and auth users */}
+              <Route element={<ProtectedRoute guestAllowed={true} />}>
+                <Route path="/player-setup" element={<PlayerSetup />} />
+                <Route path="/quiz" element={<Quiz />} />
+                <Route path="/results" element={<Results />} />
+              </Route>
+
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
