@@ -4,7 +4,7 @@ import axios, {
   InternalAxiosRequestConfig,
   AxiosRequestConfig,
 } from 'axios';
-import { getRefreshToken, setRefreshToken } from './authService';
+import { getAuthToken, getRefreshToken, setRefreshToken } from './authService';
 import {
   LoginRequest,
   LoginResponse,
@@ -19,16 +19,20 @@ import {
   UserStatsResponse,
 } from '../types/api.types';
 
+type InternalRequestConfig = InternalAxiosRequestConfig & {
+  _retryCount?: number;
+};
+
 interface ApiErrorResponse {
   detail?: string;
   message?: string;
   code?: string;
   data?: any;
-  [key: string]: any; // Allow for additional error fields from backend
+  [key: string]: any;
 }
 
 interface RequestQueueItem {
-  config: AxiosRequestConfig;
+  config: InternalRequestConfig;
   resolve: (value: any) => void;
   reject: (error: any) => void;
   retryCount: number;
@@ -36,35 +40,16 @@ interface RequestQueueItem {
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 const MAX_RETRIES = 3;
-const INITIAL_RETRY_DELAY = 1000; // 1 second
+const INITIAL_RETRY_DELAY = 1000;
 
 class ApiClientService {
   private requestQueue: RequestQueueItem[] = [];
   private isRefreshing = false;
-  private processingQueue = false;
-  public readonly axiosInstance;
 
-  constructor() {
-    this.axiosInstance = axios.create({
-      baseURL: API_BASE_URL,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    this.initializeAxiosInstance();
-  }
-
-  private initializeAxiosInstance() {
-    this.axiosInstance.interceptors.request.use(
-      this.handleRequest.bind(this),
-      this.handleRequestError.bind(this)
-    );
-
-    this.axiosInstance.interceptors.response.use(
-      this.handleResponse.bind(this),
-      this.handleResponseError.bind(this)
-    );
-  }
+  public readonly axiosInstance = axios.create({
+    baseURL: API_BASE_URL,
+    headers: { 'Content-Type': 'application/json' },
+  });
 
   private publicEndpoints = [
     '/categories/',
@@ -75,35 +60,44 @@ class ApiClientService {
     '/auth/signup/',
   ];
 
+  constructor() {
+    this.axiosInstance.interceptors.request.use(
+      this.handleRequest.bind(this),
+      this.handleRequestError.bind(this)
+    );
+    this.axiosInstance.interceptors.response.use(
+      this.handleResponse.bind(this),
+      this.handleResponseError.bind(this)
+    );
+  }
+
   private isTokenExpired(token: string): boolean {
     try {
-      const tokenData = JSON.parse(atob(token.split('.')[1]));
-      return tokenData.exp * 1000 < Date.now();
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.exp * 1000 < Date.now();
     } catch {
       return true;
     }
   }
 
   private async handleRequest(config: InternalAxiosRequestConfig) {
-    const isPublicEndpoint = this.publicEndpoints.some(
-      (endpoint) => config.url === endpoint || config.url?.endsWith(endpoint)
+    const isPublic = this.publicEndpoints.some(
+      (ep) => config.url === ep || config.url?.endsWith(ep)
     );
-
-    if (!isPublicEndpoint) {
+    if (!isPublic) {
       const token = getAuthToken();
       if (token && this.isTokenExpired(token)) {
         await this.refreshAccessToken();
       }
-
-      const currentToken = getAuthToken();
-      if (currentToken) {
-        config.headers.Authorization = `Bearer ${currentToken}`;
+      const current = getAuthToken();
+      if (current) {
+        config.headers.Authorization = `Bearer ${current}`;
       }
     }
 
-    const guestSessionId = this.getGuestSessionId();
-    if (guestSessionId) {
-      config.headers['X-Guest-Session-ID'] = guestSessionId;
+    const guestId = this.getGuestSessionId();
+    if (guestId) {
+      config.headers['X-Guest-Session-ID'] = guestId;
     }
 
     return config;
@@ -118,12 +112,9 @@ class ApiClientService {
   }
 
   private async handleResponseError(error: AxiosError<ApiErrorResponse>) {
-    console.log('Handling response error:', error);
-
-    const originalRequest = error.config as InternalAxiosRequestConfig;
-    const retryCount = (originalRequest as any)._retryCount || 0;
-
-    const isPublic = this.publicEndpoints.some((ep) => originalRequest.url?.endsWith(ep));
+    const original = error.config as InternalRequestConfig;
+    const retryCount = original._retryCount ?? 0;
+    const isPublic = this.publicEndpoints.some((ep) => original.url?.endsWith(ep));
 
     if (error.response?.status === 401 && !isPublic && !this.isRefreshing) {
       if (retryCount < MAX_RETRIES) {
@@ -131,259 +122,124 @@ class ApiClientService {
       }
     }
 
-    if (this.shouldRetry(error) && retryCount < MAX_RETRIES) {
+    if (
+      (error.response?.status === 429 ||
+        error.response?.status === 503 ||
+        error.code === 'ECONNABORTED' ||
+        !error.response) &&
+      retryCount < MAX_RETRIES
+    ) {
       return this.retryRequest(error);
     }
-
-    console.error('API Error:', error);
-    console.error('API Error Response Data:', error.response?.data);
 
     return Promise.reject(this.formatError(error));
   }
 
   private async handleUnauthorizedError(error: AxiosError) {
-    if (!this.isRefreshing) {
-      this.isRefreshing = true;
-      try {
-        await this.refreshAccessToken();
-        return this.retryFailedRequests();
-      } catch (refreshError) {
-        this.clearQueue(refreshError);
-        throw refreshError;
-      } finally {
-        this.isRefreshing = false;
-      }
+    this.isRefreshing = true;
+    try {
+      await this.refreshAccessToken();
+      const queue = [...this.requestQueue];
+      this.requestQueue = [];
+      return Promise.all(
+        queue.map(({ config, resolve, reject }) => {
+          const cfg = {
+            ...config,
+            headers: {
+              ...config.headers,
+              Authorization: `Bearer ${getAuthToken()}`,
+            },
+          } as InternalAxiosRequestConfig;
+          return this.axiosInstance(cfg).then(resolve).catch(reject);
+        })
+      );
+    } finally {
+      this.isRefreshing = false;
     }
+  }
 
+  private retryRequest(error: AxiosError) {
+    const config = error.config as InternalRequestConfig;
+    const retryCount = config._retryCount ?? 0;
     return new Promise((resolve, reject) => {
-      this.requestQueue.push({
-        config: error.config!,
-        resolve,
-        reject,
-        retryCount: (error.config as any)._retryCount || 0,
-      });
+      setTimeout(
+        () => {
+          config._retryCount = retryCount + 1;
+          this.axiosInstance(config).then(resolve).catch(reject);
+        },
+        INITIAL_RETRY_DELAY * Math.pow(2, retryCount)
+      );
     });
   }
 
-  private shouldRetry(error: AxiosError): boolean {
-    return (
-      error.response?.status === 429 ||
-      error.response?.status === 503 ||
-      error.code === 'ECONNABORTED' ||
-      !error.response
+  private async refreshAccessToken(): Promise<string> {
+    const refresh = getRefreshToken();
+    if (!refresh) throw new Error('No refresh token');
+    const resp = await axios.post<{ access: string; refresh: string }>(
+      `${API_BASE_URL}/auth/refresh/`,
+      { refresh }
     );
-  }
-
-  private async retryRequest(error: AxiosError) {
-    const retryCount = (error.config as any)._retryCount || 0;
-    const delay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount);
-
-    await new Promise((resolve) => setTimeout(resolve, delay));
-
-    const newConfig = {
-      ...error.config,
-      _retryCount: retryCount + 1,
-    } as InternalAxiosRequestConfig;
-
-    return this.axiosInstance(newConfig);
-  }
-
-  private async refreshAccessToken() {
-    const refreshToken = getRefreshToken();
-    if (!refreshToken) {
-      throw new Error('No refresh token available');
-    }
-
-    try {
-      const response = await axios.post<{ access: string; refresh: string }>(
-        `${API_BASE_URL}/auth/refresh/`,
-        {
-          refresh: refreshToken,
-        }
-      );
-
-      const { access, refresh } = response.data;
-      setAuthToken(access);
-      setRefreshToken(refresh);
-
-      return access;
-    } catch (error) {
-      setAuthToken(null);
-      setRefreshToken(null);
-      throw error;
-    }
-  }
-
-  private async retryFailedRequests() {
-    const requestsToRetry = [...this.requestQueue];
-    this.requestQueue = [];
-
-    return Promise.all(
-      requestsToRetry.map(({ config, resolve, reject }) => {
-        const newConfig = {
-          ...config,
-          headers: {
-            ...config.headers,
-            Authorization: `Bearer ${getAuthToken()}`,
-          },
-        } as InternalAxiosRequestConfig;
-
-        return this.axiosInstance(newConfig).then(resolve).catch(reject);
-      })
-    );
-  }
-
-  private clearQueue(error: any) {
-    this.requestQueue.forEach(({ reject }) => reject(error));
-    this.requestQueue = [];
+    const { access, refresh: newRefresh } = resp.data;
+    setAuthToken(access);
+    setRefreshToken(newRefresh);
+    return access;
   }
 
   private formatError(error: AxiosError<ApiErrorResponse>) {
     if (!error.response) {
-      return {
-        message: error.message || 'Network error occurred',
-        code: 'network_error',
-        status: 0,
-      };
+      return { message: error.message || 'Network error', code: 'network_error', status: 0 };
     }
-
-    const { status, data: errorResponse } = error.response;
-
-    if (status === 401) {
-      const errorMessage =
-        typeof errorResponse === 'object' && errorResponse
-          ? errorResponse.detail ||
-            errorResponse.message ||
-            (typeof errorResponse === 'string' ? errorResponse : null) ||
-            'Authentication failed'
-          : 'Authentication failed';
-
-      return {
-        message: errorMessage,
-        code: 'invalid_credentials',
-        status: 401,
-        data: errorResponse,
-      };
-    }
-
-    // Handle other error responses
-    if (errorResponse) {
-      // Handle string responses
-      if (typeof errorResponse === 'string') {
-        return {
-          message: errorResponse,
-          code: 'api_error',
-          status: status,
-        };
-      }
-
-      // Handle object responses
-      return {
-        message: errorResponse.detail || errorResponse.message || 'An error occurred',
-        code: errorResponse.code || 'api_error',
-        status: status,
-        data: errorResponse,
-      };
-    }
-
-    // Default error when no response data is available
-    return {
-      message: error.message || 'An unexpected error occurred',
-      code: 'system_error',
-      status: status || 500,
-    };
+    const { status, data } = error.response;
+    const msg = typeof data === 'string' ? data : data.detail || data.message || 'API error';
+    return { message: msg, code: data.code || 'api_error', status, data };
   }
 
   private getGuestSessionId(): string | null {
-    const guestUser = localStorage.getItem('guestUser');
-    if (guestUser) {
-      try {
-        const parsed = JSON.parse(guestUser);
-        return parsed.id;
-      } catch {
-        return null;
-      }
+    const raw = localStorage.getItem('guestUser');
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw).id;
+    } catch {
+      return null;
     }
-    return null;
   }
 
-  // Public API methods
-  public async get<T>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  // Public convenience methods:
+  public get<T>(url: string, config?: AxiosRequestConfig) {
     return this.axiosInstance.get<T>(url, config);
   }
-
-  public async post<T>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig
-  ): Promise<AxiosResponse<T>> {
+  public post<T>(url: string, data?: any, config?: AxiosRequestConfig) {
     return this.axiosInstance.post<T>(url, data, config);
   }
-
-  public async put<T>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig
-  ): Promise<AxiosResponse<T>> {
+  public put<T>(url: string, data?: any, config?: AxiosRequestConfig) {
     return this.axiosInstance.put<T>(url, data, config);
   }
-
-  public async patch<T>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig
-  ): Promise<AxiosResponse<T>> {
+  public patch<T>(url: string, data?: any, config?: AxiosRequestConfig) {
     return this.axiosInstance.patch<T>(url, data, config);
   }
-
-  public async delete<T>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  public delete<T>(url: string, config?: AxiosRequestConfig) {
     return this.axiosInstance.delete<T>(url, config);
   }
 }
 
 const apiClientService = new ApiClientService();
 
-// Exported API methods for backward compatibility
-export const login = (data: LoginRequest): Promise<AxiosResponse<LoginResponse>> => {
-  return apiClientService.post('/auth/login/', data);
-};
-
-export const signup = (data: SignupRequest): Promise<AxiosResponse<SignupResponse>> => {
-  return apiClientService.post('/auth/signup/', data);
-};
-
-export const passwordReset = (
-  data: PasswordResetRequest
-): Promise<AxiosResponse<PasswordResetResponse>> => {
-  return apiClientService.post('/auth/password-reset/', data);
-};
-
-export const fetchQuestions = (
-  params?: FetchQuestionsRequest
-): Promise<AxiosResponse<FetchQuestionsResponse>> => {
-  return apiClientService.get('/questions/', { params });
-};
-
-export const submitAnswer = (
-  data: SubmitAnswerRequest
-): Promise<AxiosResponse<SubmitAnswerResponse>> => {
-  return apiClientService.post('/score/', data);
-};
-
-export const fetchUserStats = (userId: string): Promise<AxiosResponse<UserStatsResponse>> => {
-  return apiClientService.get(`/users/${userId}/stats/`);
-};
+// backward-compatible exports:
+export const login = (d: LoginRequest) => apiClientService.post<LoginResponse>('/auth/login/', d);
+export const signup = (d: SignupRequest) =>
+  apiClientService.post<SignupResponse>('/auth/signup/', d);
+export const passwordReset = (d: PasswordResetRequest) =>
+  apiClientService.post<PasswordResetResponse>('/auth/password-reset/', d);
+export const fetchQuestions = (p?: FetchQuestionsRequest) =>
+  apiClientService.get<FetchQuestionsResponse>('/questions/', { params: p });
+export const submitAnswer = (d: SubmitAnswerRequest) =>
+  apiClientService.post<SubmitAnswerResponse>('/score/', d);
+export const fetchUserStats = (id: string) =>
+  apiClientService.get<UserStatsResponse>(`/users/${id}/stats/`);
 
 export const setAuthToken = (token: string | null): void => {
-  if (token) {
-    localStorage.setItem('authToken', token);
-  } else {
-    localStorage.removeItem('authToken');
-  }
-};
-
-export const getAuthToken = (): string | null => {
-  return localStorage.getItem('authToken');
+  if (token) localStorage.setItem('authToken', token);
+  else localStorage.removeItem('authToken');
 };
 
 export default apiClientService;

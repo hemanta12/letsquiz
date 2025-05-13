@@ -5,8 +5,17 @@ import { BrowserRouter } from 'react-router-dom';
 import { store } from './store/store';
 import App from './App';
 import './styles/main.css';
+import { setAuthToken } from './services/apiClient';
+import AuthService from './services/authService';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+
+// Attempt to restore session on application load
+const sessionData = AuthService.getSessionData();
+if (sessionData?.token) {
+  setAuthToken(sessionData.token);
+}
+
 root.render(
   <React.StrictMode>
     <Provider store={store}>

@@ -50,8 +50,8 @@ class DifficultyLevel(models.Model):
 
 # Define the Question model
 class Question(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='questions')
-    difficulty = models.ForeignKey(DifficultyLevel, on_delete=models.CASCADE, related_name='questions')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='questions', null=True, blank=True)
+    difficulty = models.ForeignKey(DifficultyLevel, on_delete=models.CASCADE, related_name='questions', null=True, blank=True)
     question_text = models.TextField()
     correct_answer = models.CharField(max_length=255)
     answer_options = models.JSONField(default=list) 
@@ -60,7 +60,7 @@ class Question(models.Model):
     is_fallback = models.BooleanField(default=False) 
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
         related_name='created_questions'
@@ -71,7 +71,7 @@ class Question(models.Model):
 
 # Define the QuizSession model
 class QuizSession(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='quiz_sessions', null=True, blank=True)  
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='quiz_sessions', null=True, blank=True)
     started_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     score = models.IntegerField(default=0)
@@ -86,8 +86,13 @@ class QuizSession(models.Model):
 
 # Define the QuizSessionQuestion model (Intermediate model for M2M relationship with extra data)
 class QuizSessionQuestion(models.Model):
-    quiz_session = models.ForeignKey(QuizSession, on_delete=models.CASCADE, related_name='session_questions')
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='session_answers')
+    quiz_session = models.ForeignKey(QuizSession, on_delete=models.CASCADE, related_name='session_questions', null=True)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='session_answers', null=True, blank=True)
+    def __init__(self, *args, **kwargs):
+        session = kwargs.pop('session', None)
+        super().__init__(*args, **kwargs)
+        if session:
+            self.quiz_session = session
     selected_answer = models.CharField(max_length=255, blank=True, null=True) 
     is_correct = models.BooleanField(default=False) 
     answered_at = models.DateTimeField(null=True, blank=True) 
@@ -100,9 +105,9 @@ class QuizSessionQuestion(models.Model):
 
 # Define the LLMGenerationTask model
 class LLMGenerationTask(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='generation_tasks')
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='generation_tasks')
-    difficulty = models.ForeignKey(DifficultyLevel, on_delete=models.SET_NULL, null=True, blank=True, related_name='generation_tasks')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name='generation_tasks')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name='generation_tasks')
+    difficulty = models.ForeignKey(DifficultyLevel, on_delete=models.CASCADE, null=True, blank=True, related_name='generation_tasks')
     triggered_at = models.DateTimeField(auto_now_add=True)
     STATUS_CHOICES = [
         ('Pending', 'Pending'),

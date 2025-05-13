@@ -9,6 +9,7 @@ import {
 import { GroupQuizSession } from '../types/quiz.types';
 import AuthService from './authService';
 import { AES, enc } from 'crypto-js';
+import { QuizSession } from '../types/dashboard.types';
 
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'default-key';
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
@@ -99,7 +100,12 @@ class QuizService {
         return { questions: cached.data };
       }
 
-      const response = await apiClient.get<Question[]>('/questions/', { params });
+      const response = await apiClient.get<Question[]>('/questions/', {
+        params: {
+          ...params,
+          _limit: params?.limit || 10,
+        },
+      });
       const fetchedQuestions = response.data;
 
       // Store data in cache with timestamp
@@ -337,6 +343,31 @@ class QuizService {
         `Failed to get group session: ${error.response?.data?.detail || error.message || 'An error occurred'}`
       );
     }
+  }
+
+  async saveQuizSession(quizSessionData: {
+    questions: { id: number; selected_answer: string }[];
+    score: number;
+    category_id: number | null | undefined;
+    difficulty: string;
+  }): Promise<any> {
+    try {
+      const response = await apiClient.post('/quiz-sessions/', quizSessionData);
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        throw new Error('Authentication required. Please log in again.');
+      }
+      throw new Error(
+        `Failed to save quiz session: ${error.response?.data?.detail || error.message || 'An error occurred'}`
+      );
+    }
+  }
+
+  async fetchUserSessions(userId: number): Promise<QuizSession[]> {
+    // Tell TypeScript we expect a paginated shape
+    const resp = await apiClient.get<{ results: QuizSession[] }>(`/users/${userId}/sessions/`);
+    return resp.data.results;
   }
 }
 

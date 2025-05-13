@@ -56,3 +56,11 @@ class CustomModelBackend:
             logger.error(f"Unexpected error during authentication for {username}: {str(e)}", 
                         exc_info=True)
             raise AuthenticationFailed("An error occurred during authentication. Please try again later.")
+
+    def get_user(self, user_id):
+        try:
+            return User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return None
+            
+            

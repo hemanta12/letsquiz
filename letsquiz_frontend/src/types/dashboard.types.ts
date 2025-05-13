@@ -19,3 +19,18 @@ export type CategoryStats = {
     };
   };
 };
+
+export interface QuestionDetail {
+  question: string;
+  userAnswer: string;
+  correctAnswer: string;
+}
+
+export interface SessionDetail {
+  session_id: number;
+  category: string;
+  difficulty: string;
+  score: number;
+  started_at: string;
+  questions: QuestionDetail[];
+}

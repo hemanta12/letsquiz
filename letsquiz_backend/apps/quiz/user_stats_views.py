@@ -13,6 +13,7 @@ from django.contrib.auth import get_user_model
 
 from .models import (
     QuizSession,
+    DifficultyLevel
 )
 from .serializers import UserStatsSerializer
 
@@ -90,27 +91,35 @@ def get_user_sessions_view(request, userId):
             }, status=status.HTTP_403_FORBIDDEN)
 
         # Get quiz sessions with pagination
-        paginator = PageNumberPagination()
-        paginator.page_size = 10
+        try:
+            paginator = PageNumberPagination()
+            paginator.page_size = 10
 
-        quiz_sessions = QuizSession.objects.filter(user_id=userId).order_by('-started_at')
-        paginated_sessions = paginator.paginate_queryset(quiz_sessions, request)
+            quiz_sessions = QuizSession.objects.filter(user_id=userId).order_by('-started_at')
+            logger.info(f"Quiz sessions count: {quiz_sessions.count()}")
+            paginated_sessions = paginator.paginate_queryset(quiz_sessions, request)
 
-        sessions_data = []
-        for session in paginated_sessions:
-            first_question = session.session_questions.first()
-            session_data = {
-                'id': session.id,
-                'score': session.score,
-                'total_questions': session.session_questions.count(),
-                'started_at': session.started_at,
-                'completed_at': session.completed_at,
-                'category': first_question.question.category.name if first_question else None,
-                'difficulty': first_question.question.difficulty.name if first_question else None
-            }
-            sessions_data.append(session_data)
-
-        return paginator.get_paginated_response(sessions_data)
+            sessions_data = []
+            for session in paginated_sessions:
+                first_question = session.session_questions.first()
+                session_data = {
+                    'id': session.id,
+                    'score': session.score,
+                    'total_questions': session.session_questions.count(),
+                    'started_at': session.started_at,
+                    'completed_at': session.completed_at,
+                    'category': first_question.question.category.name if first_question else None,
+                    'difficulty': first_question.question.difficulty.label if first_question else None
+                }
+                sessions_data.append(session_data)
+    
+            return paginator.get_paginated_response(sessions_data)
+        except Exception as e:
+            logger.error(f"Error retrieving user sessions: {e}", exc_info=True)
+            return Response({
+                'error': 'Error retrieving user sessions.',
+                'code': 'server_error'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     except Exception as e:
         logger.error(f"Error retrieving user sessions: {e}", exc_info=True)
@@ -132,7 +141,7 @@ def get_user_stats_view(request, userId):
             }, status=status.HTTP_403_FORBIDDEN)
 
         quiz_sessions = QuizSession.objects.filter(user_id=userId)
-        
+
         # Calculate overall stats
         total_quizzes = quiz_sessions.count()
         total_score = quiz_sessions.aggregate(Sum('score'))['score__sum'] or 0
@@ -163,7 +172,7 @@ def get_user_stats_view(request, userId):
                     category_stats[category]['correct_answers'] += 1
 
                 # Update difficulty stats
-                difficulty = question.question.difficulty.name
+                difficulty = question.question.difficulty.label 
                 if difficulty not in difficulty_stats:
                     difficulty_stats[difficulty] = {
                         'total_questions': 0,

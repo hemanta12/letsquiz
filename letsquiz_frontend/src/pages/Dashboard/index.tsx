@@ -7,7 +7,6 @@ import { fetchUserProfile } from '../../store/slices/userSlice';
 import styles from './Dashboard.module.css';
 
 const Dashboard: React.FC = () => {
-  console.log('[Dashboard] Component mounted');
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const auth = useAppSelector((state) => state.auth);
@@ -18,26 +17,16 @@ const Dashboard: React.FC = () => {
   const { isAuthenticated } = auth;
 
   useEffect(() => {
-    console.log('[Dashboard] Auth status changed', { isAuthenticated });
     if (!isAuthenticated) {
-      console.log('[Dashboard] Redirecting to login');
       navigate('/login');
     }
   }, [isAuthenticated, navigate]);
   useEffect(() => {
-    console.log('[Dashboard] Profile loading state', {
-      isAuthenticated,
-      hasProfile: !!profile,
-      loadingProfile,
-      userId: auth.userId,
-    });
     if (isAuthenticated && !profile && !loadingProfile) {
       const userId = auth.userId;
       if (!userId) {
-        console.log('[Dashboard] No user ID available');
         return;
       }
-      console.log('[Dashboard] Fetching user profile', { userId });
       dispatch(fetchUserProfile(userId.toString()));
     }
   }, [dispatch, isAuthenticated, profile, loadingProfile, auth]);
@@ -64,12 +53,6 @@ const Dashboard: React.FC = () => {
 
   if (!loadingProfile && !loadingLeaderboard && !errorProfile && !errorLeaderboard) {
     if (profile) {
-      console.log('[Dashboard] Rendering stats with profile data', {
-        totalQuizzes: profile.quiz_history?.length || 0,
-        totalScore:
-          profile.quiz_history?.reduce((sum, session) => sum + (session.score || 0), 0) || 0,
-      });
-
       // Initialize quiz_history if it's undefined
       const safeProfile = {
         ...profile,

@@ -257,20 +257,27 @@ class UserService {
         console.error('[User Service] Quiz history response data is undefined');
         return [];
       }
+      const raw = response.data?.results;
 
       if (!Array.isArray(response.data.results)) {
         console.error('[User Service] Quiz history results is not an array:', response.data);
         return [];
       }
 
-      return response.data.results.map((session) => ({
+      return raw.map((session) => ({
         id: session.id,
-        category: session.category || 'General',
-        difficulty: session.difficulty || 'Medium',
+        category: session.category ?? 'General',
+        difficulty: session.difficulty ?? 'Medium',
         score: Number(session.score) || 0,
         started_at: session.started_at || new Date().toISOString(),
         completed_at: session.completed_at || null,
-        details: Array.isArray(session.details) ? session.details : [],
+        details: Array.isArray(session.details)
+          ? session.details.map((d: any) => ({
+              question: d.question_text ?? d.userAnswer ?? '',
+              userAnswer: d.selected_answer ?? d.userAnswer ?? '',
+              correctAnswer: d.correct_answer ?? d.correctAnswer ?? '',
+            }))
+          : [],
       }));
     } catch (error: any) {
       console.error('[User Service] Failed to fetch quiz history:', error);
@@ -281,6 +288,35 @@ class UserService {
       });
       return [];
     }
+  }
+
+  async fetchQuizSessionDetails(sessionId: number): Promise<{
+    session_id: number;
+    category: string;
+    difficulty: string;
+    score: number;
+    started_at: string;
+    questions: Array<{
+      id: number;
+      text: string;
+      selected_answer: string;
+      correct_answer: string;
+    }>;
+  }> {
+    const resp = await apiClient.get<{
+      session_id: number;
+      category: string;
+      difficulty: string;
+      score: number;
+      started_at: string;
+      questions: Array<{
+        id: number;
+        text: string;
+        selected_answer: string;
+        correct_answer: string;
+      }>;
+    }>(`/sessions/${sessionId}/`);
+    return resp.data;
   }
 }
 

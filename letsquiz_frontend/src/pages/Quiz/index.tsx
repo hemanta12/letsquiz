@@ -9,6 +9,7 @@ import {
   nextQuestion as nextQuestionAction,
   resetQuiz,
   fetchQuizQuestions,
+  saveQuizSessionThunk,
 } from '../../store/slices/quizSlice';
 import { updatePlayerScore } from '../../store/slices/groupQuizSlice';
 import { Question } from '../../types/api.types';
@@ -46,7 +47,7 @@ export const Quiz: React.FC = () => {
       try {
         const nextQuestionData = await QuizService.fetchQuestions({
           limit: 1,
-          category: categoryId, // Use categoryId
+          category: categoryId,
           difficulty: difficulty,
         });
         if (nextQuestionData && nextQuestionData.questions.length > 0) {
@@ -61,7 +62,7 @@ export const Quiz: React.FC = () => {
 
   useEffect(() => {
     if (questions.length === 0 && !quizLoading && !quizError) {
-      dispatch(fetchQuizQuestions({ category: categoryId, difficulty, limit: 10 }));
+      dispatch(fetchQuizQuestions({ category: categoryId, difficulty, limit: 4 }));
     }
   }, [dispatch, categoryId, difficulty, questions.length, quizLoading, quizError]);
 
@@ -133,6 +134,27 @@ export const Quiz: React.FC = () => {
           answeredQuestions: Object.keys(selectedAnswers).length,
         });
         await dispatch(updateScore());
+
+        // Save quiz session for logged-in users
+        if (!isGuest) {
+          const quizSessionData = {
+            questions: Object.entries(selectedAnswers).map(([index, selected_answer]) => ({
+              id: questions[Number(index)].id,
+              selected_answer,
+            })),
+            score: Object.entries(selectedAnswers).reduce((score, [index, answer]) => {
+              const points = answer === questions[Number(index)].correct_answer ? 1 : 0;
+              return score + points;
+            }, 0),
+            category_id: categoryId,
+            difficulty: difficulty,
+          };
+          const resultAction = await dispatch(saveQuizSessionThunk(quizSessionData));
+          if (saveQuizSessionThunk.rejected.match(resultAction)) {
+            console.error('Error saving quiz session:', resultAction.payload);
+          }
+        }
+
         navigate('/results');
       } else {
         // Move to the next question

@@ -3,6 +3,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.auth.password_validation import validate_password
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
+from django.utils import timezone
 
 import logging
 from rest_framework import serializers
@@ -177,6 +178,46 @@ class QuizSessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = QuizSession
         fields = ('id', 'user', 'started_at', 'completed_at', 'score', 'session_questions')
+
+class QuizSessionQuestionSaveSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    selected_answer = serializers.CharField(max_length=255)
+
+class QuizSessionSaveSerializer(serializers.Serializer):
+    questions = QuizSessionQuestionSaveSerializer(many=True)
+    score = serializers.IntegerField()
+    category_id = serializers.IntegerField(required=False, allow_null=True)
+    difficulty = serializers.CharField(max_length=50)
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        questions_data = validated_data.pop('questions')
+        score = validated_data.pop('score')
+
+        # Create QuizSession
+        quiz_session = QuizSession.objects.create(
+            user=user,
+            score=score,
+            completed_at=timezone.now()
+        )
+
+        # Create QuizSessionQuestion instances
+        for question_data in questions_data:
+            try:
+                question = Question.objects.get(id=question_data['id'])
+                is_correct = question.correct_answer == question_data['selected_answer']
+                QuizSessionQuestion.objects.create(
+                    session=quiz_session,
+                    question=question,
+                    selected_answer=question_data['selected_answer'],
+                    is_correct=is_correct,
+                    answered_at=timezone.now() 
+                )
+            except Question.DoesNotExist:
+                
+                pass
+
+        return quiz_session
 
 class AnswerSubmissionSerializer(serializers.Serializer):
     question_id = serializers.IntegerField()

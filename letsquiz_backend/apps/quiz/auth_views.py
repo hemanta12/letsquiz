@@ -357,3 +357,18 @@ def convert_guest_to_user(request, session_id):
     return Response({
         'detail': 'Guest session converted successfully.'
     }, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def logout_view(request):
+    """
+    API endpoint for user logout.
+
+    Blacklists the refresh token provided in the request.
+    """
+    try:
+        refresh_token = request.data["refresh_token"]
+        token = RefreshToken(refresh_token)
+        token.blacklist()
+        return Response({"detail": "Successfully logged out."}, status=status.HTTP_205_RESET_CONTENT)
+    except Exception as e:
+        return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)

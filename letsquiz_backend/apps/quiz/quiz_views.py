@@ -6,13 +6,14 @@ from django.utils import timezone
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated 
 
 from .serializers import (
     QuestionSerializer,
     QuizSessionStartSerializer,
     AnswerSubmissionSerializer,
     CategorySerializer,
+    QuizSessionSaveSerializer, 
 )
 from .models import (
     Question,
@@ -24,6 +25,25 @@ from .models import (
 
 logger = logging.getLogger(__name__)
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def save_quiz_session_view(request):
+    """API endpoint for saving a completed quiz session."""
+    try:
+        serializer = QuizSessionSaveSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Quiz session saved successfully.'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        logger.error(f"Error saving quiz session: {e}", exc_info=True)
+        return Response({
+            'error': 'Error saving quiz session.',
+            'code': 'server_error'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 @authentication_classes([])  # Allow unauthenticated access
@@ -34,7 +54,7 @@ def fetch_seeded_questions_view(request):
 
         category_id = request.query_params.get('category')
         difficulty = request.query_params.get('difficulty')
-        count_param = request.query_params.get('count', 10)
+        count_param = request.query_params.get('_limit', 10)
 
         if category_id:
             try:
@@ -82,7 +102,7 @@ def fetch_seeded_questions_view(request):
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
-@authentication_classes([])  
+@authentication_classes([])
 def fetch_categories_view(request):
     """API endpoint for fetching quiz categories."""
     try:
@@ -92,7 +112,6 @@ def fetch_categories_view(request):
 
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
     except Exception as e:
         logger.error(f"Error fetching categories: {e}", exc_info=True)
         return Response({
@@ -102,7 +121,7 @@ def fetch_categories_view(request):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
-@authentication_classes([])  
+@authentication_classes([])
 def start_quiz_session_view(request):
     """API endpoint for starting a new quiz session (solo or group)."""
     try:
@@ -159,7 +178,7 @@ def start_quiz_session_view(request):
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
-def get_quiz_session_view(request, sessionId):
+def get_quiz_session_view(request, sessionId, category=None, difficulty=None):
     """API endpoint for retrieving quiz session details."""
     try:
         quiz_session = get_object_or_404(QuizSession, id=sessionId)
@@ -179,19 +198,36 @@ def get_quiz_session_view(request, sessionId):
                 'text': sq.question.question_text,
                 'options': sq.question.answer_options,
                 'selected_answer': sq.selected_answer,
+                'correct_answer': sq.question.correct_answer,
+                'category': sq.question.category.name,
+                'difficulty': sq.question.difficulty.label,
                 'is_correct': sq.is_correct if sq.answered_at else None,
                 'answered_at': sq.answered_at,
             }
             questions.append(question_data)
 
+        if questions:
+            session_category   = questions[0]['category']
+            session_difficulty = questions[0]['difficulty']
+        else:
+            session_category, session_difficulty = None, None
+        
+        if category is None:
+            category = session_category
+        if difficulty is None:
+            difficulty = session_difficulty
+
         response_data = {
-            'session_id': quiz_session.id,
-            'score': quiz_session.score,
-            'started_at': quiz_session.created_at,
-            'questions': questions,
-            'is_completed': quiz_session.is_completed,
-            'is_guest': not request.user.is_authenticated
+            'session_id':  quiz_session.id,
+            'category':    category,
+            'difficulty':  difficulty,
+            'score':       quiz_session.score,
+            'started_at':  quiz_session.started_at,
+            'questions':   questions,
+            'is_completed':quiz_session.is_completed,
+            'is_guest':     not request.user.is_authenticated,
         }
+        
 
         return Response(response_data, status=status.HTTP_200_OK)
 
@@ -303,7 +339,7 @@ def get_quiz_session_results_view(request, sessionId):
                 'correct_answer': sq.question.correct_answer,
                 'is_correct': sq.is_correct,
                 'category': sq.question.category.name,
-                'difficulty': sq.question.difficulty.name,
+                'difficulty': sq.question.difficulty.label,
             }
             questions_data.append(question_data)
 
@@ -313,7 +349,7 @@ def get_quiz_session_results_view(request, sessionId):
             'total_questions': total_questions,
             'correct_answers': correct_answers,
             'accuracy': (correct_answers / total_questions * 100) if total_questions > 0 else 0,
-            'started_at': quiz_session.created_at,
+            'started_at': quiz_session.started_at,
             'completed_at': quiz_session.updated_at,
             'questions': questions_data,
             'is_guest': not request.user.is_authenticated

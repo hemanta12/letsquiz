@@ -103,7 +103,7 @@ class AuthService {
     localStorage.setItem('sessionData', encrypted);
   }
 
-  private getSessionData(): SessionData | null {
+  public getSessionData(): SessionData | null {
     const encrypted = localStorage.getItem('sessionData');
     if (!encrypted) return null;
 
@@ -137,7 +137,7 @@ class AuthService {
   getGuestFeatureGates(): GuestSession['featureGates'] {
     return {
       canAccessPremiumContent: false,
-      maxQuestionsPerQuiz: 10,
+      maxQuestionsPerQuiz: 3,
       canSaveProgress: false,
     };
   }
@@ -472,4 +472,14 @@ export const getRefreshToken = (): string | null => {
   }
 };
 
-export default new AuthService();
+const authService = new AuthService();
+export default authService;
+
+export function getSessionData(): SessionData | null {
+  return authService.getSessionData();
+}
+
+export function getAuthToken(): string | null {
+  const session = getSessionData();
+  return session?.token ?? null;
+}

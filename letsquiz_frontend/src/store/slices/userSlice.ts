@@ -1,13 +1,13 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { RootState } from '../store';
 import UserService from '../../services/userService';
 import { UserProfile, FetchLeaderboardResponse, LeaderboardEntry } from '../../types/api.types';
-import { QuizSession } from '../../types/dashboard.types';
-import { loginUser } from './authSlice';
+import { SessionDetail, QuestionDetail } from '../../types/dashboard.types';
 
 interface UserState {
   profile: UserProfile | null;
   leaderboard: LeaderboardEntry[];
-  selectedDetailedSession: QuizSession | null;
+  selectedDetailedSession: SessionDetail | null;
   loadingProfile: boolean;
   loadingLeaderboard: boolean;
   loadingSelectedDetailedSession: boolean;
@@ -19,23 +19,22 @@ interface UserState {
 const initialState: UserState = {
   profile: null,
   leaderboard: [],
-  selectedDetailedSession: null, // Initialize selectedDetailedSession
+  selectedDetailedSession: null,
   loadingProfile: false,
   loadingLeaderboard: false,
-  loadingSelectedDetailedSession: false, // Initialize loading state
+  loadingSelectedDetailedSession: false,
   errorProfile: null,
   errorLeaderboard: null,
-  errorSelectedDetailedSession: null, // Initialize error state
+  errorSelectedDetailedSession: null,
 };
 
 export const fetchUserProfile = createAsyncThunk<UserProfile, string, { rejectValue: string }>(
   'user/fetchUserProfile',
   async (userId, { rejectWithValue }) => {
     try {
-      const response = await UserService.fetchUserProfile(userId);
-      return response;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.detail || error.message);
+      return await UserService.fetchUserProfile(userId);
+    } catch (err: any) {
+      return rejectWithValue(err.response?.data?.detail || err.message);
     }
   }
 );
@@ -46,37 +45,38 @@ export const fetchLeaderboard = createAsyncThunk<
   { rejectValue: string }
 >('user/fetchLeaderboard', async (_, { rejectWithValue }) => {
   try {
-    const response = await UserService.fetchLeaderboard();
-    return response;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.detail || error.message);
+    return await UserService.fetchLeaderboard();
+  } catch (err: any) {
+    return rejectWithValue(err.response?.data?.detail || err.message);
   }
 });
 
 export const fetchSingleDetailedQuizSession = createAsyncThunk<
-  QuizSession | undefined,
+  SessionDetail,
   number,
-  { rejectValue: string }
+  { state: RootState; rejectValue: string }
 >('user/fetchSingleDetailedQuizSession', async (sessionId, { getState, rejectWithValue }) => {
+  const userId = getState().auth.userId;
+  if (!userId) {
+    return rejectWithValue('User not authenticated or user ID not available');
+  }
   try {
-    const state = getState() as { user: UserState };
-    const userId = state.user.profile?.id;
-
-    if (!userId) {
-      throw new Error('User not authenticated or user ID not available');
-    }
-
-    const quizHistory = await UserService.fetchUserQuizHistory(userId.toString());
-
-    const session = quizHistory.find((session: QuizSession) => session.id === sessionId);
-
-    if (session) {
-      return session;
-    } else {
-      return undefined;
-    }
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.detail || error.message);
+    const raw = await UserService.fetchQuizSessionDetails(sessionId);
+    const detail: SessionDetail = {
+      session_id: raw.session_id,
+      category: raw.category ?? 'General',
+      difficulty: raw.difficulty ?? 'Medium',
+      score: raw.score,
+      started_at: raw.started_at,
+      questions: raw.questions.map((q) => ({
+        question: q.text,
+        userAnswer: q.selected_answer,
+        correctAnswer: q.correct_answer,
+      })) as QuestionDetail[],
+    };
+    return detail;
+  } catch (err: any) {
+    return rejectWithValue(err.response?.data?.detail || err.message);
   }
 });
 
@@ -84,65 +84,55 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    clearSelectedDetailedSession: (state) => {
+    clearSelectedDetailedSession(state) {
       state.selectedDetailedSession = null;
       state.errorSelectedDetailedSession = null;
     },
   },
   extraReducers: (builder) => {
     builder
+      // user profile
+      .addCase(fetchUserProfile.pending, (state) => {
+        state.loadingProfile = true;
+        state.errorProfile = null;
+      })
+      .addCase(fetchUserProfile.fulfilled, (state, { payload }) => {
+        state.loadingProfile = false;
+        state.profile = payload;
+      })
+      .addCase(fetchUserProfile.rejected, (state, { payload, error }) => {
+        state.loadingProfile = false;
+        state.errorProfile = payload ?? error.message ?? 'Failed to fetch profile';
+      })
+
+      // leaderboard
+      .addCase(fetchLeaderboard.pending, (state) => {
+        state.loadingLeaderboard = true;
+        state.errorLeaderboard = null;
+      })
+      .addCase(fetchLeaderboard.fulfilled, (state, { payload }) => {
+        state.loadingLeaderboard = false;
+        state.leaderboard = payload.leaderboard;
+      })
+      .addCase(fetchLeaderboard.rejected, (state, { payload, error }) => {
+        state.loadingLeaderboard = false;
+        state.errorLeaderboard = payload ?? error.message ?? 'Failed to fetch leaderboard';
+      })
+
+      // detailed session
       .addCase(fetchSingleDetailedQuizSession.pending, (state) => {
         state.loadingSelectedDetailedSession = true;
         state.errorSelectedDetailedSession = null;
         state.selectedDetailedSession = null;
       })
-      .addCase(
-        fetchSingleDetailedQuizSession.fulfilled,
-        (state, action: PayloadAction<QuizSession | undefined>) => {
-          state.loadingSelectedDetailedSession = false;
-          state.selectedDetailedSession = action.payload || null;
-          state.errorSelectedDetailedSession = null;
-        }
-      )
-      .addCase(
-        fetchSingleDetailedQuizSession.rejected,
-        (state, action: PayloadAction<string | undefined>) => {
-          state.loadingSelectedDetailedSession = false;
-          state.selectedDetailedSession = null;
-          state.errorSelectedDetailedSession =
-            action.payload || 'Failed to fetch detailed quiz session';
-        }
-      )
-      .addCase(fetchUserProfile.pending, (state) => {
-        state.loadingProfile = true;
-        state.errorProfile = null;
+      .addCase(fetchSingleDetailedQuizSession.fulfilled, (state, { payload }) => {
+        state.loadingSelectedDetailedSession = false;
+        state.selectedDetailedSession = payload;
       })
-      .addCase(fetchUserProfile.fulfilled, (state, action: PayloadAction<UserProfile>) => {
-        state.loadingProfile = false;
-        state.profile = action.payload;
-        state.errorProfile = null;
-      })
-      .addCase(fetchUserProfile.rejected, (state, action: PayloadAction<string | undefined>) => {
-        state.loadingProfile = false;
-        state.profile = null;
-        state.errorProfile = action.payload || 'Failed to fetch user profile';
-      })
-      .addCase(fetchLeaderboard.pending, (state) => {
-        state.loadingLeaderboard = true;
-        state.errorLeaderboard = null;
-      })
-      .addCase(
-        fetchLeaderboard.fulfilled,
-        (state, action: PayloadAction<FetchLeaderboardResponse>) => {
-          state.loadingLeaderboard = false;
-          state.leaderboard = action.payload.leaderboard;
-          state.errorLeaderboard = null;
-        }
-      )
-      .addCase(fetchLeaderboard.rejected, (state, action: PayloadAction<string | undefined>) => {
-        state.loadingLeaderboard = false;
-        state.leaderboard = [];
-        state.errorLeaderboard = action.payload || 'Failed to fetch leaderboard';
+      .addCase(fetchSingleDetailedQuizSession.rejected, (state, { payload, error }) => {
+        state.loadingSelectedDetailedSession = false;
+        state.errorSelectedDetailedSession =
+          payload ?? error.message ?? 'Failed to fetch detailed quiz session';
       });
   },
 });

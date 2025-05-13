@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Typography } from '../common/Typography';
 import Button from '../common/Button';
 import Modal from '../common/Modal';
@@ -9,7 +9,6 @@ import {
   clearSelectedDetailedSession,
 } from '../../store/slices/userSlice';
 import ActivityDetailContent from './ActivityDetailContent';
-
 import CategoryList from './CategoryList';
 import RecentActivity from './RecentActivity';
 import StatsPanel from './StatsPanel';
@@ -21,18 +20,13 @@ import {
 } from '../../types/api.types';
 import { QuizSession } from '../../types/dashboard.types';
 import { calculateCategoryStats } from '../../utils/dashboardUtils';
-import styles from './DashboardContent.module.css';
 import userService from '../../services/userService';
 import { fetchUserStats } from '../../services/apiClient';
+import styles from './DashboardContent.module.css';
 
 interface DashboardContentProps {
   profile: UserProfile;
 }
-
-const selectAuthState = (state: any) => ({
-  userId: state.auth.userId,
-  isAuthenticated: state.auth.isAuthenticated,
-});
 
 const toQuizSessionHistory = (session: QuizSession): QuizSessionHistory => ({
   id: session.id,
@@ -43,64 +37,63 @@ const toQuizSessionHistory = (session: QuizSession): QuizSessionHistory => ({
   difficulty: session.difficulty,
 });
 
-const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
-  const [isLoadingStats, setIsLoadingStats] = useState(false);
-  const [statsError, setStatsError] = useState<string | null>(null);
-  const [userApiStats, setUserApiStats] = useState<UserStatsResponse | null>(null);
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
-  const dispatch = useAppDispatch();
-  const { selectedDetailedSession, loadingSelectedDetailedSession, errorSelectedDetailedSession } =
-    useAppSelector((state) => state.user);
-  const { userId, isAuthenticated } = useAppSelector(selectAuthState);
+const selectAuth = (state: any) => ({
+  userId: state.auth.userId,
+  isAuthenticated: state.auth.isAuthenticated,
+});
 
-  const [showModal, setShowModal] = useState(false);
+const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
+  const dispatch = useAppDispatch();
+  const { userId, isAuthenticated } = useAppSelector(selectAuth);
+  const { selectedDetailedSession, loadingSelectedDetailedSession, errorSelectedDetailedSession } =
+    useAppSelector((s) => s.user);
 
   const [sessions, setSessions] = useState<QuizSession[]>([]);
   const [categoryStats, setCategoryStats] = useState<CategoryStats[]>([]);
+  const [userApiStats, setUserApiStats] = useState<UserStatsResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const [showModal, setShowModal] = useState(false);
+
+  // 1) Fetch both quiz-history and user-stats in one go
   useEffect(() => {
-    const fetchUserData = async () => {
-      if (!userId || !isAuthenticated) {
-        setStatsError('User not authenticated');
-        setIsLoadingStats(false); // Ensure loading is stopped
-        return;
-      }
-
-      setIsLoadingStats(true);
-      setStatsError(null);
-
+    if (!userId || !isAuthenticated) {
+      setError('User not authenticated');
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    (async () => {
       try {
-        const userSessions = await userService.fetchUserQuizHistory(userId);
+        // history from your userService
+        const raw = await userService.fetchUserQuizHistory(userId.toString());
+        const wellTyped: QuizSession[] = raw.map((s) => ({
+          id: s.id,
+          details: s.details ?? [],
+          category: s.category || 'Uncategorized',
+          difficulty: s.difficulty || 'Unknown',
+          score: s.score ?? 0,
+          started_at: s.started_at,
+          completed_at: s.completed_at,
+        }));
+        setSessions(wellTyped);
 
-        const wellTypedSessions: QuizSession[] = (userSessions || []).map((s) => {
-          const session: QuizSession = {
-            id: s.id,
-            details: s.details || [],
-            category: s.category || 'Uncategorized',
-            difficulty: s.difficulty || 'Unknown',
-            score: s.score || 0,
-            started_at: s.started_at || new Date().toISOString(),
-            completed_at: s.completed_at || null,
-          };
-          return session;
-        });
+        // per-category stats
+        setCategoryStats(calculateCategoryStats(wellTyped));
 
-        setSessions(wellTypedSessions);
-
-        const clientCalculatedCategoryStats = calculateCategoryStats(wellTypedSessions);
-        setCategoryStats(clientCalculatedCategoryStats);
-
-        const apiStatsResponse = await fetchUserStats(userId);
-        setUserApiStats(apiStatsResponse.data);
-      } catch (error: any) {
-        console.error('Error fetching user data:', error);
-        setStatsError(error.message || 'Failed to load user data. Please try again.');
+        // user API stats for the top panel
+        const apiStats = await fetchUserStats(userId);
+        setUserApiStats(apiStats.data);
+      } catch (e: any) {
+        console.error(e);
+        setError(e.message || 'Failed to load dashboard');
       } finally {
-        setIsLoadingStats(false);
+        setLoading(false);
       }
-    };
-
-    fetchUserData();
+    })();
   }, [userId, isAuthenticated]);
 
   const sessionHistories = useMemo(() => sessions.map(toQuizSessionHistory), [sessions]);
@@ -108,8 +101,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
   const recentActivity = useMemo(
     () =>
       sessionHistories
-        .filter((session) => session.completed_at !== null)
-        .slice()
+        .filter((s) => s.completed_at)
         .sort(
           (a, b) =>
             new Date(b.completed_at as string).getTime() -
@@ -118,52 +110,28 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
     [sessionHistories]
   );
 
-  const handleCategoryToggle = useCallback((category: string) => {
+  const handleCategoryToggle = useCallback((cat: string) => {
     setExpandedCategories((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(category)) {
-        newSet.delete(category);
-      } else {
-        newSet.add(category);
-      }
-      return newSet;
+      const nxt = new Set(prev);
+      nxt.has(cat) ? nxt.delete(cat) : nxt.add(cat);
+      return nxt;
     });
   }, []);
 
-  const handleQuizCardClick = useCallback(
-    (session: QuizSessionHistory) => {
-      dispatch(fetchSingleDetailedQuizSession(session.id));
+  const openDetail = useCallback(
+    (id: number) => {
+      dispatch(fetchSingleDetailedQuizSession(id));
       setShowModal(true);
     },
     [dispatch]
   );
 
-  const handleCloseModal = useCallback(() => {
+  const closeDetail = useCallback(() => {
     setShowModal(false);
     dispatch(clearSelectedDetailedSession());
   }, [dispatch]);
 
-  const handleActivityClick = useCallback(
-    (sessionId: number) => {
-      dispatch(fetchSingleDetailedQuizSession(sessionId));
-      setShowModal(true);
-      const sessionForCategory = sessions.find((s) => s.id === sessionId);
-      if (sessionForCategory) {
-        setExpandedCategories((prev) => new Set(prev).add(sessionForCategory.category));
-      }
-
-      setTimeout(() => {
-        const quizElement = document.getElementById(`quiz-${sessionId}`);
-        if (quizElement) {
-          quizElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          quizElement.focus();
-        }
-      }, 100);
-    },
-    [dispatch, sessions] // Depends on original sessions for category
-  );
-
-  if (!isAuthenticated && !isLoadingStats) {
+  if (!isAuthenticated && !loading) {
     return (
       <div className={styles.dashboardError}>
         <Typography variant="h3">Authentication Required</Typography>
@@ -172,38 +140,32 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
     );
   }
 
-  if (isLoadingStats) {
-    return <Loading />;
-  }
+  if (loading) return <Loading />;
 
-  if (statsError) {
+  if (error) {
     return (
       <div className={styles.dashboardError}>
-        <Typography variant="h3">Unable to Load Dashboard</Typography>
-        <p>{statsError}</p>
-        <Button onClick={() => window.location.reload()}>Retry Loading</Button>
+        <Typography variant="h3">Error Loading Dashboard</Typography>
+        <p>{error}</p>
+        <Button onClick={() => window.location.reload()}>Retry</Button>
       </div>
     );
   }
 
   return (
     <div className={styles.dashboardContent}>
-      {/* StatsPanel expects QuizSessionHistory[] and now userApiStats */}
       <StatsPanel
-        profile={{
-          ...profile,
-          quiz_history: profile.quiz_history || [],
-        }}
-        sessions={sessionHistories || []}
+        profile={{ ...profile, quiz_history: profile.quiz_history || [] }}
+        sessions={sessionHistories}
         userApiStats={userApiStats}
       />
+
       <div className={styles.contentRow}>
         <div className={styles.historyContainer}>
           <div className={styles.historyHeader}>
             <Typography variant="h3">Quiz History</Typography>
           </div>
-          {/* CategoryList expects QuizSessionHistory[] */}
-          {sessionHistories.length === 0 ? (
+          {sessions.length === 0 ? (
             <div className={styles.emptyState}>
               <Typography variant="body1">No quiz history available yet.</Typography>
             </div>
@@ -213,18 +175,28 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
               sessions={sessionHistories}
               expandedCategories={expandedCategories}
               onCategoryToggle={handleCategoryToggle}
-              onQuizCardClick={handleQuizCardClick}
+              onQuizCardClick={(session) => openDetail(session.id)}
             />
           )}
         </div>
-        {/* RecentActivity expects QuizSessionHistory[] (based on current recentActivity derivation) */}
-        <RecentActivity activities={recentActivity} onActivityClick={handleActivityClick} />
+
+        <RecentActivity
+          activities={recentActivity}
+          onActivityClick={(sessionId) => openDetail(sessionId)}
+        />
       </div>
 
-      <Modal open={showModal && !!selectedDetailedSession} onClose={handleCloseModal}>
-        {selectedDetailedSession && (
-          <ActivityDetailContent quizHistory={sessions} sessionId={selectedDetailedSession.id} />
-        )}
+      <Modal open={showModal} onClose={closeDetail}>
+        {loadingSelectedDetailedSession ? (
+          <Loading />
+        ) : errorSelectedDetailedSession ? (
+          <div className={styles.dashboardError}>
+            <Typography variant="h3">Error</Typography>
+            <p>{errorSelectedDetailedSession}</p>
+          </div>
+        ) : selectedDetailedSession ? (
+          <ActivityDetailContent sessionDetail={selectedDetailedSession} />
+        ) : null}
       </Modal>
     </div>
   );

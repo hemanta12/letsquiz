@@ -12,6 +12,7 @@ urlpatterns = [
     # Authentication URLs
     path('auth/signup/', auth_views.signup_view, name='signup'),
     path('auth/login/', auth_views.login_view, name='user_login'),
+    path('auth/logout/', auth_views.logout_view, name='user_logout'),
     
     # Guest session URLs
     path('guest/session/', create_guest_session, name='create_guest_session'),
@@ -36,6 +37,7 @@ urlpatterns = [
     path('sessions/<int:sessionId>/', quiz_views.get_quiz_session_view, name='get_quiz_session'),
     path('sessions/<int:sessionId>/answer/', quiz_views.submit_answer_view, name='submit_answer'),
     path('sessions/<int:sessionId>/results/', quiz_views.get_quiz_session_results_view, name='get_quiz_session_results'),
+    path('quiz-sessions/', quiz_views.save_quiz_session_view, name='save_quiz_session'), # New endpoint for saving quiz sessions
     # User profile and stats URLs
     path('users/<int:userId>/sessions/', user_stats_views.get_user_sessions_view, name='get_user_sessions'),
     path('users/<int:userId>/stats/', user_stats_views.get_user_stats_view, name='get_user_stats'),

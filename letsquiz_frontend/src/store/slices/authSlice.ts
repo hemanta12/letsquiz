@@ -92,26 +92,34 @@ if (tokenExpiresAt && Date.now() > tokenExpiresAt) {
   localStorage.removeItem('isAuthenticated');
 }
 
-const initialState: AuthState = {
-  user: user || (guestUser && !isTokenExpired(guestUser.expiresAt) ? guestUser : null),
-  isAuthenticated: isAuthenticated && !!authToken && !isTokenExpired(tokenExpiresAt),
-  userId: getUserId(),
-  isGuest: !!guestUser && !isTokenExpired(guestUser.expiresAt),
-  loading: false,
-  error: null,
-  accessToken: authToken,
-  tokenExpiresAt: tokenExpiresAt,
-  featureGates: {
-    canAccessPremiumContent: false,
-    maxQuestionsPerQuiz: 10,
-    canSaveProgress: false,
-  },
-  guestProgress: guestProgress || {
-    quizzes: 0,
-    totalScore: 0,
-    lastQuizDate: null,
-  },
-};
+const initialState: AuthState = (() => {
+  const sessionData = AuthService.getSessionData();
+  const isAuthenticated = !!sessionData?.token && !isTokenExpired(sessionData?.expiresAt);
+  const user = securelyRetrieveData('user');
+  const guestUser = securelyRetrieveData('guestUser');
+  const guestProgress = securelyRetrieveData('guestProgress');
+
+  return {
+    user: user || (guestUser && !isTokenExpired(guestUser.expiresAt) ? guestUser : null),
+    isAuthenticated: isAuthenticated,
+    userId: isAuthenticated ? user?.id || null : null,
+    isGuest: !!guestUser && !isTokenExpired(guestUser.expiresAt) && !isAuthenticated,
+    loading: false,
+    error: null,
+    accessToken: sessionData?.token || null,
+    tokenExpiresAt: sessionData?.expiresAt || null,
+    featureGates: {
+      canAccessPremiumContent: false,
+      maxQuestionsPerQuiz: 10,
+      canSaveProgress: false,
+    },
+    guestProgress: guestProgress || {
+      quizzes: 0,
+      totalScore: 0,
+      lastQuizDate: null,
+    },
+  };
+})();
 
 function isTokenExpired(expiresAt: string | number | null): boolean {
   if (!expiresAt) return true;
@@ -227,6 +235,7 @@ const authSlice = createSlice({
       } else {
         state.user = null;
         state.isAuthenticated = false;
+        state.isGuest = false;
         state.error = null;
         state.loading = false;
         state.accessToken = null;
@@ -235,6 +244,11 @@ const authSlice = createSlice({
         localStorage.removeItem('isAuthenticated');
         localStorage.removeItem('authToken');
         localStorage.removeItem('tokenExpiresAt');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('refreshTokenData');
+        localStorage.removeItem('sessionData');
+        localStorage.removeItem('guestUser');
+        localStorage.removeItem('guestProgress');
       }
     },
     updateGuestProgress: (state, action: PayloadAction<{ score: number }>) => {
@@ -290,6 +304,7 @@ const authSlice = createSlice({
         state.error = action.payload as { message: string; code: string; status: number };
       })
       .addCase(loginUser.fulfilled, (state, action: PayloadAction<LoginResponse>) => {
+        state.isGuest = false;
         const { user, access } = action.payload;
 
         // Ensure we have a valid user ID before proceeding

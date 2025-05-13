@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { QuizSettings } from '../../types/quiz.types';
 import QuizService from '../../services/quizService';
+import { QuizSession } from '../../types/dashboard.types';
 import { FetchQuestionsRequest, Question, FetchQuestionsResponse } from '../../types/api.types';
 import { setGroupSession, setGroupMode, setCurrentPlayer } from './groupQuizSlice';
 
@@ -40,6 +41,9 @@ interface QuizState {
   guestQuizLimit: number;
   guestQuizCount: number;
   migration: MigrationState;
+  sessions: QuizSession[];
+  historyLoading: boolean;
+  historyError: string | null;
 }
 
 const savedGuestProgress = localStorage.getItem('guestQuizProgress');
@@ -72,7 +76,44 @@ const initialState: QuizState = {
     error: null,
     backup: null,
   },
+  sessions: [],
+  historyLoading: false,
+  historyError: null,
 };
+
+// 1 New thunk: load past quiz sessions for the current user
+export const fetchQuizHistoryThunk = createAsyncThunk<
+  QuizSession[],
+  void,
+  { state: { quiz: QuizState; auth: any }; rejectValue: string }
+>('quiz/fetchHistory', async (_, { getState, rejectWithValue }) => {
+  const userId = getState().auth.userId;
+  if (!userId) return rejectWithValue('Not authenticated');
+  try {
+    return await QuizService.fetchUserSessions(userId);
+  } catch (err: any) {
+    return rejectWithValue(err.message || 'Failed to load history');
+  }
+});
+
+// Async thunk for saving quiz session
+export const saveQuizSessionThunk = createAsyncThunk<
+  any,
+  {
+    questions: { id: number; selected_answer: string }[];
+    score: number;
+    category_id: number | null | undefined;
+    difficulty: string;
+  },
+  { rejectValue: string }
+>('quiz/saveQuizSession', async (quizSessionData, { rejectWithValue }) => {
+  try {
+    const response = await QuizService.saveQuizSession(quizSessionData);
+    return response;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to save quiz session');
+  }
+});
 
 // Async thunk for fetching quiz questions
 export const fetchQuizQuestions = createAsyncThunk<
@@ -93,9 +134,7 @@ export const fetchQuizQuestions = createAsyncThunk<
   } catch (error: any) {
     console.error('fetchQuizQuestions thunk - error:', error);
 
-    // Provide more detailed error messages
     if (error.response) {
-      // Server responded with an error
       return rejectWithValue(
         error.response.data?.detail ||
           error.response.data?.message ||
@@ -299,6 +338,31 @@ export const quizSlice = createSlice({
       .addCase(startGroupQuiz.fulfilled, (state, action) => {
         state.questions = action.payload.questions;
         state.currentQuestionIndex = 0;
+      })
+      .addCase(saveQuizSessionThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(saveQuizSessionThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        // optionally capture the returned QuizSession ID if you need it:
+        // state.lastSavedSessionId = action.payload.id;
+      })
+      .addCase(saveQuizSessionThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || 'Failed to save session';
+      })
+      .addCase(fetchQuizHistoryThunk.pending, (state) => {
+        state.historyLoading = true;
+        state.historyError = null;
+      })
+      .addCase(fetchQuizHistoryThunk.fulfilled, (state, action) => {
+        state.historyLoading = false;
+        state.sessions = action.payload;
+      })
+      .addCase(fetchQuizHistoryThunk.rejected, (state, action) => {
+        state.historyLoading = false;
+        state.historyError = action.payload as string;
       });
   },
 });
