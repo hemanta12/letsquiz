@@ -13,7 +13,8 @@ from django.contrib.auth import get_user_model
 
 from .models import (
     QuizSession,
-    DifficultyLevel
+    DifficultyLevel,
+    GroupPlayer
 )
 from .serializers import UserStatsSerializer
 
@@ -35,24 +36,40 @@ class UserProfileView(APIView):
                 }, status=status.HTTP_403_FORBIDDEN)
 
             user = request.user
-            quiz_sessions = QuizSession.objects.filter(user=user)
-            total_score = quiz_sessions.aggregate(Sum('score'))['score__sum'] or 0
-            total_quizzes = quiz_sessions.count()
 
-            # Get category stats
+            # Get solo sessions owned by the user
+            solo_sessions = QuizSession.objects.filter(user=user, is_group_session=False)
+
+            # Get GroupPlayer instances for the user (assuming name matches user.email)
+            user_group_players = GroupPlayer.objects.filter(name=user.email)
+
+            # Get QuizSession objects associated with these group players
+            group_sessions_as_player = QuizSession.objects.filter(group_players__in=user_group_players).distinct()
+
+            # Calculate total quizzes
+            total_quizzes = solo_sessions.count() + group_sessions_as_player.count()
+
+            # Calculate total score
+            solo_score_sum = solo_sessions.aggregate(Sum('score'))['score__sum'] or 0
+            group_score_sum = user_group_players.aggregate(Sum('score'))['score__sum'] or 0
+            total_score = solo_score_sum + group_score_sum
+
+            # Get category stats (only from solo sessions for now)
             category_stats = {}
-            for session in quiz_sessions:
+            for session in solo_sessions:
                 questions = session.session_questions.all()
                 for question in questions:
-                    category = question.question.category
-                    if category.name not in category_stats:
-                        category_stats[category.name] = {
-                            'total_questions': 0,
-                            'correct_answers': 0
-                        }
-                    category_stats[category.name]['total_questions'] += 1
-                    if question.is_correct:
-                        category_stats[category.name]['correct_answers'] += 1
+                    # Ensure question and category exist before accessing name
+                    if question.question and question.question.category:
+                        category = question.question.category
+                        if category.name not in category_stats:
+                            category_stats[category.name] = {
+                                'total_questions': 0,
+                                'correct_answers': 0
+                            }
+                        category_stats[category.name]['total_questions'] += 1
+                        if question.is_correct:
+                            category_stats[category.name]['correct_answers'] += 1
 
             profile_data = {
                 'user_id': user.id,
@@ -109,10 +126,11 @@ def get_user_sessions_view(request, userId):
                     'started_at': session.started_at,
                     'completed_at': session.completed_at,
                     'category': first_question.question.category.name if first_question else None,
-                    'difficulty': first_question.question.difficulty.label if first_question else None
+                    'difficulty': first_question.question.difficulty.label if first_question else None,
+                    'is_group_session': session.is_group_session
                 }
                 sessions_data.append(session_data)
-    
+
             return paginator.get_paginated_response(sessions_data)
         except Exception as e:
             logger.error(f"Error retrieving user sessions: {e}", exc_info=True)
@@ -172,7 +190,7 @@ def get_user_stats_view(request, userId):
                     category_stats[category]['correct_answers'] += 1
 
                 # Update difficulty stats
-                difficulty = question.question.difficulty.label 
+                difficulty = question.question.difficulty.label
                 if difficulty not in difficulty_stats:
                     difficulty_stats[difficulty] = {
                         'total_questions': 0,

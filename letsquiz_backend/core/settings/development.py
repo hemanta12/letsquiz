@@ -33,12 +33,12 @@ GUEST_SESSION_TIMEOUT = 60 * 60 * 24 * 30  # 30 days in seconds
 
 RATE_LIMIT = {
     'GUEST': {
-        'rate': 30,
-        'period': 3600
+        'rate': 300,
+        'period': 36000
     },
     'USER': {
-        'rate': 300,
-        'period': 3600
+        'rate': 3000,
+        'period': 36000
     }
 }
 
@@ -54,8 +54,8 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '30/hour',
-        'user': '300/hour'
+        'anon': '60/hour',
+        'user': '600/hour'
     }
 }
 

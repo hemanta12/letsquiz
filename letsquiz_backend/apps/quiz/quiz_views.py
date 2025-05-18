@@ -13,7 +13,8 @@ from .serializers import (
     QuizSessionStartSerializer,
     AnswerSubmissionSerializer,
     CategorySerializer,
-    QuizSessionSaveSerializer, 
+    QuizSessionSaveSerializer,
+    QuizSessionSerializer,
 )
 from .models import (
     Question,
@@ -21,6 +22,7 @@ from .models import (
     DifficultyLevel,
     QuizSession,
     QuizSessionQuestion,
+    GroupPlayer, 
 )
 
 logger = logging.getLogger(__name__)
@@ -32,9 +34,11 @@ def save_quiz_session_view(request):
     try:
         serializer = QuizSessionSaveSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
-            serializer.save()
+            quiz_session_instance = serializer.save()
+            logger.info(f"save_quiz_session_view: Quiz session saved. ID: {quiz_session_instance.id}, is_group_session: {quiz_session_instance.is_group_session}") 
             return Response({'message': 'Quiz session saved successfully.'}, status=status.HTTP_201_CREATED)
         else:
+            logger.error(f"save_quiz_session_view: Serializer errors: {serializer.errors}") 
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     except Exception as e:
@@ -137,11 +141,21 @@ def start_quiz_session_view(request):
         difficulty_id = serializer.validated_data.get('difficulty_id')
         count = serializer.validated_data['count']
         mode = serializer.validated_data['mode']
+        players_data = serializer.validated_data.get('players', []) # Get player names from validated data
 
         # Create quiz session
-        quiz_session = QuizSession.objects.create(
-            user=request.user if request.user.is_authenticated else None
-        )
+        quiz_session = QuizSession(score=0) 
+        if request.user.is_authenticated:
+            quiz_session.user = request.user
+        # Set is_group_session to True if mode is 'group'
+        if mode == 'group':
+            quiz_session.is_group_session = True
+        quiz_session.save()
+        
+        # Create GroupPlayer instances for group mode
+        if mode == 'group' and players_data:
+            group_players = [GroupPlayer(quiz_session=quiz_session, name=name) for name in players_data]
+            GroupPlayer.objects.bulk_create(group_players)
 
         # Select questions
         queryset = Question.objects.filter(is_seeded=True)
@@ -163,11 +177,20 @@ def start_quiz_session_view(request):
         ]
         QuizSessionQuestion.objects.bulk_create(quiz_session_questions)
 
-        return Response({
-            'message': 'Quiz session started successfully.',
-            'session_id': quiz_session.id,
-            'is_guest': not request.user.is_authenticated
-        }, status=status.HTTP_201_CREATED)
+        # Fetch category and difficulty objects to include names/labels in response
+        category_name = Category.objects.get(id=category_id).name if category_id else 'Mixed'
+        difficulty_label = DifficultyLevel.objects.get(id=difficulty_id).label if difficulty_id else 'Unknown'
+
+        # Serialize the created quiz session including group players
+        session_serializer = QuizSessionSerializer(quiz_session)
+
+        # Combine serialized session data with category name and difficulty label
+        response_data = session_serializer.data
+        response_data['category'] = category_name
+        response_data['difficulty'] = difficulty_label
+        response_data['totalQuestions'] = count 
+
+        return Response(response_data, status=status.HTTP_201_CREATED)
 
     except Exception as e:
         logger.error(f"Error starting quiz session: {e}", exc_info=True)
@@ -226,6 +249,8 @@ def get_quiz_session_view(request, sessionId, category=None, difficulty=None):
             'questions':   questions,
             'is_completed':quiz_session.is_completed,
             'is_guest':     not request.user.is_authenticated,
+            'is_group_session': quiz_session.is_group_session,
+            'group_players': QuizSessionSerializer(quiz_session).data.get('group_players', []) 
         }
         
 

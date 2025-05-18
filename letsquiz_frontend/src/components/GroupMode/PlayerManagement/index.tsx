@@ -13,8 +13,8 @@ export const PlayerManagement: React.FC<PlayerManagementProps> = ({ onPlayersCon
   const { loading } = useSelector((state: RootState) => state.quiz);
 
   const [players, setPlayers] = useState<Player[]>([
-    { id: '1', name: '', score: 0, isCurrentTurn: false },
-    { id: '2', name: '', score: 0, isCurrentTurn: false },
+    { id: '1', name: '', score: 0, isCurrentTurn: false, errors: [] },
+    { id: '2', name: '', score: 0, isCurrentTurn: false, errors: [] },
   ]);
   const [error, setError] = useState<string>('');
 
@@ -36,7 +36,7 @@ export const PlayerManagement: React.FC<PlayerManagementProps> = ({ onPlayersCon
     }
     setPlayers([
       ...players,
-      { id: `${players.length + 1}`, name: '', score: 0, isCurrentTurn: false },
+      { id: `${players.length + 1}`, name: '', score: 0, isCurrentTurn: false, errors: [] },
     ]);
     setError('');
   };

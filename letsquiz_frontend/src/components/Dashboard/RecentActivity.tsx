@@ -26,7 +26,7 @@ const RecentActivity: React.FC<RecentActivityProps> = ({ activities, onActivityC
     if (
       date.getFullYear() === today.getFullYear() &&
       date.getMonth() === today.getMonth() &&
-      diffDays > 1 // Exclude today and yesterday
+      diffDays > 1
     ) {
       return 'This Month';
     }
@@ -76,13 +76,19 @@ const RecentActivity: React.FC<RecentActivityProps> = ({ activities, onActivityC
                     key={activity.id}
                     className={styles.activityItem}
                     onClick={() => onActivityClick(activity.id)}
-                    aria-label={`${activity.category} quiz in ${activity.difficulty} difficulty, scored ${activity.score !== null ? activity.score : 'N/A'}/10 on ${formatDate(activity.completed_at as string)}`}
+                    aria-label={`${activity.is_group_session ? 'Group' : 'Solo'} quiz in ${activity.category} - ${activity.difficulty} difficulty, scored ${activity.score !== null ? activity.score : 'N/A'}/10 on ${formatDate(activity.completed_at as string)}`}
                   >
                     <div className={styles.activityContent}>
                       <Typography variant="body1" className={styles.activityTitle}>
+                        {activity.is_group_session ? 'Group Quiz' : 'Solo Quiz'} -{' '}
                         {activity.category || 'Unknown Category'} -{' '}
                         {activity.difficulty || 'Unknown Difficulty'}
                       </Typography>
+                      {activity.is_group_session && activity.group_players && (
+                        <Typography variant="body2" className={styles.groupPlayers}>
+                          Players: {activity.group_players.map((p) => p.name).join(', ')}
+                        </Typography>
+                      )}
                       <Typography variant="body2" className={styles.activityTime}>
                         {formatDate(activity.completed_at as string)}
                       </Typography>

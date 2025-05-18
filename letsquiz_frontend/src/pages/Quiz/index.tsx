@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button, Typography, Loading, Modal } from '../../components/common';
 import { ErrorBoundary } from '../../components/common/ErrorBoundary';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
@@ -13,6 +13,7 @@ import {
 } from '../../store/slices/quizSlice';
 import { updatePlayerScore } from '../../store/slices/groupQuizSlice';
 import { Question } from '../../types/api.types';
+import { GroupPlayer } from '../../types/quiz.types';
 import { GroupQuestionView } from '../../components/GroupMode/GroupQuestionView';
 import styles from './Quiz.module.css';
 import QuizService from '../../services/quizService';
@@ -21,6 +22,7 @@ export const Quiz: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const {
+    settings,
     currentQuestionIndex,
     questions,
     selectedAnswers,
@@ -32,6 +34,7 @@ export const Quiz: React.FC = () => {
     error: quizError,
   } = useAppSelector((state) => state.quiz);
 
+  const { groupSession } = useAppSelector((state) => state.groupQuiz);
   const isGuest = useAppSelector((state) => state.auth.isGuest);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -42,35 +45,16 @@ export const Quiz: React.FC = () => {
   const [showQuitModal, setShowQuitModal] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
 
-  const preloadNextQuestion = useCallback(async () => {
-    if (currentQuestionIndex < questions.length) {
-      try {
-        const nextQuestionData = await QuizService.fetchQuestions({
-          limit: 1,
-          category: categoryId,
-          difficulty: difficulty,
-        });
-        if (nextQuestionData && nextQuestionData.questions.length > 0) {
-          setPreloadedQuestion(nextQuestionData.questions[0]);
-        }
-      } catch (error) {
-        setError('Error preloading next question');
-        console.error('Error:', error);
-      }
-    }
-  }, [currentQuestionIndex, questions.length, categoryId, difficulty]);
-
   useEffect(() => {
     if (questions.length === 0 && !quizLoading && !quizError) {
-      dispatch(fetchQuizQuestions({ category: categoryId, difficulty, limit: 4 }));
+      dispatch(fetchQuizQuestions({ category: categoryId, difficulty }));
     }
   }, [dispatch, categoryId, difficulty, questions.length, quizLoading, quizError]);
 
-  useEffect(() => {
-    preloadNextQuestion();
-  }, [preloadNextQuestion]);
-
-  const progress = questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
+  const progress =
+    settings.numberOfQuestions > 0
+      ? ((currentQuestionIndex + 1) / settings.numberOfQuestions) * 100
+      : 0;
   const currentQuestionData = questions[currentQuestionIndex];
   const hasSelectedAnswer = selectedAnswers[currentQuestionIndex] !== undefined;
 
@@ -92,10 +76,8 @@ export const Quiz: React.FC = () => {
 
         console.log('[Quiz] Answer processed:', {
           correct,
-          progress: `${currentQuestionIndex + 1}/${questions.length}`,
+          progress: `${currentQuestionIndex + 1}/${settings.numberOfQuestions}`,
         });
-
-        await preloadNextQuestion();
       } catch (err) {
         setError('Error selecting answer');
       } finally {
@@ -115,7 +97,7 @@ export const Quiz: React.FC = () => {
       setIsLoading(true);
       console.log('[Quiz] Moving to next question:', {
         currentQuestionIndex,
-        totalQuestions: questions.length,
+        totalQuestions: settings.numberOfQuestions,
         mode,
         isGuest,
       });
@@ -127,15 +109,13 @@ export const Quiz: React.FC = () => {
       setShowFeedback(false);
       setSelectedPlayer(null);
 
-      // Check if the current question is the last one (index 9 for 10 questions)
-      if (currentQuestionIndex === 9) {
+      if (currentQuestionIndex === settings.numberOfQuestions - 1) {
         console.log('[Quiz] Completing quiz:', {
-          totalQuestions: questions.length,
+          totalQuestions: settings.numberOfQuestions,
           answeredQuestions: Object.keys(selectedAnswers).length,
         });
         await dispatch(updateScore());
 
-        // Save quiz session for logged-in users
         if (!isGuest) {
           const quizSessionData = {
             questions: Object.entries(selectedAnswers).map(([index, selected_answer]) => ({
@@ -149,6 +129,20 @@ export const Quiz: React.FC = () => {
             category_id: categoryId,
             difficulty: difficulty,
           };
+
+          if (mode === 'Group' && groupSession?.players) {
+            Object.assign(quizSessionData, {
+              is_group_session: true,
+              players: groupSession.players.map((player: GroupPlayer) => ({
+                name: player.name,
+                score: player.score,
+                errors: player.errors,
+              })),
+            });
+          }
+
+          console.log('[Quiz] Saving quiz session with payload:', quizSessionData);
+
           const resultAction = await dispatch(saveQuizSessionThunk(quizSessionData));
           if (saveQuizSessionThunk.rejected.match(resultAction)) {
             console.error('Error saving quiz session:', resultAction.payload);
@@ -157,9 +151,7 @@ export const Quiz: React.FC = () => {
 
         navigate('/results');
       } else {
-        // Move to the next question
         dispatch(nextQuestionAction());
-        await preloadNextQuestion();
       }
     } catch (err) {
       setError('Error moving to next question');
@@ -181,7 +173,6 @@ export const Quiz: React.FC = () => {
     );
   }
 
-  // Handle case where no questions are available after loading
   if (!quizLoading && questions.length === 0) {
     return (
       <div className={styles.quiz}>
@@ -192,7 +183,6 @@ export const Quiz: React.FC = () => {
     );
   }
 
-  // Display error if either local error or quiz slice error exists
   if (error || quizError) {
     return (
       <div className={styles.quiz}>
@@ -210,7 +200,7 @@ export const Quiz: React.FC = () => {
           {mode} - {difficulty} - {category}
         </Typography>
         <Typography variant="body1">
-          Question {currentQuestionIndex + 1}/{questions.length}
+          Question {currentQuestionIndex + 1}/{settings.numberOfQuestions}
         </Typography>
       </div>
 
@@ -222,7 +212,7 @@ export const Quiz: React.FC = () => {
         <>
           <GroupQuestionView
             questionNumber={currentQuestionIndex + 1}
-            totalQuestions={questions.length}
+            totalQuestions={settings.numberOfQuestions}
             question={currentQuestionData.question_text}
             options={currentQuestionData.answer_options}
             correctAnswer={currentQuestionData.correct_answer}
@@ -241,14 +231,16 @@ export const Quiz: React.FC = () => {
               Quit
             </Button>
             <Button variant="primary" disabled={!hasSelectedAnswer} onClick={handleNext}>
-              {currentQuestionIndex === 9 ? 'Finish Quiz' : 'Next Question'}
+              {currentQuestionIndex === settings.numberOfQuestions - 1
+                ? 'Finish Quiz'
+                : 'Next Question'}
             </Button>
           </div>
         </>
       ) : (
         <>
           <div className={styles.question}>
-            <Typography variant="h2">{currentQuestionData?.question_text}</Typography>{' '}
+            <Typography variant="h2">{currentQuestionData?.question_text}</Typography>
           </div>
 
           {showFeedback && (
@@ -318,7 +310,9 @@ export const Quiz: React.FC = () => {
               disabled={!hasSelectedAnswer || isLoading || quizLoading}
               onClick={handleNext}
             >
-              {currentQuestionIndex === 9 ? 'Finish Quiz' : 'Next Question'}
+              {currentQuestionIndex === settings.numberOfQuestions - 1
+                ? 'Finish Quiz'
+                : 'Next Question'}
             </Button>
           </div>
         </>

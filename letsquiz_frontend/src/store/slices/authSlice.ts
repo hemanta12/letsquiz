@@ -304,16 +304,19 @@ const authSlice = createSlice({
         state.error = action.payload as { message: string; code: string; status: number };
       })
       .addCase(loginUser.fulfilled, (state, action: PayloadAction<LoginResponse>) => {
+        console.log('[Auth] loginUser.fulfilled - Payload:', action.payload);
         state.isGuest = false;
         const { user, access } = action.payload;
 
         // Ensure we have a valid user ID before proceeding
         if (!user || typeof user.id !== 'number') {
           console.error('[Auth] Invalid user ID in login response:', user);
+          state.isAuthenticated = false;
+          state.userId = null;
           return;
         }
 
-        console.log('[Auth] User logged in successfully', {
+        console.log('[Auth] User logged in successfully. Updating state:', {
           userId: user.id,
           isPremium: user.is_premium,
         });
@@ -326,6 +329,12 @@ const authSlice = createSlice({
         state.error = null;
         state.accessToken = access;
         state.tokenExpiresAt = Date.now() + 30 * 60 * 1000; // 30 minutes
+
+        console.log('[Auth] State after login success:', {
+          isAuthenticated: state.isAuthenticated,
+          userId: state.userId,
+          user: state.user,
+        });
 
         // Store data securely
         console.log('[Auth] Storing user data:', {

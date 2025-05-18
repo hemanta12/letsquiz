@@ -31,9 +31,13 @@ const initialState: UserState = {
 export const fetchUserProfile = createAsyncThunk<UserProfile, string, { rejectValue: string }>(
   'user/fetchUserProfile',
   async (userId, { rejectWithValue }) => {
+    console.log('[userSlice] Attempting to fetch user profile for userId:', userId);
     try {
-      return await UserService.fetchUserProfile(userId);
+      const profile = await UserService.fetchUserProfile(userId);
+      console.log('[userSlice] Successfully fetched user profile:', profile);
+      return profile;
     } catch (err: any) {
+      console.error('[userSlice] Failed to fetch user profile:', err);
       return rejectWithValue(err.response?.data?.detail || err.message);
     }
   }
@@ -63,14 +67,24 @@ export const fetchSingleDetailedQuizSession = createAsyncThunk<
   try {
     const raw = await UserService.fetchQuizSessionDetails(sessionId);
     const detail: SessionDetail = {
-      session_id: raw.session_id,
+      session_id: raw.id, // Use raw.id for session_id
       category: raw.category ?? 'General',
       difficulty: raw.difficulty ?? 'Medium',
       score: raw.score,
       started_at: raw.started_at,
+      is_group_session: raw.is_group_session ?? false,
+      group_players:
+        raw.group_players?.map((player) => ({
+          id: player.id,
+          name: player.name,
+          score: player.score,
+          errors: player.errors ?? [], // Ensure errors is an array
+        })) ?? [],
+
       questions: raw.questions.map((q) => ({
+        // Use raw.questions from the backend response
         question: q.text,
-        userAnswer: q.selected_answer,
+        userAnswer: q.selected_answer ?? '',
         correctAnswer: q.correct_answer,
       })) as QuestionDetail[],
     };

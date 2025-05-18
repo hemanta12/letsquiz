@@ -3,6 +3,9 @@
   margin: 0 auto;
   padding: var(--space-xl) 0;
   text-align: center;
+  background-color: rgba(255, 255, 255, 0.8); 
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+  border-radius: 10px; 
 }
 
 .score {
@@ -39,9 +42,9 @@
 
 .actions {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: var(--space-md);
-  max-width: 300px;
   margin: var(--space-xl) auto 0;
 }
 

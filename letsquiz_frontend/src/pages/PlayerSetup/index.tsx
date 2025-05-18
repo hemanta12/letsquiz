@@ -4,7 +4,7 @@ import { Button, Typography } from '../../components/common';
 import PlayerManagement from '../../components/GroupMode/PlayerManagement';
 import { Player } from '../../types/group.types';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
-import { setQuizSettings } from '../../store/slices/quizSlice';
+import { setQuizSettings, startGroupQuiz } from '../../store/slices/quizSlice';
 import { setGroupSession } from '../../store/slices/groupQuizSlice';
 import QuizService from '../../services/quizService';
 import styles from './PlayerSetup.module.css';
@@ -12,7 +12,7 @@ import styles from './PlayerSetup.module.css';
 export const PlayerSetup: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { mode, category, difficulty, isMixedMode } = useAppSelector(
+  const { mode, category, categoryId, difficulty, isMixedMode, numberOfQuestions } = useAppSelector(
     (state) => state.quiz.settings
   );
 
@@ -26,31 +26,28 @@ export const PlayerSetup: React.FC = () => {
     async (players: Player[]) => {
       setSessionError(null);
       try {
-        dispatch(
-          setQuizSettings({
-            mode,
-            category,
-            difficulty,
-            isMixedMode,
+        const resultAction = await dispatch(
+          startGroupQuiz({
+            players: players.map((player) => player.name),
+            categoryId: categoryId,
+            difficulty: difficulty,
+            numberOfQuestions: numberOfQuestions,
           })
         );
 
-        const groupSession = await QuizService.createGroupSession(
-          players.map((player) => player.name),
-          category,
-          difficulty
-        );
-
-        dispatch(setGroupSession(groupSession));
-
-        navigate('/quiz');
+        if (startGroupQuiz.fulfilled.match(resultAction)) {
+          navigate('/quiz');
+        } else {
+          const errorMessage = resultAction.payload as string;
+          setSessionError(errorMessage || 'Failed to start group quiz. Please try again.');
+          console.error('Error starting group session:', errorMessage);
+        }
       } catch (error: any) {
-        console.error('Error creating group session:', error);
-
+        console.error('Unexpected error starting group session:', error);
         setSessionError(error.message || 'Failed to start group quiz. Please try again.');
       }
     },
-    [dispatch, mode, category, difficulty, isMixedMode, navigate]
+    [dispatch, categoryId, difficulty, navigate]
   );
 
   return (

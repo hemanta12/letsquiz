@@ -4,6 +4,7 @@ export interface Player {
   score: number;
   uiScore?: number;
   isCurrentTurn: boolean;
+  errors: string[]; // Add errors field
 }
 
 export interface GroupGameState {

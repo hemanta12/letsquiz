@@ -75,6 +75,7 @@ class QuizSession(models.Model):
     started_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     score = models.IntegerField(default=0)
+    is_group_session = models.BooleanField(default=False) 
 
     def __str__(self):
         return f"Session {self.id} for {self.user.username if self.user else 'Guest'}"
@@ -83,6 +84,16 @@ class QuizSession(models.Model):
     def is_completed(self):
         """Check if all questions in the session have been answered."""
         return self.session_questions.filter(answered_at__isnull=True).count() == 0
+
+# Define the GroupPlayer model for group sessions
+class GroupPlayer(models.Model):
+    quiz_session = models.ForeignKey(QuizSession, on_delete=models.CASCADE, related_name='group_players')
+    name = models.CharField(max_length=100)
+    score = models.IntegerField(default=0)
+    errors = models.JSONField(default=list, blank=True, null=True) 
+
+    def __str__(self):
+        return f"{self.name} in Session {self.quiz_session.id}"
 
 # Define the QuizSessionQuestion model (Intermediate model for M2M relationship with extra data)
 class QuizSessionQuestion(models.Model):

@@ -1,5 +1,9 @@
 import apiClient from './apiClient';
-import { UserProfile, FetchLeaderboardResponse } from '../types/api.types';
+import {
+  UserProfile,
+  FetchLeaderboardResponse,
+  BackendQuizSessionResponse,
+} from '../types/api.types';
 import { QuizSession } from '../types/dashboard.types';
 import AuthService from './authService';
 
@@ -207,11 +211,17 @@ class UserService {
 
   async fetchUserProfile(userId: string): Promise<UserProfile> {
     try {
-      console.log('[User Service] Fetching profile for user:', userId);
+      console.log('[User Service] Attempting to fetch profile for user:', userId);
       const response = await apiClient.get<UserProfile>(`/users/${userId}/`);
+      console.log('[User Service] Successfully fetched profile:', response.data);
       return response.data;
     } catch (error: any) {
       console.error('[User Service] Failed to fetch profile:', error);
+      console.error('[User Service] Error details:', {
+        response: error.response,
+        message: error.message,
+        stack: error.stack,
+      });
       throw error;
     }
   }
@@ -242,6 +252,8 @@ class UserService {
           score: Number(data.score) || 0,
           started_at: data.startTime || data.timestamp,
           completed_at: data.timestamp,
+          is_group_session: false, // Add is_group_session for guest sessions
+          group_players: [], // Add empty group_players array for guest sessions
           details: Object.entries(data.answers || {}).map(([question, answer]: [string, any]) => ({
             question,
             userAnswer: answer.selected,
@@ -271,6 +283,8 @@ class UserService {
         score: Number(session.score) || 0,
         started_at: session.started_at || new Date().toISOString(),
         completed_at: session.completed_at || null,
+        is_group_session: session.is_group_session ?? false,
+        group_players: session.group_players ?? [],
         details: Array.isArray(session.details)
           ? session.details.map((d: any) => ({
               question: d.question_text ?? d.userAnswer ?? '',
@@ -290,32 +304,8 @@ class UserService {
     }
   }
 
-  async fetchQuizSessionDetails(sessionId: number): Promise<{
-    session_id: number;
-    category: string;
-    difficulty: string;
-    score: number;
-    started_at: string;
-    questions: Array<{
-      id: number;
-      text: string;
-      selected_answer: string;
-      correct_answer: string;
-    }>;
-  }> {
-    const resp = await apiClient.get<{
-      session_id: number;
-      category: string;
-      difficulty: string;
-      score: number;
-      started_at: string;
-      questions: Array<{
-        id: number;
-        text: string;
-        selected_answer: string;
-        correct_answer: string;
-      }>;
-    }>(`/sessions/${sessionId}/`);
+  async fetchQuizSessionDetails(sessionId: number): Promise<BackendQuizSessionResponse> {
+    const resp = await apiClient.get<BackendQuizSessionResponse>(`/sessions/${sessionId}/`);
     return resp.data;
   }
 }

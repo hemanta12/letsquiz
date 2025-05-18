@@ -15,7 +15,8 @@ from letsquiz_backend.apps.quiz.models import (
     Category,
     DifficultyLevel,
     QuizSession,
-    QuizSessionQuestion
+    QuizSessionQuestion,
+    GroupPlayer 
 )
 
 User = get_user_model()
@@ -100,7 +101,7 @@ class SetNewPasswordSerializer(serializers.Serializer):
         except ValidationError as e:
             raise serializers.ValidationError({'new_password': list(e.messages)})
 
-        data['user'] = user # Add the user object to validated data
+        data['user'] = user 
         return data
 
 class AccountVerificationSerializer(serializers.Serializer):
@@ -114,14 +115,14 @@ class AccountVerificationSerializer(serializers.Serializer):
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             raise ValidationError('Invalid token or user ID.')
 
-        token_generator = PasswordResetTokenGenerator() # Can reuse the same token generator
+        token_generator = PasswordResetTokenGenerator() 
         if not token_generator.check_token(user, data['token']):
             raise ValidationError('Invalid token or user ID.')
 
         if user.is_active:
              raise ValidationError('Account is already active.')
 
-        data['user'] = user # Add the user object to validated data
+        data['user'] = user 
         return data
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -147,37 +148,59 @@ class QuizSessionStartSerializer(serializers.Serializer):
     difficulty_id = serializers.IntegerField(required=False, allow_null=True)
     count = serializers.IntegerField(min_value=1)
     mode = serializers.ChoiceField(choices=['solo', 'group'])
+    players = serializers.ListField(child=serializers.CharField(max_length=100), required=False) 
 
-    def validate_category_id(self, value):
-        if value is not None:
+    def validate(self, data):
+        # Validate category_id if provided
+        category_id = data.get('category_id')
+        if category_id is not None:
             try:
-                Category.objects.get(id=value)
+                Category.objects.get(id=category_id)
             except Category.DoesNotExist:
-                raise ValidationError("Invalid category ID.")
-            return value
+                raise ValidationError({"category_id": ["Invalid category ID."]})
 
-    def validate_difficulty_id(self, value):
-        if value is not None:
+        # Validate difficulty_id if provided
+        difficulty_id = data.get('difficulty_id')
+        if difficulty_id is not None:
             try:
-                DifficultyLevel.objects.get(id=value)
+                DifficultyLevel.objects.get(id=difficulty_id)
             except DifficultyLevel.DoesNotExist:
-                raise ValidationError("Invalid difficulty ID.")
-            return value
+                raise ValidationError({"difficulty_id": ["Invalid difficulty ID."]})
+
+        # Validate players for group mode
+        mode = data.get('mode')
+        players = data.get('players')
+        if mode == 'group' and not players:
+             raise ValidationError({"players": ["Player names are required for group mode."]})
+        if mode == 'group' and players:
+            if len(players) < 2:
+                 raise ValidationError({"players": ["At least two players are required for group mode."]})
+            if len(set(name.strip().lower() for name in players)) != len(players):
+                 raise ValidationError({"players": ["All player names must be unique."]})
+
+        return data
+
+# Serializer for the new GroupPlayer model
+class GroupPlayerSerializer(serializers.ModelSerializer):
+   class Meta:
+       model = GroupPlayer
+       fields = ('id', 'name', 'score', 'errors') 
 
 class QuizSessionQuestionSerializer(serializers.ModelSerializer):
-    question = QuestionSerializer(read_only=True)
+   question = QuestionSerializer(read_only=True)
 
-    class Meta:
-        model = QuizSessionQuestion
-        fields = ('id', 'question', 'selected_answer', 'is_correct', 'answered_at')
+   class Meta:
+       model = QuizSessionQuestion
+       fields = ('id', 'question', 'selected_answer', 'is_correct', 'answered_at')
 
 class QuizSessionSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    session_questions = QuizSessionQuestionSerializer(many=True, read_only=True)
+   user = UserSerializer(read_only=True)
+   session_questions = QuizSessionQuestionSerializer(many=True, read_only=True)
+   group_players = GroupPlayerSerializer(many=True, read_only=True) 
 
-    class Meta:
-        model = QuizSession
-        fields = ('id', 'user', 'started_at', 'completed_at', 'score', 'session_questions')
+   class Meta:
+       model = QuizSession
+       fields = ('id', 'user', 'started_at', 'completed_at', 'score', 'is_group_session', 'session_questions', 'group_players') 
 
 class QuizSessionQuestionSaveSerializer(serializers.Serializer):
     id = serializers.IntegerField()
@@ -188,18 +211,40 @@ class QuizSessionSaveSerializer(serializers.Serializer):
     score = serializers.IntegerField()
     category_id = serializers.IntegerField(required=False, allow_null=True)
     difficulty = serializers.CharField(max_length=50)
+    is_group_session = serializers.BooleanField(default=False) 
+    players = serializers.ListField(child=serializers.DictField(), required=False) 
 
     def create(self, validated_data):
         user = self.context['request'].user
         questions_data = validated_data.pop('questions')
         score = validated_data.pop('score')
+        is_group_session = validated_data.pop('is_group_session', False) 
+        players_data = validated_data.pop('players', []) 
+        # Infer is_group_session from presence of players data
+        is_group_session = is_group_session or bool(players_data)
 
         # Create QuizSession
         quiz_session = QuizSession.objects.create(
             user=user,
             score=score,
-            completed_at=timezone.now()
+            completed_at=timezone.now(),
+            is_group_session=is_group_session
         )
+        logger.info(f"QuizSessionSaveSerializer: QuizSession created with is_group_session: {quiz_session.is_group_session}") 
+
+        # Create GroupPlayer instances for group mode
+        if is_group_session and players_data:
+            group_players = [
+                GroupPlayer(
+                    quiz_session=quiz_session,
+                    name=player['name'],
+                    score=player.get('score', 0), 
+                    errors=player.get('errors', []) 
+                ) for player in players_data
+            ]
+            GroupPlayer.objects.bulk_create(group_players)
+            logger.info(f"QuizSessionSaveSerializer: Created {len(group_players)} GroupPlayer instances.") 
+
 
         # Create QuizSessionQuestion instances
         for question_data in questions_data:
@@ -207,14 +252,14 @@ class QuizSessionSaveSerializer(serializers.Serializer):
                 question = Question.objects.get(id=question_data['id'])
                 is_correct = question.correct_answer == question_data['selected_answer']
                 QuizSessionQuestion.objects.create(
-                    session=quiz_session,
+                    quiz_session=quiz_session, 
                     question=question,
                     selected_answer=question_data['selected_answer'],
                     is_correct=is_correct,
-                    answered_at=timezone.now() 
+                    answered_at=timezone.now()
                 )
             except Question.DoesNotExist:
-                
+                logger.warning(f"QuizSessionSaveSerializer: Question with ID {question_data['id']} not found. Skipping.") 
                 pass
 
         return quiz_session

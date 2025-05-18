@@ -35,6 +35,8 @@ const toQuizSessionHistory = (session: QuizSession): QuizSessionHistory => ({
   score: session.score,
   category: session.category,
   difficulty: session.difficulty,
+  is_group_session: session.is_group_session,
+  group_players: session.group_players,
 });
 
 const selectAuth = (state: any) => ({
@@ -70,6 +72,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
       try {
         // history from your userService
         const raw = await userService.fetchUserQuizHistory(userId.toString());
+        console.log('Raw quiz history data:', raw);
         const wellTyped: QuizSession[] = raw.map((s) => ({
           id: s.id,
           details: s.details ?? [],
@@ -78,6 +81,8 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
           score: s.score ?? 0,
           started_at: s.started_at,
           completed_at: s.completed_at,
+          is_group_session: s.is_group_session ?? false,
+          group_players: s.group_players ?? [],
         }));
         setSessions(wellTyped);
 

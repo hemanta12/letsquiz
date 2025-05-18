@@ -5,6 +5,7 @@ export interface QuizSettings {
   category: string;
   categoryId?: number | null;
   difficulty: string;
+  numberOfQuestions: number; // Add numberOfQuestions field
   isMixedMode?: boolean;
   groupState?: GroupGameState;
 }
@@ -18,6 +19,7 @@ export interface GroupPlayer {
   name: string;
   score: number;
   uiScore?: number;
+  errors: string[]; // Add errors field
 }
 
 export interface GroupQuizSession {

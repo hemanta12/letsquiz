@@ -5,6 +5,8 @@ import {
   SubmitAnswerRequest,
   SubmitAnswerResponse,
   Question,
+  BackendQuizSessionResponse,
+  Category,
 } from '../types/api.types';
 import { GroupQuizSession } from '../types/quiz.types';
 import AuthService from './authService';
@@ -31,11 +33,6 @@ interface LocalQuizProgress {
 interface CacheEntry {
   data: Question[];
   timestamp: number;
-}
-
-interface Category {
-  id: number;
-  name: string;
 }
 
 const questionCache: Record<string, CacheEntry> = {};
@@ -93,8 +90,9 @@ class QuizService {
 
     const cacheKey = `${params?.category !== undefined && params.category !== null ? params.category : 'all'}-${params?.difficulty || 'all'}`;
 
+    console.log('[QuizService] fetchQuestions received params:', params);
+
     try {
-      // Check if data is in cache and not expired
       const cached = questionCache[cacheKey];
       if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
         return { questions: cached.data };
@@ -103,12 +101,11 @@ class QuizService {
       const response = await apiClient.get<Question[]>('/questions/', {
         params: {
           ...params,
-          _limit: params?.limit || 10,
+          _limit: params?.count || 10,
         },
       });
       const fetchedQuestions = response.data;
 
-      // Store data in cache with timestamp
       questionCache[cacheKey] = {
         data: fetchedQuestions,
         timestamp: Date.now(),
@@ -126,7 +123,27 @@ class QuizService {
   }
 
   async fetchCategories(): Promise<Category[]> {
+    const cacheKey = 'categoriesCache';
+    const cachedData = localStorage.getItem(cacheKey);
+
+    if (cachedData) {
+      try {
+        const { data, timestamp } = JSON.parse(cachedData);
+        if (Date.now() - timestamp < CACHE_DURATION) {
+          console.log('[QuizService] Returning categories from cache');
+          return data;
+        } else {
+          console.log('[QuizService] Categories cache expired');
+          localStorage.removeItem(cacheKey);
+        }
+      } catch (e) {
+        console.error('[QuizService] Error parsing cached categories:', e);
+        localStorage.removeItem(cacheKey);
+      }
+    }
+
     try {
+      console.log('[QuizService] Fetching categories from API');
       const response = await apiClient.get<Category[]>('/categories/');
 
       if (!Array.isArray(response.data)) {
@@ -134,10 +151,18 @@ class QuizService {
         throw new Error('Invalid category data format received');
       }
 
-      return response.data.map((category) => ({
+      const fetchedCategories = response.data.map((category) => ({
         id: Number(category.id),
         name: String(category.name),
       }));
+
+      localStorage.setItem(
+        cacheKey,
+        JSON.stringify({ data: fetchedCategories, timestamp: Date.now() })
+      );
+      console.log('[QuizService] Stored categories in cache');
+
+      return fetchedCategories;
     } catch (error: any) {
       if (error.response?.status === 401) {
         throw new Error('Authentication required. Please log in again.');
@@ -231,12 +256,20 @@ class QuizService {
 
   async createGroupSession(
     players: string[],
-    category: string,
-    difficulty: string
-  ): Promise<GroupQuizSession> {
+    categoryId: number | null | undefined,
+    difficultyId: number,
+    numberOfQuestions: number
+  ): Promise<BackendQuizSessionResponse> {
     try {
-      if (!players.length || !category || !difficulty) {
-        throw new Error('Invalid group session data');
+      if (
+        !players.length ||
+        difficultyId === undefined ||
+        difficultyId === null ||
+        numberOfQuestions <= 0
+      ) {
+        throw new Error(
+          'Invalid group session data: players, difficulty, or number of questions missing/invalid'
+        );
       }
 
       if (players.length < MIN_GROUP_SIZE) {
@@ -252,25 +285,18 @@ class QuizService {
         throw new Error('All players must have unique names');
       }
 
-      const session = {
-        players: players.map((name, index) => ({
-          id: index + 1,
-          name: name.trim(),
-          score: 0,
-          lastActive: new Date().toISOString(),
-        })),
-        currentQuestion: 0,
-        totalQuestions: 5,
-        category,
-        difficulty,
-        status: 'active',
-        currentPlayer: 1,
-        createdAt: new Date().toISOString(),
-        lastActive: new Date().toISOString(),
-        timeoutAt: new Date(Date.now() + GROUP_SESSION_TIMEOUT).toISOString(),
+      const sessionPayload = {
+        category_id: categoryId,
+        difficulty_id: difficultyId,
+        count: numberOfQuestions,
+        mode: 'group',
+        players: players,
       };
 
-      const response = await apiClient.post<GroupQuizSession>('/groupQuizSessions', session);
+      const response = await apiClient.post<BackendQuizSessionResponse>(
+        '/sessions/',
+        sessionPayload
+      );
       return response.data;
     } catch (error: any) {
       if (error.response?.status === 401) {
@@ -305,7 +331,7 @@ class QuizService {
       };
 
       const response = await apiClient.patch<GroupQuizSession>(
-        `/groupQuizSessions/${sessionId}`,
+        `/sessions/${sessionId}/`,
         updatedData
       );
       return response.data;
@@ -325,7 +351,7 @@ class QuizService {
         throw new Error('Invalid session ID');
       }
 
-      const response = await apiClient.get<GroupQuizSession>(`/groupQuizSessions/${sessionId}`);
+      const response = await apiClient.get<GroupQuizSession>(`/sessions/${sessionId}/`);
       const session = response.data;
 
       const timeoutAt = new Date(session.timeoutAt);
@@ -350,6 +376,8 @@ class QuizService {
     score: number;
     category_id: number | null | undefined;
     difficulty: string;
+    is_group_session?: boolean;
+    players?: { name: string; score: number }[];
   }): Promise<any> {
     try {
       const response = await apiClient.post('/quiz-sessions/', quizSessionData);
@@ -365,7 +393,6 @@ class QuizService {
   }
 
   async fetchUserSessions(userId: number): Promise<QuizSession[]> {
-    // Tell TypeScript we expect a paginated shape
     const resp = await apiClient.get<{ results: QuizSession[] }>(`/users/${userId}/sessions/`);
     return resp.data.results;
   }

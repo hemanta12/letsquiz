@@ -25,8 +25,13 @@ const Dashboard: React.FC = () => {
     if (isAuthenticated && !profile && !loadingProfile) {
       const userId = auth.userId;
       if (!userId) {
+        console.warn('[Dashboard useEffect] userId is null, cannot fetch profile.');
         return;
       }
+      console.log(
+        '[Dashboard useEffect] Conditions met, dispatching fetchUserProfile for userId:',
+        userId
+      );
       dispatch(fetchUserProfile(userId.toString()));
     }
   }, [dispatch, isAuthenticated, profile, loadingProfile, auth]);

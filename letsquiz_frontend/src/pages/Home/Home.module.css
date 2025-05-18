@@ -13,7 +13,7 @@
 }
 
 .guestBanner {
-  background-color: var(--color-gray-100);
+  background-color: rgb(185, 185, 231);
   border-radius: 8px;
   padding: var(--space-md);
   margin: 0 auto var(--space-lg);
@@ -33,13 +33,6 @@
   gap: var(--space-md);
   justify-content: center;
   margin-top: var(--space-sm);
-}
-
-.featureHint {
-  font-size: var(--font-size-small);
-  color: var(--color-text-secondary);
-  display: block;
-  margin-top: var(--space-xs);
 }
 
 .section {
@@ -205,6 +198,47 @@
   box-shadow: 0 2px 8px rgba(108, 92, 231, 0.4);
 }
 
+.minimalQuestionCount {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md); /* Adjust spacing as needed */
+  justify-content: center;
+}
+
+.questionCountOptionsMinimal {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+}
+
+.questionCountButtonMinimal {
+  padding: var(--space-sm) var(--space-md);
+  min-width: 50px; /* Adjust size for minimal look */
+  text-align: center;
+  font-size: var(--font-size-small); /* Smaller font size */
+}
+
+.questionCountInputMinimal {
+  width: 8rem; /* Adjust width for minimal look */
+  padding: var(--space-sm) var(--space-md);
+  text-align: center;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  transition: border-color 0.2s ease-in-out;
+  font-size: var(--font-size-small); /* Smaller font size */
+}
+
+.questionCountInputMinimal:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.questionCountInputMinimal.selected {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.2rem rgba(108, 92, 231, 0.25); /* Example focus ring */
+}
+
 .startQuiz {
   display: flex;
   justify-content: flex-end;
@@ -289,6 +323,7 @@
   .mixUpButton {
     margin-top: var(--space-sm);
   }
+
   .difficultySelector {
     flex-direction: column;
     width: 100%;
@@ -303,6 +338,7 @@
     padding: var(--space-xs) var(--space-sm);
     font-size: var(--font-size-small);
   }
+
   .startQuiz button {
     width: 100%;
     font-size: var(--font-size-body);

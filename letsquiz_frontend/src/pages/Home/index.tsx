@@ -1,9 +1,14 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card, Typography, Icon, Modal } from '../../components/common';
+import { Button, Card, Typography, Icon, Input } from '../../components/common';
 import { PlayerManagement } from '../../components/GroupMode/PlayerManagement/index';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
-import { setQuizSettings, fetchQuizQuestions, startGroupQuiz } from '../../store/slices/quizSlice';
+import {
+  setQuizSettings,
+  fetchQuizQuestions,
+  startGroupQuiz,
+  fetchCategoriesThunk,
+} from '../../store/slices/quizSlice';
 import QuizService from '../../services/quizService';
 import AuthService from '../../services/authService';
 import styles from './Home.module.css';
@@ -18,41 +23,30 @@ export const Home: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { categories, loadingCategories, categoryError } = useAppSelector((state) => state.quiz);
+
   const [selectedMode, setSelectedMode] = useState<'Solo' | 'Group'>('Solo');
   const [selectedCategory, setSelectedCategory] = useState<{ id: number; name: string } | null>(
     null
-  ); // Store selected category with ID
+  );
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
+  const [numberOfQuestions, setNumberOfQuestions] = useState(10);
+  const [selectedQuestionCount, setSelectedQuestionCount] = useState<number | 'custom'>(10);
   const [isMixUpMode, setIsMixUpMode] = useState(false);
   const [showPlayerSetup, setShowPlayerSetup] = useState(false);
   const [selectionError, setSelectionError] = useState('');
   const [noDataError, setNoDataError] = useState(false);
-  const [availableCategories, setAvailableCategories] = useState<{ id: number; name: string }[]>(
-    []
-  ); // Store fetched categories
-  const [loadingCategories, setLoadingCategories] = useState(true);
-  const [categoryError, setCategoryError] = useState<string | null>(null);
 
   useEffect(() => {
-    const getCategories = async () => {
-      try {
-        const fetchedCategories = await QuizService.fetchCategories();
-        setAvailableCategories(fetchedCategories);
-      } catch (error: any) {
-        setCategoryError('Failed to load categories. Please try again.');
-        console.error('Error fetching categories:', error);
-      } finally {
-        setLoadingCategories(false);
-      }
-    };
-
-    getCategories();
-  }, []); // Fetch categories on component mount
+    if (categories.length === 0 && !loadingCategories && !categoryError) {
+      dispatch(fetchCategoriesThunk());
+    }
+  }, [categories.length, loadingCategories, categoryError, dispatch]);
 
   const handleMixUp = useCallback(() => {
     setSelectedCategory(null);
-    setIsMixUpMode(!isMixUpMode);
-  }, [isMixUpMode]);
+    setIsMixUpMode((prev) => !prev);
+  }, []);
 
   const handleCategorySelect = (category: { id: number; name: string }) => {
     setSelectedCategory(category);
@@ -69,7 +63,6 @@ export const Home: React.FC = () => {
       return false;
     }
     if (!selectedCategory && !isMixUpMode) {
-      // Allow no category if mix up is selected
       setSelectionError('Please select a category');
       return false;
     }
@@ -77,8 +70,26 @@ export const Home: React.FC = () => {
       setSelectionError('Please select a difficulty level');
       return false;
     }
+    if (
+      selectedQuestionCount === 'custom' &&
+      (numberOfQuestions <= 0 || !Number.isInteger(numberOfQuestions))
+    ) {
+      setSelectionError('Number of questions must be a positive integer');
+      return false;
+    }
     setSelectionError('');
     return true;
+  };
+
+  const handleNumberOfQuestionsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value, 10);
+    setNumberOfQuestions(isNaN(value) ? 0 : value);
+    setSelectedQuestionCount('custom');
+  };
+
+  const handlePredefinedQuestionSelect = (count: number) => {
+    setNumberOfQuestions(count);
+    setSelectedQuestionCount(count);
   };
 
   const handleContinue = async () => {
@@ -86,10 +97,9 @@ export const Home: React.FC = () => {
     setSelectionError('');
     if (!validateSelections()) return;
 
-    // Create guest session if user is not authenticated
     if (!isAuthenticated) {
       try {
-        AuthService.createGuestSession();
+        await AuthService.createGuestSession();
       } catch (error) {
         console.error('Error creating guest session:', error);
         setSelectionError('Failed to create guest session. Please try again.');
@@ -99,57 +109,29 @@ export const Home: React.FC = () => {
 
     const categoryId = isMixUpMode ? null : selectedCategory?.id;
 
-    if (selectedMode === 'Group') {
-      try {
-        const isDataAvailable = await QuizService.checkQuizDataAvailability(
-          categoryId, // Pass category ID
-          selectedDifficulty
+    try {
+      const isDataAvailable = await QuizService.checkQuizDataAvailability(
+        categoryId,
+        selectedDifficulty
+      );
+      if (isDataAvailable) {
+        dispatch(
+          setQuizSettings({
+            mode: selectedMode,
+            category: selectedCategory?.name || 'Mixed',
+            categoryId: categoryId,
+            difficulty: selectedDifficulty,
+            numberOfQuestions: numberOfQuestions,
+            isMixedMode: isMixUpMode,
+          })
         );
-        if (isDataAvailable) {
-          dispatch(
-            setQuizSettings({
-              mode: selectedMode,
-              category: selectedCategory?.name || 'Mixed', // Store category name or 'Mixed'
-              categoryId: categoryId, // Pass category ID
-              difficulty: selectedDifficulty,
-              isMixedMode: isMixUpMode,
-            })
-          );
-          navigate('/player-setup');
-        } else {
-          setNoDataError(true);
-        }
-      } catch (error) {
-        console.error('Error checking quiz data availability:', error);
-        setSelectionError('An error occurred while checking quiz data availability.');
+        navigate(selectedMode === 'Group' ? '/player-setup' : '/quiz');
+      } else {
+        setNoDataError(true);
       }
-    } else {
-      try {
-        const isDataAvailable = await QuizService.checkQuizDataAvailability(
-          categoryId, // Pass category ID
-          selectedDifficulty
-        );
-        if (isDataAvailable) {
-          dispatch(
-            setQuizSettings({
-              mode: selectedMode,
-              category: selectedCategory?.name || 'Mixed', // Store category name or 'Mixed'
-              categoryId: categoryId, // Pass category ID
-              difficulty: selectedDifficulty,
-              isMixedMode: isMixUpMode,
-            })
-          );
-          await dispatch(
-            fetchQuizQuestions({ category: categoryId, difficulty: selectedDifficulty }) // Pass category ID
-          );
-          navigate('/quiz');
-        } else {
-          setNoDataError(true);
-        }
-      } catch (error) {
-        console.error('Error checking or fetching solo quiz data:', error);
-        setSelectionError('An error occurred while setting up the solo quiz.');
-      }
+    } catch (error) {
+      console.error('Error checking quiz data availability:', error);
+      setSelectionError('An error occurred while checking quiz data availability.');
     }
   };
 
@@ -161,17 +143,8 @@ export const Home: React.FC = () => {
       {!isAuthenticated && (
         <div className={styles.guestBanner}>
           <Typography variant="body1">
-            You're playing as a guest. Sign in for free to: • Save your quiz history • Track your
-            progress • Access all quiz modes
+            Sign in for free to <b>Save your quiz history</b> and <b>Track your progress</b>
           </Typography>
-          <div className={styles.guestActions}>
-            <Button variant="primary" onClick={() => navigate('/signup')}>
-              Sign Up
-            </Button>
-            <Button variant="secondary" onClick={() => navigate('/login')}>
-              Sign In
-            </Button>
-          </div>
         </div>
       )}
 
@@ -192,22 +165,41 @@ export const Home: React.FC = () => {
                   onClick={() => handleModeSelect('Solo')}
                 >
                   <Icon name="person" /> Solo Mode
-                  {!isAuthenticated && (
-                    <span className={styles.featureHint}>Limited to 10 questions</span>
-                  )}
                 </Button>
                 <Button
                   variant="primary"
                   className={selectedMode === 'Group' ? styles.selected : ''}
                   onClick={() => handleModeSelect('Group')}
-                  disabled={!isAuthenticated}
                 >
                   <Icon name="group" /> Group Mode
-                  {!isAuthenticated && (
-                    <span className={styles.featureHint}>Sign in to unlock</span>
-                  )}
                 </Button>
               </section>
+              <div className={styles.minimalQuestionCount}>
+                <Typography variant="body1">Questions:</Typography>
+                <div className={styles.questionCountOptionsMinimal}>
+                  {[10, 15, 20].map((count) => (
+                    <Button
+                      key={count}
+                      variant={selectedQuestionCount === count ? 'primary' : 'secondary'}
+                      onClick={() => handlePredefinedQuestionSelect(count)}
+                      className={styles.questionCountButtonMinimal}
+                      aria-pressed={selectedQuestionCount === count}
+                    >
+                      {count}
+                    </Button>
+                  ))}
+                  <Input
+                    type="number"
+                    value={selectedQuestionCount === 'custom' ? numberOfQuestions : ''}
+                    onChange={handleNumberOfQuestionsChange}
+                    min="1"
+                    className={`${styles.questionCountInputMinimal} ${selectedQuestionCount === 'custom' ? styles.selected : ''}`}
+                    aria-label="Custom number of questions"
+                    placeholder="Custom"
+                    onFocus={() => setSelectedQuestionCount('custom')}
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -225,11 +217,11 @@ export const Home: React.FC = () => {
                 <Typography variant="body2" color="error">
                   {categoryError}
                 </Typography>
-              ) : availableCategories.length === 0 ? (
+              ) : categories.length === 0 ? (
                 <Typography variant="body1">No categories available</Typography>
               ) : (
                 <section className={styles.categoryGrid}>
-                  {availableCategories.map((category) => {
+                  {categories.map((category) => {
                     const requiresAuth = category.id > 3;
                     return (
                       <Card
@@ -304,9 +296,10 @@ export const Home: React.FC = () => {
             dispatch(
               setQuizSettings({
                 mode: selectedMode,
-                category: selectedCategory?.name || 'Mixed', // Store category name or 'Mixed'
-                categoryId: selectedCategory?.id, // Pass category ID
+                category: selectedCategory?.name || 'Mixed',
+                categoryId: selectedCategory?.id,
                 difficulty: selectedDifficulty,
+                numberOfQuestions: numberOfQuestions,
                 isMixedMode: isMixUpMode,
                 groupState: {
                   players,
@@ -315,12 +308,12 @@ export const Home: React.FC = () => {
                 },
               })
             );
-            // Dispatch startGroupQuiz with categoryId
             dispatch(
               startGroupQuiz({
-                players: players.map((player) => player.name), // Map Player objects to names
-                categoryId: selectedCategory?.id, // Pass category ID
+                players: players.map((player) => player.name),
+                categoryId: selectedCategory?.id,
                 difficulty: selectedDifficulty,
+                numberOfQuestions: numberOfQuestions,
               })
             );
             navigate('/quiz');
