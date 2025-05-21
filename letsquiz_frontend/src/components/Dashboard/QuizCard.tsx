@@ -17,7 +17,9 @@ const QuizCard: React.FC<QuizCardProps> = ({ session, onClick }) => {
 
   // Handle potential null score
   const score = session.score !== null ? session.score : 'N/A';
-  const scorePercentage = session.score !== null ? (session.score / 10) * 100 : 0;
+  const totalQuestions = session.totalQuestions ?? 0;
+  const scorePercentage =
+    session.score !== null && totalQuestions > 0 ? (session.score / totalQuestions) * 100 : 0;
 
   return (
     <div
@@ -44,7 +46,7 @@ const QuizCard: React.FC<QuizCardProps> = ({ session, onClick }) => {
 
       <div className={styles.scoreIndicator}>
         <Typography variant="h3" style={{ color: 'var(--color-primary)' }}>
-          {score}/10
+          {totalQuestions > 0 ? `${score}/${totalQuestions}` : `${score}/N/A`}
         </Typography>
         <div className={styles.scoreBar}>
           <div

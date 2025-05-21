@@ -393,3 +393,40 @@ def get_quiz_session_results_view(request, sessionId):
             'error': 'Error retrieving quiz results.',
             'code': 'server_error'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_quiz_session_view(request, sessionId):
+    """API endpoint for deleting a quiz session."""
+    try:
+        quiz_session = get_object_or_404(QuizSession, id=sessionId)
+
+        # Ensure the user owns the session
+        if quiz_session.user != request.user:
+            return Response({
+                'error': 'Not authorized to delete this session.',
+                'code': 'permission_denied'
+            }, status=status.HTTP_403_FORBIDDEN)
+
+        # Delete associated quiz session questions first
+        QuizSessionQuestion.objects.filter(quiz_session=quiz_session).delete()
+        
+        # Delete group players if it's a group session
+        if quiz_session.is_group_session:
+            GroupPlayer.objects.filter(quiz_session=quiz_session).delete()
+
+        # Delete the quiz session
+        quiz_session.delete()
+
+        logger.info(f"delete_quiz_session_view: Quiz session {sessionId} deleted by user {request.user.id}")
+
+        return Response({
+            'message': 'Quiz session deleted successfully.'
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        logger.error(f"Error deleting quiz session {sessionId}: {e}", exc_info=True)
+        return Response({
+            'error': 'Error deleting quiz session.',
+            'code': 'server_error'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

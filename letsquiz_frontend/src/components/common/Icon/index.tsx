@@ -9,6 +9,7 @@ export const Icon: React.FC<IconProps> = ({
   size = 'medium',
   color = 'inherit',
   className,
+  style,
   ...props
 }) => {
   const IconComponent = icons[name];
@@ -17,7 +18,7 @@ export const Icon: React.FC<IconProps> = ({
   const iconClassName = `${styles.icon} ${styles[size]} ${styles[color]} ${className || ''}`.trim();
 
   return (
-    <span className={iconClassName}>
+    <span className={iconClassName} style={style}>
       <SvgIcon
         component={IconComponent}
         fontSize={size}

@@ -58,24 +58,40 @@ const CategoryList: React.FC<CategoryListProps> = ({
               role="button"
               aria-expanded={expandedCategories.has(categoryName)}
             >
-              <div className={styles.categoryContent}>
+              <div className={styles.headerRow}>
                 <div className={styles.categoryIcon}>
                   <Icon name={iconName} size="large" />
                 </div>
-                <div>
-                  <Typography variant="h3">{categoryName}</Typography>
-                  <Typography variant="body2">
-                    {category.totalQuizzes} quizzes | Avg:
-                    {category.totalQuizzes > 0
-                      ? Math.round(
-                          ((category.totalScore !== null ? category.totalScore : 0) /
-                            (category.totalQuizzes * 10)) *
-                            100
-                        )
-                      : 0}
-                    %
-                  </Typography>
-                </div>
+                <Typography variant="h3">{categoryName}</Typography>
+              </div>
+              <div className={styles.statsRow}>
+                <Typography variant="body2">
+                  {category.totalQuizzes} quizzes | Avg:
+                  {(() => {
+                    const sessionsInCategory = sessions.filter(
+                      (session) =>
+                        session.category === categoryName && session.completed_at !== null
+                    );
+                    const totalQuestionsForCategory = sessionsInCategory.reduce(
+                      (sum, session) => sum + (session.totalQuestions ?? 0),
+                      0
+                    );
+                    const totalScoreForCategory = sessionsInCategory.reduce(
+                      (sum, session) => sum + (session.score ?? 0),
+                      0
+                    );
+
+                    if (totalQuestionsForCategory > 0) {
+                      return (
+                        Math.round((totalScoreForCategory / totalQuestionsForCategory) * 100) + '%'
+                      );
+                    } else if (totalScoreForCategory > 0) {
+                      return 'N/A (data incomplete)';
+                    } else {
+                      return '0%';
+                    }
+                  })()}
+                </Typography>
               </div>
               <div
                 className={`${styles.expandIcon} ${
@@ -83,7 +99,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
                 }`}
                 aria-hidden="true"
               >
-                ▼
+                <Icon name="expandMore" />
               </div>
             </div>
 

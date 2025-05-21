@@ -11,6 +11,18 @@
   align-items: start;
 }
 
+.historyContainer {
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--space-lg);
+  margin-top: 1rem;
+}
+
+.historyHeader {
+  margin-bottom: var(--space-md);
+  padding: var(--space-sm);
+}
+
 @media (max-width: 1024px) {
   .contentRow {
     grid-template-columns: 1fr;

@@ -13,6 +13,7 @@ import AuthService from './authService';
 import { AES, enc } from 'crypto-js';
 import { QuizSession } from '../types/dashboard.types';
 
+/* Constants for caching and session management */
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'default-key';
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 const GROUP_SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
@@ -35,12 +36,15 @@ interface CacheEntry {
   timestamp: number;
 }
 
+/* In-memory cache for optimizing API calls */
 const questionCache: Record<string, CacheEntry> = {};
+const categoriesCache: { data: Category[]; timestamp: number } | null = null;
 
 const GUEST_QUIZ_PROGRESS = 'guestQuizProgress';
 const GUEST_QUIZ_COUNT = 'guestQuizCount';
 
 class QuizService {
+  /* Guest session management methods */
   private getGuestQuizCount(): number {
     const encrypted = localStorage.getItem(GUEST_QUIZ_COUNT);
     if (!encrypted) return 0;
@@ -59,6 +63,7 @@ class QuizService {
     localStorage.setItem(GUEST_QUIZ_COUNT, encrypted);
   }
 
+  /* Encrypted local storage operations for guest progress */
   private getGuestProgress(): Record<string, LocalQuizProgress> {
     const encrypted = localStorage.getItem(GUEST_QUIZ_PROGRESS);
     if (!encrypted) return {};
@@ -78,6 +83,7 @@ class QuizService {
     localStorage.setItem(GUEST_QUIZ_PROGRESS, encrypted);
   }
 
+  /* Question fetching with caching and guest limits */
   async fetchQuestions(params?: FetchQuestionsRequest): Promise<FetchQuestionsResponse> {
     if (AuthService.isGuestSession()) {
       const guestCount = this.getGuestQuizCount();
@@ -89,8 +95,6 @@ class QuizService {
     }
 
     const cacheKey = `${params?.category !== undefined && params.category !== null ? params.category : 'all'}-${params?.difficulty || 'all'}`;
-
-    console.log('[QuizService] fetchQuestions received params:', params);
 
     try {
       const cached = questionCache[cacheKey];
@@ -113,41 +117,22 @@ class QuizService {
 
       return { questions: fetchedQuestions };
     } catch (error: any) {
-      if (error.response?.status === 401) {
-        throw new Error('Authentication required. Please log in again.');
-      }
       throw new Error(
         `Failed to fetch questions: ${error.response?.data?.detail || error.message || 'An error occurred'}`
       );
     }
   }
 
+  /* Category fetching with in-memory caching */
   async fetchCategories(): Promise<Category[]> {
-    const cacheKey = 'categoriesCache';
-    const cachedData = localStorage.getItem(cacheKey);
-
-    if (cachedData) {
-      try {
-        const { data, timestamp } = JSON.parse(cachedData);
-        if (Date.now() - timestamp < CACHE_DURATION) {
-          console.log('[QuizService] Returning categories from cache');
-          return data;
-        } else {
-          console.log('[QuizService] Categories cache expired');
-          localStorage.removeItem(cacheKey);
-        }
-      } catch (e) {
-        console.error('[QuizService] Error parsing cached categories:', e);
-        localStorage.removeItem(cacheKey);
-      }
+    if (categoriesCache && Date.now() - categoriesCache.timestamp < CACHE_DURATION) {
+      return categoriesCache.data;
     }
 
     try {
-      console.log('[QuizService] Fetching categories from API');
       const response = await apiClient.get<Category[]>('/categories/');
 
       if (!Array.isArray(response.data)) {
-        console.error('[Quiz Service] Invalid response format - expected array:', response.data);
         throw new Error('Invalid category data format received');
       }
 
@@ -156,17 +141,13 @@ class QuizService {
         name: String(category.name),
       }));
 
-      localStorage.setItem(
-        cacheKey,
-        JSON.stringify({ data: fetchedCategories, timestamp: Date.now() })
-      );
-      console.log('[QuizService] Stored categories in cache');
+      Object.assign(categoriesCache || {}, {
+        data: fetchedCategories,
+        timestamp: Date.now(),
+      });
 
       return fetchedCategories;
     } catch (error: any) {
-      if (error.response?.status === 401) {
-        throw new Error('Authentication required. Please log in again.');
-      }
       throw new Error(
         `Failed to fetch categories: ${error.response?.data?.detail || error.message || 'An error occurred'}`
       );
@@ -187,8 +168,7 @@ class QuizService {
         },
       });
       return Array.isArray(response.data) && response.data.length > 0;
-    } catch (error: any) {
-      console.error('[Quiz Service] Error checking availability:', error);
+    } catch {
       return false;
     }
   }
@@ -234,9 +214,6 @@ class QuizService {
       const response = await apiClient.post<SubmitAnswerResponse>('/score/', data);
       return response.data;
     } catch (error: any) {
-      if (error.response?.status === 401) {
-        throw new Error('Authentication required. Please log in again.');
-      }
       throw new Error(
         `Failed to submit answer: ${error.response?.data?.detail || error.message || 'An error occurred'}`
       );
@@ -254,6 +231,7 @@ class QuizService {
     }
   }
 
+  /* Group session management with validation */
   async createGroupSession(
     players: string[],
     categoryId: number | null | undefined,
@@ -299,15 +277,13 @@ class QuizService {
       );
       return response.data;
     } catch (error: any) {
-      if (error.response?.status === 401) {
-        throw new Error('Authentication required. Please log in again.');
-      }
       throw new Error(
         `Failed to create group session: ${error.response?.data?.detail || error.message || 'An error occurred'}`
       );
     }
   }
 
+  /* Session update with timeout management */
   async updateGroupSession(
     sessionId: number,
     data: Partial<GroupQuizSession>
@@ -336,15 +312,13 @@ class QuizService {
       );
       return response.data;
     } catch (error: any) {
-      if (error.response?.status === 401) {
-        throw new Error('Authentication required. Please log in again.');
-      }
       throw new Error(
         `Failed to update group session: ${error.response?.data?.detail || error.message || 'An error occurred'}`
       );
     }
   }
 
+  /* Session retrieval with timeout check */
   async getGroupSession(sessionId: number): Promise<GroupQuizSession> {
     try {
       if (!sessionId || typeof sessionId !== 'number') {
@@ -362,15 +336,13 @@ class QuizService {
 
       return session;
     } catch (error: any) {
-      if (error.response?.status === 401) {
-        throw new Error('Authentication required. Please log in again.');
-      }
       throw new Error(
         `Failed to get group session: ${error.response?.data?.detail || error.message || 'An error occurred'}`
       );
     }
   }
 
+  /* Quiz session operations */
   async saveQuizSession(quizSessionData: {
     questions: { id: number; selected_answer: string }[];
     score: number;
@@ -383,19 +355,49 @@ class QuizService {
       const response = await apiClient.post('/quiz-sessions/', quizSessionData);
       return response.data;
     } catch (error: any) {
-      if (error.response?.status === 401) {
-        throw new Error('Authentication required. Please log in again.');
-      }
       throw new Error(
         `Failed to save quiz session: ${error.response?.data?.detail || error.message || 'An error occurred'}`
       );
     }
   }
 
+  async fetchQuizSessionDetails(sessionId: number): Promise<BackendQuizSessionResponse> {
+    const resp = await apiClient.get<BackendQuizSessionResponse>(`/sessions/${sessionId}/`);
+    return resp.data;
+  }
+
+  /* Convenience method for question count */
+  async fetchQuestionCount(sessionId: number): Promise<number> {
+    const detail = await this.fetchQuizSessionDetails(sessionId);
+    return detail.questions.length;
+  }
+
   async fetchUserSessions(userId: number): Promise<QuizSession[]> {
     const resp = await apiClient.get<{ results: QuizSession[] }>(`/users/${userId}/sessions/`);
     return resp.data.results;
   }
+
+  /* Error handling with specific error messages */
+  deleteQuizSession = async (sessionId: number): Promise<void> => {
+    try {
+      if (!sessionId || typeof sessionId !== 'number') {
+        throw new Error('Invalid session ID');
+      }
+
+      await apiClient.delete(`/quiz-sessions/${sessionId}/`);
+    } catch (error: any) {
+      const errorMap: Record<number, string> = {
+        401: 'Authentication required. Please log in again.',
+        403: 'You are not authorized to delete this quiz session.',
+        404: 'Quiz session not found or already deleted.',
+      };
+
+      throw new Error(
+        errorMap[error.response?.status] ||
+          `Failed to delete quiz session: ${error.response?.data?.detail || error.message || 'An unexpected error occurred'}`
+      );
+    }
+  };
 }
 
 export default new QuizService();

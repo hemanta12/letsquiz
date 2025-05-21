@@ -5,19 +5,12 @@ import { PlayerManagement } from '../../components/GroupMode/PlayerManagement/in
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
 import {
   setQuizSettings,
-  fetchQuizQuestions,
   startGroupQuiz,
   fetchCategoriesThunk,
 } from '../../store/slices/quizSlice';
 import QuizService from '../../services/quizService';
 import AuthService from '../../services/authService';
 import styles from './Home.module.css';
-
-const difficulties = [
-  { name: 'Easy', color: 'var(--color-easy)' },
-  { name: 'Medium', color: 'var(--color-medium)' },
-  { name: 'Quiz Genius', color: 'var(--color-quiz-genius)' },
-];
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -30,8 +23,9 @@ export const Home: React.FC = () => {
     null
   );
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
-  const [numberOfQuestions, setNumberOfQuestions] = useState(10);
+  const [numberOfQuestions, setNumberOfQuestions] = useState('');
   const [selectedQuestionCount, setSelectedQuestionCount] = useState<number | 'custom'>(10);
+  const [inputConfirmed, setInputConfirmed] = useState(false);
   const [isMixUpMode, setIsMixUpMode] = useState(false);
   const [showPlayerSetup, setShowPlayerSetup] = useState(false);
   const [selectionError, setSelectionError] = useState('');
@@ -72,7 +66,8 @@ export const Home: React.FC = () => {
     }
     if (
       selectedQuestionCount === 'custom' &&
-      (numberOfQuestions <= 0 || !Number.isInteger(numberOfQuestions))
+      numberOfQuestions !== '' &&
+      (parseInt(numberOfQuestions, 10) <= 0 || !Number.isInteger(parseInt(numberOfQuestions, 10)))
     ) {
       setSelectionError('Number of questions must be a positive integer');
       return false;
@@ -82,13 +77,34 @@ export const Home: React.FC = () => {
   };
 
   const handleNumberOfQuestionsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value, 10);
-    setNumberOfQuestions(isNaN(value) ? 0 : value);
+    const value = e.target.value;
+    if (value === '') {
+      setNumberOfQuestions('');
+      setSelectedQuestionCount('custom');
+      setInputConfirmed(false);
+      return;
+    }
+    const numValue = Number(value);
+    if (!Number.isInteger(numValue) || numValue < 1) {
+      // Ignore invalid input, do not update state
+      return;
+    }
+    setNumberOfQuestions(value);
     setSelectedQuestionCount('custom');
+    setInputConfirmed(false);
+  };
+
+  const handleInputBlur = () => {
+    const numValue = parseInt(numberOfQuestions, 10);
+    if (Number.isInteger(numValue) && numValue > 0) {
+      setInputConfirmed(true);
+    } else {
+      setInputConfirmed(false);
+    }
   };
 
   const handlePredefinedQuestionSelect = (count: number) => {
-    setNumberOfQuestions(count);
+    setNumberOfQuestions('');
     setSelectedQuestionCount(count);
   };
 
@@ -121,7 +137,7 @@ export const Home: React.FC = () => {
             category: selectedCategory?.name || 'Mixed',
             categoryId: categoryId,
             difficulty: selectedDifficulty,
-            numberOfQuestions: numberOfQuestions,
+            numberOfQuestions: parseInt(numberOfQuestions, 10) || 10,
             isMixedMode: isMixUpMode,
           })
         );
@@ -188,14 +204,16 @@ export const Home: React.FC = () => {
                       {count}
                     </Button>
                   ))}
-                  <Input
-                    type="number"
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={selectedQuestionCount === 'custom' ? numberOfQuestions : ''}
                     onChange={handleNumberOfQuestionsChange}
-                    min="1"
-                    className={`${styles.questionCountInputMinimal} ${selectedQuestionCount === 'custom' ? styles.selected : ''}`}
+                    onBlur={handleInputBlur}
+                    className={`${styles.questionCountInputMinimal} ${selectedQuestionCount === 'custom' ? styles.selected : ''} ${inputConfirmed ? styles.confirmed : ''}`}
                     aria-label="Custom number of questions"
-                    placeholder="Custom"
+                    placeholder="eg. 7"
                     onFocus={() => setSelectedQuestionCount('custom')}
                   />
                 </div>
@@ -262,12 +280,11 @@ export const Home: React.FC = () => {
             </div>
             <div className={styles.sectionContent}>
               <section className={styles.difficultySelector}>
-                {difficulties.map(({ name, color }) => (
+                {['Easy', 'Medium', 'Quiz Genius'].map((name) => (
                   <Button
                     key={name}
-                    variant="primary"
-                    className={selectedDifficulty === name ? styles.selected : ''}
-                    style={{ backgroundColor: color }}
+                    // variant="primary"
+                    className={`${selectedDifficulty === name ? styles.selected : ''} ${styles[name.replace(' ', '').toLowerCase()]}`}
                     onClick={() => setSelectedDifficulty(name)}
                   >
                     {name}
@@ -299,7 +316,7 @@ export const Home: React.FC = () => {
                 category: selectedCategory?.name || 'Mixed',
                 categoryId: selectedCategory?.id,
                 difficulty: selectedDifficulty,
-                numberOfQuestions: numberOfQuestions,
+                numberOfQuestions: parseInt(numberOfQuestions, 10) || 10,
                 isMixedMode: isMixUpMode,
                 groupState: {
                   players,
@@ -313,7 +330,7 @@ export const Home: React.FC = () => {
                 players: players.map((player) => player.name),
                 categoryId: selectedCategory?.id,
                 difficulty: selectedDifficulty,
-                numberOfQuestions: numberOfQuestions,
+                numberOfQuestions: parseInt(numberOfQuestions, 10) || 0,
               })
             );
             navigate('/quiz');

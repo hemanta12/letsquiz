@@ -41,4 +41,5 @@ urlpatterns = [
     # User profile and stats URLs
     path('users/<int:userId>/sessions/', user_stats_views.get_user_sessions_view, name='get_user_sessions'),
     path('users/<int:userId>/stats/', user_stats_views.get_user_stats_view, name='get_user_stats'),
+    path('quiz-sessions/<int:sessionId>/', quiz_views.delete_quiz_session_view, name='delete_quiz_session'),
 ]

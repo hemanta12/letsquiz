@@ -1,16 +1,19 @@
 import { QuizSession } from '../types/dashboard.types';
 
+/* Base types */
 export interface Category {
   id: number;
   name: string;
 }
 
+/* Guest mode types */
 export interface GuestProgress {
   quizzes: number;
   totalScore: number;
   lastQuizDate: string | null;
 }
 
+/* Authentication types */
 export interface LoginRequest {
   email: string;
   password: string;
@@ -26,6 +29,7 @@ export interface LoginResponse {
   };
 }
 
+/* User statistics types */
 export interface UserStatsResponse {
   overall_stats: {
     total_quizzes: number;
@@ -48,32 +52,7 @@ export interface UserStatsResponse {
   >;
 }
 
-export interface SignupRequest {
-  email: string;
-  password: string;
-  username: string;
-}
-
-export interface SignupResponse {
-  message: string;
-}
-
-export interface PasswordResetRequest {
-  email: string;
-}
-
-export interface PasswordResetResponse {
-  message: string;
-}
-
-export interface SetNewPasswordResponse {
-  message: string;
-}
-
-export interface ErrorResponse {
-  detail: string;
-}
-
+/* Quiz types */
 export interface Question {
   id: number;
   category: string;
@@ -84,7 +63,6 @@ export interface Question {
   is_seeded: boolean;
   is_fallback: boolean;
   created_by: number | null;
-
   answer_options: string[];
 }
 
@@ -92,13 +70,14 @@ export interface FetchQuestionsRequest {
   category?: number | null;
   difficulty?: string;
   limit?: number;
-  count?: number; // Add count property
+  count?: number;
 }
 
 export interface FetchQuestionsResponse {
   questions: Question[];
 }
 
+/* Quiz session types */
 export interface SubmitAnswerRequest {
   quiz_session_id: number;
   question_id: number;
@@ -124,8 +103,10 @@ export interface QuizSessionHistory {
     name: string;
     score: number;
   }[];
+  totalQuestions?: number;
 }
 
+/* User profile and leaderboard types */
 export interface UserProfile {
   id: number;
   email: string;
@@ -157,11 +138,10 @@ export type CategoryStats = {
   };
 };
 
-// Interface for the data returned by the backend's QuizSessionSerializer and start_quiz_session_view
+/* Backend response types */
 export interface BackendQuizSessionResponse {
   id: number;
   user: {
-    // Assuming UserSerializer returns this structure
     id: number;
     email: string;
     is_premium: boolean;
@@ -169,15 +149,13 @@ export interface BackendQuizSessionResponse {
   started_at: string;
   completed_at: string | null;
   score: number;
-  is_group_session: boolean; // Add is_group_session field
+  is_group_session: boolean;
   session_questions: {
-    // Assuming QuizSessionQuestionSerializer returns this structure
     id: number;
     question: {
-      // Assuming nested QuestionSerializer returns this structure
       id: number;
-      category: { id: number; name: string }; // Assuming CategorySerializer
-      difficulty: { id: number; label: string }; // Assuming DifficultyLevelSerializer
+      category: { id: number; name: string };
+      difficulty: { id: number; label: string };
       question_text: string;
       correct_answer: string;
       answer_options: string[];
@@ -188,10 +166,8 @@ export interface BackendQuizSessionResponse {
     };
     selected_answer: string | null;
     is_correct: boolean;
-
     answered_at: string | null;
   }[];
-  // Add the 'questions' property to match the get_quiz_session_view response
   questions: {
     id: number;
     text: string;
@@ -204,13 +180,11 @@ export interface BackendQuizSessionResponse {
     answered_at: string | null;
   }[];
   group_players: {
-    // Assuming GroupPlayerSerializer returns this structure
     id: number;
     name: string;
     score: number;
-    errors: string[]; // Add errors field
+    errors: string[];
   }[];
-  // Additional fields added in the start_quiz_session_view
   category: string;
   difficulty: string;
   totalQuestions: number;

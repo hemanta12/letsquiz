@@ -185,24 +185,47 @@
   border: 5px solid transparent;
 }
 
-.difficultySelector button:hover {
-  background-color: var(--color-primary);
-  border: 5px solid var(--color-primary);
-  color: white;
-  transform: translateY(-2px);
+.easy {
+  border-color: var(--color-easy) !important;
+  background-color: transparent;
+  color: black;
 }
 
-.difficultySelector .selected {
-  border: 5px solid var(--color-primary);
+.medium {
+  border-color: var(--color-medium) !important;
+  background-color: transparent;
+  color: black;
+}
+
+.quizgenius {
+  border-color: var(--color-quiz-genius) !important;
+  background-color: transparent;
+  color: black;
+}
+
+.easy:hover,
+.easy.selected {
+  background-color: var(--color-easy) !important;
   color: white;
-  box-shadow: 0 2px 8px rgba(108, 92, 231, 0.4);
+}
+
+.medium:hover,
+.medium.selected {
+  background-color: var(--color-medium) !important;
+  color: white;
+}
+
+.quizgenius:hover,
+.quizgenius.selected {
+  background-color: var(--color-quiz-genius) !important;
+  color: white;
 }
 
 .minimalQuestionCount {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  margin-top: var(--space-md); /* Adjust spacing as needed */
+  margin-top: var(--space-md);
   justify-content: center;
 }
 
@@ -214,29 +237,31 @@
 
 .questionCountButtonMinimal {
   padding: var(--space-sm) var(--space-md);
-  min-width: 50px; /* Adjust size for minimal look */
+  min-width: 50px;
   text-align: center;
-  font-size: var(--font-size-small); /* Smaller font size */
+  font-size: var(--font-size-small);
 }
 
 .questionCountInputMinimal {
-  width: 8rem; /* Adjust width for minimal look */
+  width: 8rem;
   padding: var(--space-sm) var(--space-md);
   text-align: center;
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-primary);
   border-radius: 4px;
-  transition: border-color 0.2s ease-in-out;
-  font-size: var(--font-size-small); /* Smaller font size */
+  transition: all 0.3s ease;
+  font-size: var(--font-size-small);
+}
+
+.questionCountInputMinimal.confirmed {
+  border-color: var(--color-success);
+  background-color: var(--color-success-light);
+  box-shadow: 0 4px 6px rgba(0, 122, 51, 0.2);
 }
 
 .questionCountInputMinimal:focus {
   outline: none;
   border-color: var(--color-primary);
-}
-
-.questionCountInputMinimal.selected {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 0.2rem rgba(108, 92, 231, 0.25); /* Example focus ring */
+  box-shadow: 0 0 8px var(--color-primary);
 }
 
 .startQuiz {
@@ -323,7 +348,6 @@
   .mixUpButton {
     margin-top: var(--space-sm);
   }
-
   .difficultySelector {
     flex-direction: column;
     width: 100%;
@@ -338,7 +362,6 @@
     padding: var(--space-xs) var(--space-sm);
     font-size: var(--font-size-small);
   }
-
   .startQuiz button {
     width: 100%;
     font-size: var(--font-size-body);

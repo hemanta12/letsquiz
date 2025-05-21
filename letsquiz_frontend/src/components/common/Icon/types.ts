@@ -7,11 +7,15 @@ export type IconName =
   | 'person'
   | 'group'
   | 'shuffle'
-  | 'menu';
+  | 'menu'
+  | 'edit'
+  | 'delete'
+  | 'expandMore';
 
 export interface IconProps {
   name: IconName;
-  size?: 'small' | 'medium' | 'large'; // Add back size prop
-  color?: 'inherit' | 'primary' | 'secondary'; // Add back color prop
+  size?: 'small' | 'medium' | 'large';
+  color?: 'inherit' | 'primary' | 'secondary';
   className?: string;
+  style?: React.CSSProperties;
 }

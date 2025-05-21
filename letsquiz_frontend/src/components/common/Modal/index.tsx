@@ -3,14 +3,7 @@ import { createPortal } from 'react-dom';
 import styles from './Modal.module.css';
 import { ModalProps } from './types';
 
-export const Modal: React.FC<ModalProps> = ({
-  open,
-  onClose,
-  title,
-  children,
-  className,
-  ...props
-}) => {
+const Modal: React.FC<ModalProps> = ({ open, onClose, title, children, className, ...props }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -21,19 +14,21 @@ export const Modal: React.FC<ModalProps> = ({
     };
 
     if (open) {
-      document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
+      document.addEventListener('keydown', handleEscape);
+    } else {
+      document.body.style.overflow = '';
     }
 
     return () => {
+      document.body.style.overflow = '';
       document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
     };
   }, [open, onClose]);
 
   if (!open) return null;
 
-  const modalContent = (
+  return createPortal(
     <div className={styles.overlay} onClick={onClose}>
       <div
         className={`${styles.modal} ${className || ''}`}
@@ -53,10 +48,9 @@ export const Modal: React.FC<ModalProps> = ({
         )}
         <div className={styles.content}>{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
-
-  return createPortal(modalContent, document.body);
 };
 
 export default Modal;

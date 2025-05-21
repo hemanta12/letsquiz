@@ -1,5 +1,6 @@
+/* Sticky container with max height constraint */
 .recentActivityCard {
-  margin-top: 0;
+  margin-top: var(--space-md);
   position: sticky;
   top: var(--space-lg);
   max-height: calc(100vh - 200px);
@@ -12,6 +13,13 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+.recentActivityHeaderContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Scrollable content area with custom scrollbar */
 .recentActivityContent {
   flex: 1;
   overflow-y: auto;
@@ -20,42 +28,42 @@
   scrollbar-color: var(--color-primary) transparent;
 }
 
-.recentActivityCard {
-  margin-top: var(--space-md);
-}
-
-.title {
-  margin-bottom: var(--space-md);
-}
-
 .activityGroup {
   margin-bottom: var(--space-md);
-  position: relative;
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--space-sm);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: whitesmoke;
 }
 
+/* Sticky date header for each activity group */
 .activityDate {
   position: sticky;
   top: 0;
   z-index: 1;
-  color: var(--color-text-secondary);
-  font-size: 14px;
   padding: var(--space-xs) var(--space-sm);
-  background: white;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--color-primary);
   border-radius: 4px;
   margin-bottom: var(--space-sm);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.groupHeader {
-  color: var(--color-text-secondary);
-  padding: var(--space-xs) var(--space-sm);
-  background: rgba(108, 92, 231, 0.05);
-  border-radius: 4px;
-  margin-bottom: var(--space-sm);
+.activityRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border-bottom: 2px solid var(--color-border);
+  padding: var(--space-sm);
 }
 
 .activityItem {
-  width: 100%;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -65,7 +73,6 @@
   cursor: pointer;
   border-radius: 8px;
   transition: background-color 0.2s ease;
-  text-align: left;
 }
 
 .activityItem:hover,
@@ -73,23 +80,22 @@
   background: rgba(108, 92, 231, 0.05);
 }
 
-.activityItem:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: -2px;
-}
-
 .activityContent {
   flex: 1;
-  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: left;
 }
 
 .activityTitle {
-  margin-bottom: var(--space-xs);
   font-weight: 500;
+  margin-bottom: var(--space-xs);
 }
 
 .activityTime {
   color: var(--color-text-secondary);
+  font-size: 14px;
 }
 
 .scoreInfo {
@@ -104,35 +110,86 @@
   color: var(--color-primary);
 }
 
-.trendIcon {
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.trendUp {
-  color: var(--color-easy);
-}
-
-.trendDown {
-  color: var(--color-quiz-genius);
-}
-
-.trendSame {
+.editModeToggle {
+  background: none;
+  border: none;
+  cursor: pointer;
   color: var(--color-text-secondary);
+  transition: color 0.2s ease;
+  padding: var(--space-sm);
+  border-radius: 50%;
 }
 
+.editModeToggle:hover {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.deleteButton {
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+  border: none;
+  border-radius: 4px;
+  padding: var(--space-xs);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: var(--space-sm);
+}
+
+.deleteButton:hover {
+  background-color: var(--color-error) !important;
+  color: white;
+}
+
+.deleteButton:active {
+  transform: scale(0.95);
+}
+
+.deleteButton:focus {
+  outline: 2px solid var(--color-error);
+  outline-offset: 2px;
+}
+
+/* Inline confirmation dialog for delete action */
+.inlineConfirm {
+  background-color: var(--color-error-light);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-sm);
+  padding: var(--space-sm);
+  justify-content: space-evenly;
+  order: 1;
+}
+
+.inlineConfirm button {
+  min-width: 3rem;
+  padding: var(--space-sm) var(--space-sm);
+}
+
+/* Stack layout for mobile views */
 @media (max-width: 768px) {
   .activityItem {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-xs);
   }
-
   .scoreInfo {
     margin-left: 0;
   }
+  .deleteButton {
+    margin-top: 0;
+    align-self: center;
+  }
 }
 
+/* Disable sticky positioning on tablets */
 @media (max-width: 1024px) {
   .recentActivityCard {
     position: static;

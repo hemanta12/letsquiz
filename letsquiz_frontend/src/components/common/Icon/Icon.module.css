@@ -5,12 +5,6 @@
   line-height: 1;
 }
 
-.icon svg {
-  font-size: inherit;
-  width: 1em;
-  height: 1em;
-}
-
 .small {
   width: var(--icon-size-small);
   height: var(--icon-size-small);

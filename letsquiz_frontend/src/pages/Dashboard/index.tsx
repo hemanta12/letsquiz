@@ -56,34 +56,30 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  if (!loadingProfile && !loadingLeaderboard && !errorProfile && !errorLeaderboard) {
-    if (profile) {
-      // Initialize quiz_history if it's undefined
-      const safeProfile = {
-        ...profile,
-        quiz_history: profile.quiz_history || [],
-      };
+  if (profile) {
+    // Initialize quiz_history if it's undefined
+    const safeProfile = {
+      ...profile,
+      quiz_history: profile.quiz_history || [],
+    };
 
-      return (
-        <div className={styles.dashboard}>
-          <Typography variant="h2">Your Quiz Journey</Typography>
-          <DashboardContent profile={safeProfile} />
-        </div>
-      );
-    } else {
-      return (
-        <div className={styles.dashboard}>
-          <Typography variant="h2">Your Quiz Journey</Typography>
-        </div>
-      );
-    }
+    return (
+      <div className={styles.dashboard}>
+        <Typography variant="h2" className={styles.heading}>
+          Your Quiz Journey
+        </Typography>
+        <DashboardContent profile={safeProfile} />
+      </div>
+    );
+  } else {
+    return (
+      <div className={styles.dashboard}>
+        <Typography variant="h2" className={styles.heading}>
+          Your Quiz Journey
+        </Typography>
+      </div>
+    );
   }
-
-  return (
-    <div className={styles.dashboard}>
-      <Typography variant="h2">Your Quiz Journey</Typography>
-    </div>
-  );
 };
 
 export default Dashboard;

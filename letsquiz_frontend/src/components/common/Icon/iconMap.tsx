@@ -8,6 +8,9 @@ import PersonIcon from '@mui/icons-material/Person';
 import GroupIcon from '@mui/icons-material/Group';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import MenuIcon from '@mui/icons-material/Menu';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { IconName } from './types';
 
 export const icons: Record<IconName, React.FC> = {
@@ -20,4 +23,7 @@ export const icons: Record<IconName, React.FC> = {
   group: GroupIcon,
   shuffle: ShuffleIcon,
   menu: MenuIcon,
+  edit: EditIcon,
+  expandMore: ExpandMoreIcon,
+  delete: DeleteIcon,
 };
