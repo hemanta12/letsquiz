@@ -54,6 +54,7 @@ interface QuizState {
   categories: Category[];
   loadingCategories: boolean;
   categoryError: string | null;
+  savedSessionId: number | null;
 }
 
 const savedGuestProgress = localStorage.getItem('guestQuizProgress');
@@ -94,6 +95,7 @@ const initialState: QuizState = {
   categories: [],
   loadingCategories: false,
   categoryError: null,
+  savedSessionId: null,
 };
 
 // Load past quiz sessions for the current user
@@ -238,7 +240,11 @@ export const startGroupQuiz = createAsyncThunk<
         dispatch(setCurrentPlayer(frontendSession.players[0]));
       }
 
-      const { questions } = await QuizService.fetchQuestions({ category: categoryId, difficulty });
+      const { questions } = await QuizService.fetchQuestions({
+        category: categoryId,
+        difficulty,
+        count: numberOfQuestions,
+      });
       return { questions };
     } catch (error: any) {
       dispatch(setGroupMode(false));
@@ -368,6 +374,10 @@ export const quizSlice = createSlice({
       localStorage.removeItem('guestQuizProgress');
       localStorage.removeItem('guestQuizCount');
     },
+
+    setSavedSessionId: (state, action: PayloadAction<number | null>) => {
+      state.savedSessionId = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -415,6 +425,7 @@ export const quizSlice = createSlice({
       })
       .addCase(saveQuizSessionThunk.fulfilled, (state, action) => {
         state.loading = false;
+        state.savedSessionId = action.payload?.id ?? null;
       })
       .addCase(saveQuizSessionThunk.rejected, (state, action) => {
         state.loading = false;
@@ -460,6 +471,7 @@ export const {
   failMigration,
   rollbackMigration,
   setGuestSession,
+  setSavedSessionId,
 } = quizSlice.actions;
 
 export default quizSlice.reducer;

@@ -25,8 +25,35 @@ export interface LoginResponse {
   user: {
     id: number;
     email: string;
+    username: string;
     is_premium: boolean;
   };
+}
+
+export interface SignupRequest {
+  email: string;
+  password: string;
+}
+
+export interface SignupResponse {
+  success: boolean;
+  token: string;
+  user: UserProfile;
+  message?: string;
+}
+
+export interface PasswordResetRequest {
+  email: string;
+}
+
+export interface PasswordResetResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface SetNewPasswordResponse {
+  success: boolean;
+  message: string;
 }
 
 /* User statistics types */

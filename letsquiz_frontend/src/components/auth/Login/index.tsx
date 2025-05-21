@@ -109,7 +109,9 @@ export const Login: React.FC = () => {
             }));
           }
         } else {
-          dispatch(clearGuestSession());
+          if (isGuest) {
+            dispatch(clearGuestSession());
+          }
           await dispatch(fetchUserProfile(userId.toString()));
           navigate('/dashboard');
         }

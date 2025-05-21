@@ -5,10 +5,7 @@ import { Button, Typography, Modal } from '../../components/common';
 import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
 import CircularProgressBar from '../../components/Results/CircularProgressBar';
 import { resetQuiz } from '../../store/slices/quizSlice';
-import {
-  fetchSingleDetailedQuizSession,
-  clearSelectedDetailedSession,
-} from '../../store/slices/userSlice';
+import { clearSelectedDetailedSession } from '../../store/slices/userSlice';
 import styles from './Results.module.css';
 import { SessionDetail } from '../../types/dashboard.types';
 import { Question } from '../../types/api.types';
@@ -26,11 +23,13 @@ export const Results: React.FC = () => {
   const percentage = Math.round((score / totalQuestions) * 100);
 
   const [showModal, setShowModal] = useState(false);
+  const [selectedSession, setSelectedSession] = useState<SessionDetail | null>(null);
 
   const handlePlayAgain = () => {
     dispatch(resetQuiz());
     navigate('/');
   };
+
   const sessionDetailForReview: SessionDetail = {
     session_id: Date.now(), // Temporary unique ID
     category,
@@ -44,12 +43,13 @@ export const Results: React.FC = () => {
       userAnswer: selectedAnswers[index] || '',
       correctAnswer: q.correct_answer || '',
     })),
+    totalQuestions: questions.length,
   };
 
-  const handleReviewSession = useCallback(() => {
-    dispatch(fetchSingleDetailedQuizSession(sessionDetailForReview.session_id));
+  const handleReviewSession = () => {
+    setSelectedSession(sessionDetailForReview);
     setShowModal(true);
-  }, [dispatch, sessionDetailForReview.session_id]);
+  };
 
   const handleCloseModal = useCallback(() => {
     setShowModal(false);
@@ -139,7 +139,7 @@ export const Results: React.FC = () => {
       )}
 
       <Modal open={showModal} onClose={handleCloseModal}>
-        <ActivityDetailContent sessionDetail={sessionDetailForReview} />
+        {selectedSession && <ActivityDetailContent sessionDetail={selectedSession} />}
       </Modal>
     </motion.div>
   );

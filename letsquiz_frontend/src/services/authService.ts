@@ -44,6 +44,7 @@ interface LoginResponseData {
   user: {
     id: number;
     email: string;
+    username: string;
     is_premium: boolean;
   };
 }
@@ -196,6 +197,7 @@ class AuthService {
           user: {
             id: user.id,
             email: user.email,
+            username: user.username,
             is_premium: user.is_premium,
           },
         };
@@ -246,30 +248,47 @@ class AuthService {
     }
   }
 
+  private handleAuthError(error: any) {
+    const errorResponse = {
+      message: 'An unexpected error occurred',
+      code: 'system_error',
+      status: error.response?.status || 500,
+    };
+
+    if (error.response?.data) {
+      const errorData = error.response.data;
+      if (errorData.email) {
+        errorResponse.message = Array.isArray(errorData.email)
+          ? errorData.email[0]
+          : errorData.email;
+        errorResponse.code = 'invalid_email';
+      } else if (errorData.password) {
+        errorResponse.message = Array.isArray(errorData.password)
+          ? errorData.password[0]
+          : errorData.password;
+        errorResponse.code = 'invalid_password';
+      } else if (errorData.detail) {
+        errorResponse.message = errorData.detail;
+        errorResponse.code = errorData.code || 'auth_error';
+      }
+      errorResponse.status = error.response.status;
+    } else if (error.message) {
+      errorResponse.message = error.message;
+      errorResponse.code = 'api_response_error';
+    }
+
+    return errorResponse;
+  }
+
   async signup(credentials: SignupRequest): Promise<SignupResponse> {
     try {
       const response = await apiClient.post<SignupResponse>('/auth/signup/', credentials);
+      if (!response.data) {
+        throw new Error('No response data received from server');
+      }
       return response.data;
     } catch (error: any) {
-      console.error('[Auth] Signup error:', {
-        status: error.response?.status,
-        data: error.response?.data,
-        message: error.message,
-      });
-
-      const errorResponse = error.response?.data;
-      if (errorResponse?.error && errorResponse?.code) {
-        throw {
-          message: errorResponse.error,
-          code: errorResponse.code,
-          status: error.response?.status,
-        };
-      }
-      throw {
-        message: error.message || 'An unexpected error occurred',
-        code: 'system_error',
-        status: error.response?.status || 500,
-      };
+      throw this.handleAuthError(error);
     }
   }
 

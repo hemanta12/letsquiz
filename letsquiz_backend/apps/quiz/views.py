@@ -2,11 +2,15 @@ import logging
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.core.cache import cache
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 
 from .models import (
     QuizSession,
     QuizSessionQuestion,
 )
+from .serializers import QuizSessionSerializer
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -39,4 +43,16 @@ def track_guest_progress(request, quiz_session):
 
         # Update session with 30-day expiration
         cache.set(session_key, session_data, timeout=60*60*24*30)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_quiz_session(request, session_id):
+    try:
+        session = QuizSession.objects.get(id=session_id)
+        data = QuizSessionSerializer(session).data
+        # Add total_questions explicitly for consistency
+        data['total_questions'] = session.session_questions.count()
+        return Response(data)
+    except QuizSession.DoesNotExist:
+        return Response({'error': 'Session not found'}, status=404)
 

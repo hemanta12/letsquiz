@@ -20,20 +20,18 @@ from letsquiz_backend.apps.quiz.models import (
 )
 
 User = get_user_model()
-
-
-User = get_user_model()
 logger = logging.getLogger(__name__)
 
 class UserSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     email = serializers.EmailField(required=True)
+    username = serializers.CharField(read_only=True)  # <-- Add this line
     password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
     
     class Meta:
         model = User
-        fields = ('id', 'email', 'is_premium', 'password')
-        read_only_fields = ('id', 'is_premium')
+        fields = ('id', 'username', 'email', 'is_premium', 'password')
+        read_only_fields = ('id', 'username', 'is_premium')
 
     def validate_password(self, value):
         if len(value) < 4:
@@ -45,25 +43,45 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("A user with this email already exists.")
         return value
 
+    def create(self, validated_data):
+        try:
+            username = User.generate_unique_username(validated_data['email'])
+            user = User.objects.create_user(
+                username=username,
+                email=validated_data['email'],
+                password=validated_data['password']
+            )
+            return user
+        except Exception as e:
+            logger.error(f"Error creating user: {str(e)}")
+            raise serializers.ValidationError("Error creating user account")
+
     def to_representation(self, instance):
-        """
-        """
         logger.info(f"[UserSerializer] Serializing user instance: {instance.id}, {instance.email}")
         data = super().to_representation(instance)
         logger.info(f"[UserSerializer] Serialized data: {data}")
         return data
 
-    def create(self, validated_data):
-        email = validated_data.get('email')
-        username = email.split('@')[0]
-        password = validated_data.get('password')
-        
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password
-        )
-        return user
+class AccountVerificationSerializer(serializers.Serializer):
+    uidb64 = serializers.CharField()
+    token = serializers.CharField()
+
+    def validate(self, data):
+        try:
+            uid = force_str(urlsafe_base64_decode(data['uidb64']))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            raise ValidationError('Invalid token or user ID.')
+
+        token_generator = PasswordResetTokenGenerator()
+        if not token_generator.check_token(user, data['token']):
+            raise ValidationError('Invalid token or user ID.')
+
+        if user.is_active:
+            raise ValidationError('Account is already active.')
+
+        data['user'] = user
+        return data
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -95,32 +113,8 @@ class SetNewPasswordSerializer(serializers.Serializer):
         if not token_generator.check_token(user, data['token']):
             raise ValidationError('Invalid token or user ID.')
 
-        # Validate the new password using Django's validators
-        try:
-            validate_password(data['new_password'], user)
-        except ValidationError as e:
-            raise serializers.ValidationError({'new_password': list(e.messages)})
-
-        data['user'] = user 
-        return data
-
-class AccountVerificationSerializer(serializers.Serializer):
-    uidb64 = serializers.CharField()
-    token = serializers.CharField()
-
-    def validate(self, data):
-        try:
-            uid = force_str(urlsafe_base64_decode(data['uidb64']))
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            raise ValidationError('Invalid token or user ID.')
-
-        token_generator = PasswordResetTokenGenerator() 
-        if not token_generator.check_token(user, data['token']):
-            raise ValidationError('Invalid token or user ID.')
-
         if user.is_active:
-             raise ValidationError('Account is already active.')
+            raise ValidationError('Account is already active.')
 
         data['user'] = user 
         return data
@@ -148,7 +142,7 @@ class QuizSessionStartSerializer(serializers.Serializer):
     difficulty_id = serializers.IntegerField(required=False, allow_null=True)
     count = serializers.IntegerField(min_value=1)
     mode = serializers.ChoiceField(choices=['solo', 'group'])
-    players = serializers.ListField(child=serializers.CharField(max_length=100), required=False) 
+    players = serializers.ListField(child=serializers.CharField(max_length=100), required=False)
 
     def validate(self, data):
         # Validate category_id if provided
@@ -171,36 +165,40 @@ class QuizSessionStartSerializer(serializers.Serializer):
         mode = data.get('mode')
         players = data.get('players')
         if mode == 'group' and not players:
-             raise ValidationError({"players": ["Player names are required for group mode."]})
+            raise ValidationError({"players": ["Player names are required for group mode."]})
         if mode == 'group' and players:
             if len(players) < 2:
-                 raise ValidationError({"players": ["At least two players are required for group mode."]})
+                raise ValidationError({"players": ["At least two players are required for group mode."]})
             if len(set(name.strip().lower() for name in players)) != len(players):
-                 raise ValidationError({"players": ["All player names must be unique."]})
-
+                raise ValidationError({"players": ["All player names must be unique."]})
         return data
 
-# Serializer for the new GroupPlayer model
 class GroupPlayerSerializer(serializers.ModelSerializer):
-   class Meta:
-       model = GroupPlayer
-       fields = ('id', 'name', 'score', 'errors') 
+    class Meta:
+        model = GroupPlayer
+        fields = ('id', 'name', 'score', 'errors') 
 
 class QuizSessionQuestionSerializer(serializers.ModelSerializer):
-   question = QuestionSerializer(read_only=True)
+    question = QuestionSerializer(read_only=True)
 
-   class Meta:
-       model = QuizSessionQuestion
-       fields = ('id', 'question', 'selected_answer', 'is_correct', 'answered_at')
+    class Meta:
+        model = QuizSessionQuestion
+        fields = ('id', 'question', 'selected_answer', 'is_correct', 'answered_at')
 
 class QuizSessionSerializer(serializers.ModelSerializer):
-   user = UserSerializer(read_only=True)
-   session_questions = QuizSessionQuestionSerializer(many=True, read_only=True)
-   group_players = GroupPlayerSerializer(many=True, read_only=True) 
+    user = UserSerializer(read_only=True)
+    session_questions = QuizSessionQuestionSerializer(many=True, read_only=True)
+    group_players = GroupPlayerSerializer(many=True, read_only=True)
+    total_questions = serializers.SerializerMethodField()
 
-   class Meta:
-       model = QuizSession
-       fields = ('id', 'user', 'started_at', 'completed_at', 'score', 'is_group_session', 'session_questions', 'group_players') 
+    def get_total_questions(self, obj):
+        return obj.session_questions.count()
+
+    class Meta:
+        model = QuizSession
+        fields = ('id', 'user', 'started_at', 'completed_at', 'score', 
+                 'is_group_session', 'session_questions', 'group_players',
+                 'total_questions')
 
 class QuizSessionQuestionSaveSerializer(serializers.Serializer):
     id = serializers.IntegerField()
@@ -211,14 +209,14 @@ class QuizSessionSaveSerializer(serializers.Serializer):
     score = serializers.IntegerField()
     category_id = serializers.IntegerField(required=False, allow_null=True)
     difficulty = serializers.CharField(max_length=50)
-    is_group_session = serializers.BooleanField(default=False) 
-    players = serializers.ListField(child=serializers.DictField(), required=False) 
+    is_group_session = serializers.BooleanField(default=False)
+    players = serializers.ListField(child=serializers.DictField(), required=False)
 
     def create(self, validated_data):
         user = self.context['request'].user
         questions_data = validated_data.pop('questions')
         score = validated_data.pop('score')
-        is_group_session = validated_data.pop('is_group_session', False) 
+        is_group_session = validated_data.pop('is_group_session', False)
         players_data = validated_data.pop('players', []) 
         # Infer is_group_session from presence of players data
         is_group_session = is_group_session or bool(players_data)
@@ -244,7 +242,6 @@ class QuizSessionSaveSerializer(serializers.Serializer):
             ]
             GroupPlayer.objects.bulk_create(group_players)
             logger.info(f"QuizSessionSaveSerializer: Created {len(group_players)} GroupPlayer instances.") 
-
 
         # Create QuizSessionQuestion instances
         for question_data in questions_data:
@@ -291,7 +288,7 @@ class LoginSerializer(serializers.Serializer):
         if not email or not password:
             raise ValidationError({
                 'error': 'Must include "email" and "password".',
-                'code': 'missing_fields'
+                'code': 'missing_fields',
             })
 
         user = None
@@ -301,7 +298,6 @@ class LoginSerializer(serializers.Serializer):
             if user:
                 if not user.is_active:
                     raise AuthenticationFailed('User account is disabled.', code='account_disabled')
-
                 data['user'] = user
                 return data
             else:

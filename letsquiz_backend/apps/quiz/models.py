@@ -4,14 +4,13 @@ from django.conf import settings
 
 # Define the User model extending Django's AbstractUser
 class User(AbstractUser):
-   
+    username = models.CharField(max_length=150, unique=True)
     email = models.EmailField(unique=True) 
     is_premium = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'  
     REQUIRED_FIELDS = [] 
 
-    
     groups = models.ManyToManyField(
         'auth.Group',
         verbose_name='groups',
@@ -28,6 +27,20 @@ class User(AbstractUser):
         related_name="quiz_user_permissions",
         related_query_name="user",
     )
+
+    @classmethod
+    def generate_unique_username(cls, email: str) -> str:
+        """Generate a unique username based on email."""
+        base_username = email.split('@')[0]
+        username = base_username
+        counter = 1
+        
+        # Keep trying with incrementing counter until we find a unique username
+        while cls.objects.filter(username=username).exists():
+            username = f"{base_username}{counter}"
+            counter += 1
+            
+        return username
 
     def __str__(self):
         return self.username

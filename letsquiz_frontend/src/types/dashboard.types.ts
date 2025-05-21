@@ -2,7 +2,7 @@ export type GroupPlayer = {
   id: number;
   name: string;
   score: number;
-  errors: string[]; // Add errors field
+  errors: string[];
 };
 
 export type QuizSession = {
@@ -12,8 +12,8 @@ export type QuizSession = {
   completed_at: string | null;
   category: string;
   difficulty: string;
-  is_group_session: boolean; // Add is_group_session field
-  group_players?: GroupPlayer[]; // Add optional group_players field
+  is_group_session: boolean;
+  group_players?: GroupPlayer[];
   details: { question: string; userAnswer: string; correctAnswer: string }[];
 };
 
@@ -41,7 +41,8 @@ export interface SessionDetail {
   difficulty: string;
   score: number;
   started_at: string;
-  is_group_session?: boolean; // Add optional field for group session
-  group_players?: GroupPlayer[]; // Add optional field for group players
+  is_group_session?: boolean;
+  group_players?: GroupPlayer[];
   questions: QuestionDetail[];
+  totalQuestions?: number;
 }

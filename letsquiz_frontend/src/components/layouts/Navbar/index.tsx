@@ -2,13 +2,13 @@ import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../store/store';
-import { logout } from '../../../store/slices/authSlice';
+import { logout, AuthState } from '../../../store/slices/authSlice';
 import styles from './Navbar.module.css';
 import Icon from '../../common/Icon';
 
 export const Navbar: React.FC = () => {
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const { profile: user } = useSelector((state: RootState) => state.user);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -17,6 +17,15 @@ export const Navbar: React.FC = () => {
     dispatch(logout());
     navigate('/');
   };
+
+  // Prefer username, fallback to 'User'
+  const displayName =
+    (isAuthenticated &&
+      user &&
+      !user.isGuest &&
+      typeof user.username === 'string' &&
+      user.username) ||
+    'User';
 
   return (
     <nav className={styles.navbar}>
@@ -29,20 +38,19 @@ export const Navbar: React.FC = () => {
             <>
               <Link
                 to="/dashboard"
-                className={`${styles.dashboardLink} ${isAuthenticated ? styles.dashboardLinkAuthenticated : ''} ${location.pathname === '/dashboard' ? styles.dashboardLinkActive : ''}`} // Added active class
+                className={`${styles.dashboardLink} ${isAuthenticated ? styles.dashboardLinkAuthenticated : ''} ${location.pathname === '/dashboard' ? styles.dashboardLinkActive : ''}`}
               >
                 Dashboard
               </Link>
               <div className={styles.authenticatedUserGroup}>
-                {' '}
                 <span className={styles.welcomeMessage}>
                   <Icon
                     name="person"
                     size="small"
                     color="secondary"
                     className={styles.welcomeIcon}
-                  />{' '}
-                  Welcome, {user?.email || 'User'}!
+                  />
+                  Welcome, <span>{displayName}</span>
                 </span>
                 <button onClick={handleLogout} className={styles.logoutButton}>
                   Logout

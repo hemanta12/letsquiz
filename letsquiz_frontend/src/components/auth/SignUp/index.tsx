@@ -16,7 +16,6 @@ interface MigrationState {
 export const SignUp: React.FC = () => {
   const [formData, setFormData] = useState({
     email: '',
-    name: '',
     password: '',
     confirmPassword: '',
   });
@@ -29,7 +28,6 @@ export const SignUp: React.FC = () => {
 
   const [visitedFields, setVisitedFields] = useState({
     email: false,
-    name: false,
     password: false,
     confirmPassword: false,
   });
@@ -45,7 +43,7 @@ export const SignUp: React.FC = () => {
   ) => {
     const allFieldsVisited = Object.values(visited).every((v) => v);
     const allFieldsFilled =
-      data.email !== '' && data.name !== '' && data.password !== '' && data.confirmPassword !== '';
+      data.email !== '' && data.password !== '' && data.confirmPassword !== '';
     const noErrors = Object.values(errors).every((error) => error === '');
 
     return allFieldsVisited && allFieldsFilled && noErrors;
@@ -140,13 +138,7 @@ export const SignUp: React.FC = () => {
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const {
-    loading: authLoading,
-    error: authError,
-    isGuest,
-    guestProgress,
-    user,
-  } = useAppSelector((state) => state.auth);
+  const { isGuest, guestProgress, user } = useAppSelector((state) => state.auth);
 
   // Monitor migration progress
   useEffect(() => {
@@ -188,7 +180,6 @@ export const SignUp: React.FC = () => {
     // Mark all fields as visited
     setVisitedFields({
       email: true,
-      name: true,
       password: true,
       confirmPassword: true,
     });
@@ -211,7 +202,6 @@ export const SignUp: React.FC = () => {
     setIsFormValid(
       checkFormValidity(formData, newErrors, {
         email: true,
-        name: true,
         password: true,
         confirmPassword: true,
       })
@@ -225,40 +215,45 @@ export const SignUp: React.FC = () => {
     setError('');
 
     try {
-      // Signup
       await dispatch(
         signupUser({
           email: formData.email,
-          username: formData.name,
           password: formData.password,
         })
       ).unwrap();
 
       console.log('Signup successful');
-
-      // Clear any guest session
       dispatch(clearGuestSession());
-
-      // Redirect to login page
       navigate('/login');
     } catch (err: any) {
-      let errorMessage = 'An error occurred';
-      if (err.response && err.response.data) {
+      console.error('Signup error:', err);
+
+      if (err.code && err.message) {
+        setError(err.message);
+      } else if (err.response?.data) {
         const errorData = err.response.data;
-        if (errorData.username && Array.isArray(errorData.username)) {
-          errorMessage = `Username error: ${errorData.username.join(', ')}`;
-        } else if (errorData.email && Array.isArray(errorData.email)) {
-          errorMessage = `Email error: ${errorData.email.join(', ')}`;
-        } else if (errorData.detail) {
-          errorMessage = `Error: ${errorData.detail}`;
-        } else {
-          errorMessage = JSON.stringify(errorData);
+        if (errorData.email) {
+          setFieldErrors((prev) => ({
+            ...prev,
+            email: Array.isArray(errorData.email) ? errorData.email[0] : errorData.email,
+          }));
         }
-      } else if (err instanceof Error) {
-        errorMessage = err.message;
+        if (errorData.password) {
+          setFieldErrors((prev) => ({
+            ...prev,
+            password: Array.isArray(errorData.password)
+              ? errorData.password[0]
+              : errorData.password,
+          }));
+        }
+        if (errorData.detail) {
+          setError(errorData.detail);
+        } else if (!errorData.email && !errorData.password) {
+          setError('An error occurred during signup. Please try again.');
+        }
+      } else {
+        setError('An unexpected error occurred. Please try again later.');
       }
-      setError(errorMessage);
-      console.error('Authentication error:', err);
     } finally {
       setLoading(false);
     }
@@ -289,14 +284,6 @@ export const SignUp: React.FC = () => {
             onChange={(e) => handleFieldChange('email', e.target.value)}
             onBlur={() => handleBlur('email')}
             error={fieldErrors.email}
-            required
-          />
-          <Input
-            type="text"
-            label="Name"
-            value={formData.name}
-            onChange={(e) => handleFieldChange('name', e.target.value)}
-            onBlur={() => handleBlur('name')}
             required
           />
           <Input

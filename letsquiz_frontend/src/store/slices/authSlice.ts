@@ -3,22 +3,24 @@ import AuthService from '../../services/authService';
 import { AppDispatch, RootState } from '../store';
 import {
   LoginRequest,
-  SignupRequest,
   PasswordResetRequest,
   LoginResponse,
   PasswordResetResponse,
   SignupResponse,
+  SignupRequest,
 } from '../../types/api.types';
 import { AES, enc } from 'crypto-js';
 import { v4 as uuidv4 } from 'uuid';
 
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'default-key';
-const SESSION_CHECK_INTERVAL = 60 * 1000; // 1 minute
+// const SESSION_CHECK_INTERVAL = 60 * 1000;
 
-interface User {
+export interface User {
   id: number;
   email: string;
+  username?: string;
   is_premium: boolean;
+  isGuest: false;
 }
 
 interface GuestUser {
@@ -34,7 +36,7 @@ interface FeatureGates {
   canSaveProgress: boolean;
 }
 
-interface AuthState {
+export interface AuthState {
   user: User | GuestUser | null;
   userId: number | null;
   isAuthenticated: boolean;
@@ -67,25 +69,18 @@ const securelyRetrieveData = (key: string): any => {
   }
 };
 
-const getUserId = (): number | null => {
-  const user = securelyRetrieveData('user');
-  return user?.id || null;
-};
+// const getUserId = (): number | null => {
+//   const user = securelyRetrieveData('user');
+//   return user?.id || null;
+// };
 
 const securelyStoreData = (key: string, data: any): void => {
   const encrypted = AES.encrypt(JSON.stringify(data), ENCRYPTION_KEY).toString();
   localStorage.setItem(key, encrypted);
 };
 
-const user = securelyRetrieveData('user');
-const isAuthenticated = securelyRetrieveData('isAuthenticated') === true;
-const authToken = securelyRetrieveData('authToken');
-const tokenExpiresAt = securelyRetrieveData('tokenExpiresAt');
-const guestUser = securelyRetrieveData('guestUser');
-const guestProgress = securelyRetrieveData('guestProgress');
-
 // Check if token is expired
-if (tokenExpiresAt && Date.now() > tokenExpiresAt) {
+if (securelyRetrieveData('tokenExpiresAt') && Date.now() > securelyRetrieveData('tokenExpiresAt')) {
   localStorage.removeItem('authToken');
   localStorage.removeItem('tokenExpiresAt');
   localStorage.removeItem('user');
@@ -227,6 +222,9 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    setUser: (state, action: PayloadAction<User | GuestUser | null>) => {
+      state.user = action.payload;
+    },
     logout: (state) => {
       console.log('[Auth] Logging out user', { userId: state.user?.id });
       if (state.isGuest) {
@@ -316,6 +314,16 @@ const authSlice = createSlice({
           return;
         }
 
+        // Always ensure username is present
+        const userWithUsername: User = {
+          ...user,
+          username:
+            typeof user.username === 'string' && user.username
+              ? user.username
+              : user.email || 'User',
+          isGuest: false,
+        };
+
         console.log('[Auth] User logged in successfully. Updating state:', {
           userId: user.id,
           isPremium: user.is_premium,
@@ -323,7 +331,8 @@ const authSlice = createSlice({
 
         // Set user ID first to ensure it's available immediately
         state.userId = user.id;
-        state.user = user;
+        state.user = userWithUsername;
+        console.log('[Auth] State.user after assignment:', state.user);
         state.isAuthenticated = true;
         state.loading = false;
         state.error = null;
@@ -344,7 +353,7 @@ const authSlice = createSlice({
           expiresAt: state.tokenExpiresAt,
         });
 
-        securelyStoreData('user', user);
+        securelyStoreData('user', userWithUsername);
         securelyStoreData('userId', user.id);
         securelyStoreData('isAuthenticated', true);
         securelyStoreData('authToken', access);
@@ -390,5 +399,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, updateGuestProgress, clearGuestSession, sessionExpired } = authSlice.actions;
+export const { logout, updateGuestProgress, clearGuestSession, sessionExpired, setUser } =
+  authSlice.actions;
 export default authSlice.reducer;
