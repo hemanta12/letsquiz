@@ -95,7 +95,7 @@ export const Results: React.FC = () => {
         <>
           <div className={styles.groupResults}>
             <Typography variant="h3" className={styles.categoryInfo}>
-              {category} - {difficulty}
+              {mode} - {category} - {difficulty}
             </Typography>
 
             {sortedPlayers.map((player, index) => (

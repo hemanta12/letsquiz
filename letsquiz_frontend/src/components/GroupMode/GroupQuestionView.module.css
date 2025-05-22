@@ -1,18 +1,47 @@
-.container {
+/* Container: two-column on desktop, stacked on mobile */
+.groupContainer {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-lg);
+}
+
+/* Left pane: main question and options */
+.mainContent {
+  flex: 0 0 75%;
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
 }
 
-.questionHeader {
-  margin-bottom: 20px;
+/* Right pane: interactive scoreboard */
+.sidebar {
+  flex: 0 0 25%;
+  padding-left: var(--space-md);
+  background: var(--color-background);
+  border-radius: 8px;
+  border-left: 1px solid var(--color-border);
 }
 
+/* Question header */
+.questionHeader {
+  margin-bottom: var(--space-md);
+}
+
+/* Question text */
 .question {
   text-align: center;
   margin: var(--space-md) 0 0 0;
 }
 
+/* Feedback styling */
+.feedback {
+  text-align: center;
+  font-weight: 500;
+  width: fit-content;
+  margin: var(--space-md) auto;
+}
+
+/* Options list */
 .options {
   display: flex;
   flex-direction: column;
@@ -29,96 +58,91 @@
   transition: all 0.2s ease;
   border: 2px solid transparent;
 }
-
 .option.selected {
   border: 2px solid var(--color-primary) !important;
 }
-
 .option.correct {
   background-color: var(--color-correct-light) !important;
 }
-
 .option.incorrect {
   background-color: rgba(181, 0, 0, 0.1) !important;
   border-color: var(--color-quit) !important;
 }
-
 .option.wrong {
   background-color: rgba(181, 0, 0, 0.1) !important;
   border-color: transparent !important;
 }
 
-.feedback {
-  text-align: center;
-  font-weight: 500;
-  width: fit-content;
-  margin: 0 auto;
-}
-
-.playerSelection {
-  margin-top: 20px;
-}
-
-.playerButtons {
+/* Interactive player list uses flex for natural single row when few players */
+.playerList {
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 10px;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
 }
 
-.scoreBoard {
+.playerCard {
   display: flex;
-  justify-content: space-around;
-  padding: var(--space-md);
-  margin-bottom: var(--space-lg);
-  background: var(--color-background);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.playerScore {
-  text-align: center;
+  justify-content: space-between;
+  align-items: center;
   padding: var(--space-sm);
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+  flex: 1 1 auto;
+  min-width: 80px;
 }
 
+.playerCard:hover:not([aria-disabled='true']) {
+  background-color: rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+.playerCard[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.selectedCard {
+  background-color: rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+/* Player name and score */
 .playerName {
   font-weight: 600;
   color: var(--color-text);
-  margin-bottom: var(--space-xs);
 }
-
 .score {
-  font-size: var(--font-size-h3);
+  font-size: var(--font-size-h4);
   color: var(--color-primary);
 }
 
-.pointAnimation {
-  animation: pointPop 0.5s ease-out;
+/* Dropdown fallback for large player sets */
+.playerDropdown {
+  width: 100%;
+  margin-top: var(--space-md);
+  padding: var(--space-sm);
+  font-size: var(--font-size-base);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
 }
 
-@keyframes pointPop {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
+/* Mobile: stack sidebar below main content */
 @media screen and (max-width: 479px) {
-  .options {
-    gap: var(--space-md);
-    padding: var(--space-sm) 0;
+  .groupContainer {
+    flex-direction: column;
   }
-  .option {
-    width: 100%;
-    font-size: var(--font-size-h4);
-    padding: var(--space-xl) var(--space-lg);
+  .sidebar {
+    flex: none;
+    padding-left: 0;
+    margin-top: var(--space-lg);
   }
-  .feedback {
-    margin: var(--space-md) auto;
+  .playerList {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-sm);
   }
 }

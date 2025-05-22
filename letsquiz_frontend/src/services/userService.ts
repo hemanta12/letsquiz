@@ -239,8 +239,8 @@ class UserService {
           score: Number(data.score) || 0,
           started_at: data.startTime || data.timestamp,
           completed_at: data.timestamp,
-          is_group_session: false, // Add is_group_session for guest sessions
-          group_players: [], // Add empty group_players array for guest sessions
+          is_group_session: false,
+          group_players: [],
           details: Object.entries(data.answers || {}).map(([question, answer]: [string, any]) => ({
             question,
             userAnswer: answer.selected,

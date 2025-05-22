@@ -1,11 +1,11 @@
 .results {
   max-width: 600px;
   margin: 0 auto;
-  padding: var(--space-xl) 0;
+  padding: var(--space-sm) 0;
   text-align: center;
-  background-color: rgba(255, 255, 255, 0.8); 
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
-  border-radius: 10px; 
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
 }
 
 .score {
@@ -52,17 +52,18 @@
   margin: var(--space-xl) 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
+  gap: var(--space-md);
 }
 
 .categoryInfo {
   text-align: center;
   color: var(--color-text-secondary);
   margin-bottom: var(--space-lg);
+  margin-top: 0;
 }
 
 .playerResult {
-  padding: var(--space-lg) var(--space-lg) var(--space-lg) var(--space-xl);
+  padding: var(--space-md) var(--space-lg);
   margin-left: 25px;
   position: relative;
   background: var(--color-background);
@@ -202,9 +203,9 @@
 }
 
 .playerScore {
-  font-size: 24px;
+  font-size: var(--font-size-h3);
   font-weight: bold;
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-xs) var(--space-sm);
   border-radius: 8px;
   min-width: 100px;
   text-align: center;

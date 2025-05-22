@@ -4,10 +4,8 @@ import {
   LoginResponse,
   SignupRequest,
   SignupResponse,
-  PasswordResetRequest,
   PasswordResetResponse,
   SetNewPasswordResponse,
-  UserProfile,
 } from '../types/api.types';
 import { v4 as uuidv4 } from 'uuid';
 import { AES, enc } from 'crypto-js';
@@ -162,8 +160,6 @@ class AuthService {
 
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
-      console.log('[Auth] Login request:', credentials);
-
       const response = await apiClient.post<LoginResponseData>('/auth/login/', {
         email: credentials.email,
         password: credentials.password,
@@ -216,9 +212,6 @@ class AuthService {
       if (error.code != null && error.status != null) {
         throw error;
       }
-
-      console.error('[Auth] Login error:', error);
-      console.log('[Auth] Backend error response data:', error.response?.data);
 
       // Legacy fallback formatting
       let errorMessage = 'An unexpected error occurred';
@@ -386,7 +379,7 @@ class AuthService {
       setRefreshToken(refresh);
       return true;
     } catch (error: any) {
-      console.error('Token refresh failed:', error);
+      // console.error('Token refresh failed:', error);
 
       if (error.response?.status === 401) {
         console.log('Refresh token is invalid or expired');

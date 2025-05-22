@@ -4,15 +4,13 @@ import { Button, Typography } from '../../components/common';
 import PlayerManagement from '../../components/GroupMode/PlayerManagement';
 import { Player } from '../../types/group.types';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
-import { setQuizSettings, startGroupQuiz } from '../../store/slices/quizSlice';
-import { setGroupSession } from '../../store/slices/groupQuizSlice';
-import QuizService from '../../services/quizService';
+import { startGroupQuiz } from '../../store/slices/quizSlice';
 import styles from './PlayerSetup.module.css';
 
 export const PlayerSetup: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { mode, category, categoryId, difficulty, isMixedMode, numberOfQuestions } = useAppSelector(
+  const { categoryId, difficulty, numberOfQuestions } = useAppSelector(
     (state) => state.quiz.settings
   );
 
@@ -25,10 +23,12 @@ export const PlayerSetup: React.FC = () => {
   const handlePlayersConfirmed = useCallback(
     async (players: Player[]) => {
       setSessionError(null);
+      const capitalize = (name: string) =>
+        name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
       try {
         const resultAction = await dispatch(
           startGroupQuiz({
-            players: players.map((player) => player.name),
+            players: players.map((player) => capitalize(player.name)),
             categoryId: categoryId,
             difficulty: difficulty,
             numberOfQuestions: numberOfQuestions,
@@ -47,7 +47,7 @@ export const PlayerSetup: React.FC = () => {
         setSessionError(error.message || 'Failed to start group quiz. Please try again.');
       }
     },
-    [dispatch, categoryId, difficulty, navigate]
+    [dispatch, categoryId, difficulty, numberOfQuestions, navigate]
   );
 
   return (

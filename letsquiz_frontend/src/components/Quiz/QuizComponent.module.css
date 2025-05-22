@@ -1,11 +1,11 @@
 .quiz {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm); /* Prioritize page style */
-  max-width: 900px; /* Prioritize page style */
+  gap: var(--space-sm);
+  max-width: 900px;
   margin: 0 auto;
-  padding: var(--space-md) 0; /* Prioritize page style */
-  position: relative; /* Keep component style */
+  padding: var(--space-md) 0;
+  position: relative;
 }
 
 .header {
@@ -17,9 +17,9 @@
 .progress {
   width: 100%;
   height: 4px;
-  background-color: var(--color-border); /* Prioritize page style */
+  background-color: var(--color-border);
   border-radius: 2px;
-  margin: var(--space-md) 0; /* Prioritize page style */
+  margin: var(--space-md) 0;
 }
 
 .progressBar {
@@ -31,78 +31,78 @@
 
 .question {
   text-align: center;
-  margin: var(--space-md) 0 0 0; /* Prioritize page style */
+  margin: var(--space-md) 0 0 0;
 }
 
 .options {
-  display: flex; /* Prioritize page style */
-  flex-direction: column; /* Prioritize page style */
-  gap: var(--space-lg); /* Prioritize page style */
-  padding: var(--space-lg) 0; /* Prioritize page style */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-lg) 0;
 }
 
 .option {
-  margin: 0 auto; /* Prioritize page style */
-  width: 90%; /* Prioritize page style */
-  padding: var(--space-lg) var(--space-md); /* Prioritize page style */
+  margin: 0 auto;
+  width: 90%;
+  padding: var(--space-lg) var(--space-md);
   text-align: left;
-  font-size: var(--font-size-h3); /* Prioritize page style */
+  font-size: var(--font-size-h3);
   transition: all 0.2s ease;
-  border: 2px solid transparent; /* Prioritize page style */
+  border: 2px solid transparent;
 }
 
 .option.selected {
-  border: 2px solid var(--color-primary) !important; /* Prioritize page style */
-  transform: scale(1.02); /* Keep component style */
+  border: 2px solid var(--color-primary) !important;
+  transform: scale(1.02);
 }
 
 .option.correct {
-  background-color: var(--color-correct-light) !important; /* Prioritize page style */
+  background-color: var(--color-correct-light) !important;
 }
 
 .option.incorrect {
-  background-color: rgba(181, 0, 0, 0.1) !important; /* Prioritize page style */
-  border-color: var(--color-quit) !important; /* Prioritize page style */
+  background-color: rgba(181, 0, 0, 0.1) !important;
+  border-color: var(--color-quit) !important;
 }
 
 .option.wrong {
-  background-color: rgba(181, 0, 0, 0.1) !important; /* Prioritize page style */
-  border-color: transparent !important; /* Prioritize page style */
+  background-color: rgba(181, 0, 0, 0.1) !important;
+  border-color: transparent !important;
 }
 
 .feedback {
   text-align: center;
-  font-weight: 500; /* Prioritize page style */
-  width: fit-content; /* Prioritize page style */
-  margin: 0 auto; /* Prioritize page style */
+  font-weight: 500;
+  width: fit-content;
+  margin: 0 auto;
   animation: fadeIn 0.3s ease;
 }
 
 .actions {
   display: flex;
   justify-content: space-between;
-  padding: var(--space-lg) 0; /* Prioritize page style */
-  margin-top: var(--space-sm); /* Prioritize page style */
+  padding: var(--space-lg) 0;
+  margin-top: var(--space-sm);
 }
 
 .quitButton {
-  background-color: white; /* Prioritize page style */
-  color: black; /* Prioritize page style */
-  border: 3px solid var(--color-primary); /* Prioritize page style */
+  background-color: white;
+  color: black;
+  border: 3px solid var(--color-primary);
 }
 
 .quitButton:hover:not(:disabled) {
-  background-color: var(--color-quit); /* Prioritize page style */
-  transform: translateY(-2px); /* Prioritize page style */
-  will-change: transform; /* Prioritize page style */
-  color: white; /* Prioritize page style */
-  border: 3px solid transparent; /* Prioritize page style */
+  background-color: var(--color-quit);
+  transform: translateY(-2px);
+  will-change: transform;
+  color: white;
+  border: 3px solid transparent;
 }
 
 .error {
-  color: var(--color-error); /* Prioritize page style */
+  color: var(--color-error);
   text-align: center;
-  margin-bottom: var(--space-md); /* Prioritize page style */
+  margin-bottom: var(--space-md);
 }
 
 .quitDialog,
@@ -118,12 +118,12 @@
 .modalActions {
   display: flex;
   justify-content: center;
-  padding: var(--space-lg) 0; /* Prioritize page style */
-  gap: var(--space-lg); /* Prioritize page style */
+  padding: var(--space-lg) 0;
+  gap: var(--space-lg);
 }
 
 .modalActions button {
-  flex: 1; /* Prioritize page style */
+  flex: 1;
 }
 
 .migrationProgress {
@@ -143,6 +143,7 @@
   animation: pulse 2s infinite;
 }
 
+/* Animation for feedback appearance */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -154,6 +155,7 @@
   }
 }
 
+/* Animation for migration progress bar pulsing */
 @keyframes pulse {
   0% {
     opacity: 1;
