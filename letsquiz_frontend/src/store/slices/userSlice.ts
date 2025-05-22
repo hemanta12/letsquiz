@@ -31,13 +31,10 @@ const initialState: UserState = {
 export const fetchUserProfile = createAsyncThunk<UserProfile, string, { rejectValue: string }>(
   'user/fetchUserProfile',
   async (userId, { rejectWithValue }) => {
-    console.log('[userSlice] Attempting to fetch user profile for userId:', userId);
     try {
       const profile = await UserService.fetchUserProfile(userId);
-      console.log('[userSlice] Successfully fetched user profile:', profile);
       return profile;
     } catch (err: any) {
-      console.error('[userSlice] Failed to fetch user profile:', err);
       return rejectWithValue(err.response?.data?.detail || err.message);
     }
   }

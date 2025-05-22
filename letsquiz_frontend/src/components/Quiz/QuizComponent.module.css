@@ -1,0 +1,192 @@
+.quiz {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm); /* Prioritize page style */
+  max-width: 900px; /* Prioritize page style */
+  margin: 0 auto;
+  padding: var(--space-md) 0; /* Prioritize page style */
+  position: relative; /* Keep component style */
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress {
+  width: 100%;
+  height: 4px;
+  background-color: var(--color-border); /* Prioritize page style */
+  border-radius: 2px;
+  margin: var(--space-md) 0; /* Prioritize page style */
+}
+
+.progressBar {
+  height: 100%;
+  background-color: var(--color-primary);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.question {
+  text-align: center;
+  margin: var(--space-md) 0 0 0; /* Prioritize page style */
+}
+
+.options {
+  display: flex; /* Prioritize page style */
+  flex-direction: column; /* Prioritize page style */
+  gap: var(--space-lg); /* Prioritize page style */
+  padding: var(--space-lg) 0; /* Prioritize page style */
+}
+
+.option {
+  margin: 0 auto; /* Prioritize page style */
+  width: 90%; /* Prioritize page style */
+  padding: var(--space-lg) var(--space-md); /* Prioritize page style */
+  text-align: left;
+  font-size: var(--font-size-h3); /* Prioritize page style */
+  transition: all 0.2s ease;
+  border: 2px solid transparent; /* Prioritize page style */
+}
+
+.option.selected {
+  border: 2px solid var(--color-primary) !important; /* Prioritize page style */
+  transform: scale(1.02); /* Keep component style */
+}
+
+.option.correct {
+  background-color: var(--color-correct-light) !important; /* Prioritize page style */
+}
+
+.option.incorrect {
+  background-color: rgba(181, 0, 0, 0.1) !important; /* Prioritize page style */
+  border-color: var(--color-quit) !important; /* Prioritize page style */
+}
+
+.option.wrong {
+  background-color: rgba(181, 0, 0, 0.1) !important; /* Prioritize page style */
+  border-color: transparent !important; /* Prioritize page style */
+}
+
+.feedback {
+  text-align: center;
+  font-weight: 500; /* Prioritize page style */
+  width: fit-content; /* Prioritize page style */
+  margin: 0 auto; /* Prioritize page style */
+  animation: fadeIn 0.3s ease;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-lg) 0; /* Prioritize page style */
+  margin-top: var(--space-sm); /* Prioritize page style */
+}
+
+.quitButton {
+  background-color: white; /* Prioritize page style */
+  color: black; /* Prioritize page style */
+  border: 3px solid var(--color-primary); /* Prioritize page style */
+}
+
+.quitButton:hover:not(:disabled) {
+  background-color: var(--color-quit); /* Prioritize page style */
+  transform: translateY(-2px); /* Prioritize page style */
+  will-change: transform; /* Prioritize page style */
+  color: white; /* Prioritize page style */
+  border: 3px solid transparent; /* Prioritize page style */
+}
+
+.error {
+  color: var(--color-error); /* Prioritize page style */
+  text-align: center;
+  margin-bottom: var(--space-md); /* Prioritize page style */
+}
+
+.quitDialog,
+.upgradeDialog,
+.migrationDialog {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  text-align: center;
+  padding: 1rem;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-lg) 0; /* Prioritize page style */
+  gap: var(--space-lg); /* Prioritize page style */
+}
+
+.modalActions button {
+  flex: 1; /* Prioritize page style */
+}
+
+.migrationProgress {
+  width: 100%;
+  height: 8px;
+  background-color: var(--color-gray-200);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 1rem 0;
+}
+
+.migrationProgressBar {
+  height: 100%;
+  background-color: var(--color-primary);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  animation: pulse 2s infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .progress {
+    margin: var(--space-sm) 0;
+  }
+  .question {
+    margin: var(--space-md) 0;
+  }
+  .options {
+    gap: var(--space-md);
+    padding: var(--space-sm) 0;
+  }
+  .option {
+    width: 100%;
+    font-size: var(--font-size-h4);
+    padding: var(--space-xl) var(--space-lg);
+  }
+  .feedback {
+    margin: var(--space-md) auto;
+  }
+
+  .error {
+    margin: var(--space-sm) 0;
+  }
+}

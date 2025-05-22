@@ -57,9 +57,9 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Error creating user account")
 
     def to_representation(self, instance):
-        logger.info(f"[UserSerializer] Serializing user instance: {instance.id}, {instance.email}")
+        # logger.info(f"[UserSerializer] Serializing user instance: {instance.id}, {instance.email}")
         data = super().to_representation(instance)
-        logger.info(f"[UserSerializer] Serialized data: {data}")
+        # logger.info(f"[UserSerializer] Serialized data: {data}")
         return data
 
 class AccountVerificationSerializer(serializers.Serializer):

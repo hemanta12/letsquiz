@@ -1,7 +1,7 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
-import { Button, Typography, Loading, Modal, Card } from '../../components/common';
+import { Button, Typography, Loading, Modal } from '../../components/common';
 import { selectUI, setLoading, setError, setModal, setFeedback } from '../../store/slices/uiSlice';
 import { updateGuestProgress } from '../../store/slices/authSlice';
 import { GroupPlayer } from '../../types/quiz.types';
@@ -11,40 +11,34 @@ import {
   nextQuestion,
   resetQuiz,
   fetchQuizQuestions,
+  saveQuizSessionThunk,
 } from '../../store/slices/quizSlice';
 import { updatePlayerScore, resetTempScores } from '../../store/slices/groupQuizSlice';
 import { GroupQuestionView } from '../../components/GroupMode/GroupQuestionView';
-import styles from './Quiz.module.css';
-import QuizService from '../../services/quizService';
+import styles from './QuizComponent.module.css';
 import UserService from '../../services/userService';
-import { Question } from '../../types/api.types';
 
-export const Quiz: React.FC = () => {
+export const QuizComponent: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isLoading, error, modals, feedback } = useAppSelector(selectUI);
   const { isGuest, featureGates, user } = useAppSelector((state) => state.auth);
   const {
+    settings,
     currentQuestionIndex,
+    questions,
     selectedAnswers,
     mode,
     category,
     categoryId,
     difficulty,
-    isMixedMode,
+    loading: quizLoading,
     error: quizError,
   } = useAppSelector((state) => state.quiz);
 
-  const quizLoading = useAppSelector((state) => state.quiz.loading);
-  const questions = useAppSelector((state) => state.quiz.questions);
-  const groupSession = useAppSelector((state) => state.groupQuiz.groupSession);
+  const { groupSession } = useAppSelector((state) => state.groupQuiz);
 
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
-  const [preloadedQuestion, setPreloadedQuestion] = useState<Question | null>(null);
-  const [groupValidation, setGroupValidation] = useState({
-    isValid: true,
-    message: '',
-  });
   const [migrationState, setMigrationState] = useState<{
     inProgress: boolean;
     progress: number;
@@ -57,8 +51,10 @@ export const Quiz: React.FC = () => {
 
   const hasSelectedAnswer = selectedAnswers[currentQuestionIndex] !== undefined;
   const progress =
-    questions?.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
-  const currentQuestionData = questions?.[currentQuestionIndex];
+    settings.numberOfQuestions > 0
+      ? ((currentQuestionIndex + 1) / settings.numberOfQuestions) * 100
+      : 0;
+  const currentQuestionData = questions[currentQuestionIndex];
 
   // Monitor migration progress
   useEffect(() => {
@@ -90,74 +86,20 @@ export const Quiz: React.FC = () => {
   }, [migrationState.inProgress, user, isGuest, dispatch]);
 
   useEffect(() => {
-    if ((!questions || !questions.length) && !quizLoading) {
-      if (((categoryId !== undefined && categoryId !== null) || isMixedMode) && difficulty) {
-        dispatch(setLoading(true));
-        dispatch(fetchQuizQuestions({ category: categoryId, difficulty })).finally(() => {
-          dispatch(setLoading(false));
-        });
-      }
+    if (questions.length === 0 && !quizLoading && !quizError) {
+      dispatch(fetchQuizQuestions({ category: categoryId, difficulty }));
     }
-  }, [dispatch, categoryId, difficulty, questions, quizLoading, isMixedMode]);
-
-  const preloadNextQuestion = useCallback(async () => {
-    if (currentQuestionIndex < questions.length) {
-      try {
-        const nextQuestionData = await QuizService.fetchQuestions({
-          limit: 1,
-          category: categoryId,
-          difficulty: difficulty,
-        });
-        if (nextQuestionData && nextQuestionData.questions.length > 0) {
-          setPreloadedQuestion(nextQuestionData.questions[0]);
-        }
-      } catch (error) {
-        setError('Error preloading next question');
-        console.error('Error:', error);
-      }
-    }
-  }, [currentQuestionIndex, questions.length, categoryId, difficulty]);
-
-  useEffect(() => {
-    preloadNextQuestion();
-  }, [preloadNextQuestion]);
+  }, [dispatch, categoryId, difficulty, questions.length, quizLoading, quizError]);
 
   const handleAnswerSelect = async (answer: string) => {
     if (!hasSelectedAnswer && !isLoading && !quizLoading) {
       try {
         // Validate group mode requirements
-        if (mode === 'Group') {
-          if (!selectedPlayer) {
-            setGroupValidation({
-              isValid: false,
-              message: 'Please select a player before answering',
-            });
-            return;
-          }
-          if (!groupSession) {
-            setGroupValidation({
-              isValid: false,
-              message: 'Invalid group session',
-            });
-            return;
-          }
-        }
 
         dispatch(setLoading(true));
         dispatch(selectAnswer({ questionIndex: currentQuestionIndex, answer }));
 
         const isCorrect = answer === currentQuestionData?.correct_answer;
-
-        // Handle group mode scoring
-        if (mode === 'Group' && isCorrect && selectedPlayer) {
-          if (groupSession && groupSession.players) {
-            await QuizService.updateGroupSession(groupSession.id, {
-              players: groupSession.players.map((p: GroupPlayer) =>
-                p.id === Number(selectedPlayer) ? { ...p, score: p.score + 5 } : p
-              ),
-            });
-          }
-        }
 
         dispatch(
           setFeedback({
@@ -183,28 +125,28 @@ export const Quiz: React.FC = () => {
     }
   };
 
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLButtonElement>, option: string) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      handleAnswerSelect(option);
+    }
+  };
+
   const handleNext = async () => {
     try {
       dispatch(setLoading(true));
       dispatch(setFeedback({ show: false, isCorrect: false }));
 
       // Synchronize group state
-      if (mode === 'Group' && groupSession) {
-        await QuizService.updateGroupSession(groupSession!.id, {
-          currentQuestion: currentQuestionIndex + 1,
-          status: currentQuestionIndex === questions.length - 1 ? 'completed' : 'active',
-          currentPlayer:
-            groupSession.players[
-              (groupSession.players.findIndex((p) => p.id === Number(selectedPlayer)) + 1) %
-                groupSession.players.length
-            ].id,
-        });
+
+      if (mode === 'Group' && selectedPlayer) {
+        // Update score for the player selected for the previous question
+        dispatch(updatePlayerScore({ playerId: Number(selectedPlayer), score: 5 }));
       }
 
       setSelectedPlayer(null);
       dispatch(resetTempScores());
 
-      if (currentQuestionIndex === questions.length - 1) {
+      if (currentQuestionIndex === settings.numberOfQuestions - 1) {
         const score = Object.entries(selectedAnswers).reduce((total: number, [index, answer]) => {
           const questionIndex = parseInt(index);
           return total + (answer === questions[questionIndex].correct_answer ? 1 : 0);
@@ -214,7 +156,46 @@ export const Quiz: React.FC = () => {
           dispatch(updateGuestProgress({ score }));
         }
 
-        await dispatch(updateScore());
+        if (mode !== 'Group') {
+          await dispatch(updateScore());
+        }
+
+        if (!isGuest) {
+          const quizSessionData = {
+            questions: Object.entries(selectedAnswers).map(([index, selected_answer]) => ({
+              id: questions[Number(index)].id,
+              selected_answer,
+            })),
+            score:
+              mode === 'Group' && groupSession?.players
+                ? groupSession.players.reduce((totalScore, player) => totalScore + player.score, 0)
+                : Object.entries(selectedAnswers).reduce((score, [index, answer]) => {
+                    const points = answer === questions[Number(index)].correct_answer ? 1 : 0;
+                    return score + points;
+                  }, 0),
+            category_id: categoryId,
+            difficulty: difficulty,
+          };
+
+          if (mode === 'Group' && groupSession?.players) {
+            Object.assign(quizSessionData, {
+              is_group_session: true,
+              players: groupSession.players.map((player: GroupPlayer) => ({
+                name: player.name,
+                score: player.score,
+                errors: player.errors,
+              })),
+            });
+          }
+
+          console.log('[Quiz] Saving quiz session with payload:', quizSessionData);
+
+          const resultAction = await dispatch(saveQuizSessionThunk(quizSessionData));
+          if (saveQuizSessionThunk.rejected.match(resultAction)) {
+            console.error('Error saving quiz session:', resultAction.payload);
+          }
+        }
+
         navigate('/results');
       } else {
         if (isGuest && currentQuestionIndex >= featureGates.maxQuestionsPerQuiz - 1) {
@@ -266,11 +247,11 @@ export const Quiz: React.FC = () => {
     );
   }
 
-  if (quizError || !questions || questions.length === 0) {
+  if (error || quizError || !questions || questions.length === 0) {
     return (
       <div className={styles.quiz}>
         <Typography variant="body2" color="error" className={styles.error}>
-          {quizError || 'No questions found for the selected criteria.'}
+          {error || quizError || 'No questions found for the selected criteria.'}
         </Typography>
       </div>
     );
@@ -293,7 +274,7 @@ export const Quiz: React.FC = () => {
           {mode} - {difficulty} - {category}
         </Typography>
         <Typography variant="body1">
-          Question {currentQuestionIndex + 1}/{questions.length}
+          Question {currentQuestionIndex + 1}/{settings.numberOfQuestions}
         </Typography>
       </div>
 
@@ -303,14 +284,9 @@ export const Quiz: React.FC = () => {
 
       {mode === 'Group' ? (
         <>
-          {!groupValidation.isValid && (
-            <Typography variant="body2" color="error" className={styles.error}>
-              {groupValidation.message}
-            </Typography>
-          )}
           <GroupQuestionView
             questionNumber={currentQuestionIndex + 1}
-            totalQuestions={questions.length}
+            totalQuestions={settings.numberOfQuestions}
             question={currentQuestionData.question_text}
             options={currentQuestionData.answer_options}
             correctAnswer={currentQuestionData.correct_answer}
@@ -319,7 +295,6 @@ export const Quiz: React.FC = () => {
             selectedAnswer={selectedAnswers[currentQuestionIndex]}
             onPlayerSelected={(playerId) => {
               setSelectedPlayer(playerId);
-              setGroupValidation({ isValid: true, message: '' });
             }}
             currentScoredPlayer={selectedPlayer}
           />
@@ -343,36 +318,43 @@ export const Quiz: React.FC = () => {
           )}
 
           <div className={styles.options}>
-            {currentQuestionData.answer_options?.map((option: string) => {
-              const isSelected = selectedAnswers[currentQuestionIndex] === option;
-              const isCorrectAnswer = option === currentQuestionData.correct_answer;
-              let optionClassNames = styles.option;
+            {isLoading ? (
+              <Loading variant="skeleton" />
+            ) : (
+              currentQuestionData.answer_options?.map((option: string) => {
+                const isSelected = selectedAnswers[currentQuestionIndex] === option;
+                const isCorrectAnswer = option === currentQuestionData.correct_answer;
+                let optionClassNames = styles.option;
 
-              if (feedback.show) {
-                if (isSelected) {
-                  optionClassNames += ` ${styles.selected}`;
-                  if (isCorrectAnswer) {
+                if (feedback.show) {
+                  if (isSelected) {
+                    optionClassNames += ` ${styles.selected}`;
+                    if (isCorrectAnswer) {
+                      optionClassNames += ` ${styles.correct}`;
+                    } else {
+                      optionClassNames += ` ${styles.incorrect}`;
+                    }
+                  } else if (isCorrectAnswer) {
                     optionClassNames += ` ${styles.correct}`;
-                  } else {
-                    optionClassNames += ` ${styles.incorrect}`;
                   }
-                } else if (isCorrectAnswer) {
-                  optionClassNames += ` ${styles.correct}`;
                 }
-              }
 
-              return (
-                <Button
-                  key={`${currentQuestionIndex}-${option}`}
-                  variant="secondary"
-                  className={optionClassNames}
-                  onClick={() => handleAnswerSelect(option)}
-                  disabled={hasSelectedAnswer || isLoading || quizLoading}
-                >
-                  {option}
-                </Button>
-              );
-            })}
+                return (
+                  <Button
+                    key={`${currentQuestionIndex}-${option}`}
+                    variant="secondary"
+                    className={optionClassNames}
+                    onClick={() => handleAnswerSelect(option)}
+                    disabled={hasSelectedAnswer || isLoading || quizLoading}
+                    onKeyPress={(e) => handleKeyPress(e, option)}
+                    tabIndex={0}
+                    aria-selected={isSelected}
+                  >
+                    {option}
+                  </Button>
+                );
+              })
+            )}
           </div>
         </>
       )}
@@ -389,7 +371,9 @@ export const Quiz: React.FC = () => {
           disabled={!hasSelectedAnswer || isLoading || quizLoading}
           onClick={handleNext}
         >
-          {currentQuestionIndex === questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
+          {currentQuestionIndex === settings.numberOfQuestions - 1
+            ? 'Finish Quiz'
+            : 'Next Question'}
         </Button>
       </div>
 
@@ -415,61 +399,6 @@ export const Quiz: React.FC = () => {
         </div>
       </Modal>
 
-      {/* Upgrade Prompt Modal */}
-      <Modal
-        open={modals.upgradePrompt}
-        onClose={() => dispatch(setModal({ type: 'upgradePrompt', isOpen: false }))}
-        title="Great Progress!"
-      >
-        <div className={styles.upgradeDialog}>
-          <Typography variant="h3">You're doing great!</Typography>
-          <Typography variant="body1">
-            Upgrade to Premium to unlock unlimited questions, save your progress, and access premium
-            content!
-          </Typography>
-          <div className={styles.modalActions}>
-            <Button variant="primary" onClick={handleUpgradeStart}>
-              Upgrade Now
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => dispatch(setModal({ type: 'upgradePrompt', isOpen: false }))}
-            >
-              Continue as Guest
-            </Button>
-          </div>
-        </div>
-      </Modal>
-
-      {/* Question Limit Modal */}
-      <Modal
-        open={modals.questionLimit}
-        onClose={() => dispatch(setModal({ type: 'questionLimit', isOpen: false }))}
-        title="Question Limit Reached"
-      >
-        <div className={styles.upgradeDialog}>
-          <Typography variant="h3">Question Limit Reached</Typography>
-          <Typography variant="body1">
-            You've reached the question limit for guest users. Upgrade to Premium to: • Access
-            unlimited questions • Save your progress • Get personalized recommendations
-          </Typography>
-          <div className={styles.modalActions}>
-            <Button variant="primary" onClick={handleUpgradeStart}>
-              Upgrade Now
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => {
-                dispatch(setModal({ type: 'questionLimit', isOpen: false }));
-                handleQuitConfirm();
-              }}
-            >
-              End Quiz
-            </Button>
-          </div>
-        </div>
-      </Modal>
-
       {/* Migration Progress Modal */}
       <Modal open={migrationState.inProgress} onClose={() => {}} title="Migrating Your Progress">
         <div className={styles.migrationDialog}>
@@ -487,4 +416,4 @@ export const Quiz: React.FC = () => {
   );
 };
 
-export default Quiz;
+export default QuizComponent;

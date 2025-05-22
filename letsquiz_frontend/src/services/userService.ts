@@ -79,7 +79,6 @@ class UserService {
 
       return true;
     } catch (error) {
-      console.error('Data validation failed:', error);
       return false;
     }
   }
@@ -105,7 +104,6 @@ class UserService {
 
       return true;
     } catch (error) {
-      console.error('Data verification failed:', error);
       return false;
     }
   }
@@ -211,35 +209,24 @@ class UserService {
 
   async fetchUserProfile(userId: string): Promise<UserProfile> {
     try {
-      console.log('[User Service] Attempting to fetch profile for user:', userId);
       const response = await apiClient.get<UserProfile>(`/users/${userId}/`);
-      console.log('[User Service] Successfully fetched profile:', response.data);
       return response.data;
     } catch (error: any) {
-      console.error('[User Service] Failed to fetch profile:', error);
-      console.error('[User Service] Error details:', {
-        response: error.response,
-        message: error.message,
-        stack: error.stack,
-      });
       throw error;
     }
   }
 
   async fetchLeaderboard(): Promise<FetchLeaderboardResponse> {
     try {
-      console.log('[User Service] Fetching leaderboard');
       const response = await apiClient.get<FetchLeaderboardResponse>('/users/leaderboard');
       return response.data;
     } catch (error: any) {
-      console.error('[User Service] Failed to fetch leaderboard:', error);
       throw new Error(error.response?.data?.detail || error.message);
     }
   }
 
   async fetchUserQuizHistory(userId: string): Promise<QuizSession[]> {
     try {
-      console.log('[User Service] Fetching quiz history for user:', userId);
       if (AuthService.isGuestSession()) {
         const guestQuizzes = localStorage.getItem('guestQuizProgress');
         if (!guestQuizzes) return [];
@@ -263,16 +250,13 @@ class UserService {
       }
 
       const response = await apiClient.get<QuizHistoryResponse>(`/users/${userId}/sessions/`);
-      console.log('[User Service] Quiz history response:', response.data);
 
       if (!response.data) {
-        console.error('[User Service] Quiz history response data is undefined');
         return [];
       }
       const raw = response.data?.results;
 
       if (!Array.isArray(response.data.results)) {
-        console.error('[User Service] Quiz history results is not an array:', response.data);
         return [];
       }
 
@@ -294,12 +278,6 @@ class UserService {
           : [],
       }));
     } catch (error: any) {
-      console.error('[User Service] Failed to fetch quiz history:', error);
-      console.error('[User Service] Error details:', {
-        response: error.response,
-        message: error.message,
-        stack: error.stack,
-      });
       return [];
     }
   }
