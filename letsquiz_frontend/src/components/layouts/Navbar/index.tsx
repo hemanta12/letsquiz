@@ -52,6 +52,15 @@ export const Navbar: React.FC = () => {
                   />
                   Welcome, <span>{displayName}</span>
                 </span>
+                {/* Profile button */}
+                <button
+                  className={styles.profileButton}
+                  onClick={() => navigate('/profile')}
+                  aria-label="Go to profile"
+                  tabIndex={0}
+                >
+                  Profile
+                </button>
                 <button onClick={handleLogout} className={styles.logoutButton}>
                   Logout
                 </button>

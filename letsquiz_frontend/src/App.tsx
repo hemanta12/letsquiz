@@ -7,6 +7,7 @@ import ProtectedRoute from './utils/ProtectedRoute';
 import styles from './App.module.css';
 
 const Home = lazy(() => import('./pages/Home'));
+const Profile = lazy(() => import('./pages/Profile'));
 
 const LoadingFallback = () => (
   <RouteTransition>
@@ -75,6 +76,7 @@ const App: React.FC = () => {
                 <Route path="/results" element={<Results />} />
               </Route>
 
+              <Route path="/profile" element={<Profile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

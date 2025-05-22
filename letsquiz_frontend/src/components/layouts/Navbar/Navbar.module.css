@@ -77,6 +77,27 @@
   color: white;
 }
 
+.profileButton {
+  color: var(--color-primary);
+  background-color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  padding: var(--space-md) var(--space-xxl);
+  font-weight: bold;
+  font-size: var(--font-size-body);
+  margin-left: var(--space-sm);
+  margin-right: var(--space-sm);
+  transition: background-color 0.2s;
+}
+
+.profileButton:hover,
+.profileButton:focus {
+  background-color: var(--color-secondary-light);
+  color: white;
+  outline: none;
+}
+
 .menuItem {
   color: white;
   text-decoration: none;

@@ -1,0 +1,31 @@
+.profileCard {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 32px;
+  text-align: left;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(108, 92, 231, 0.08);
+}
+
+.title {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.infoRow {
+  margin-bottom: 16px;
+  font-size: 1.1rem;
+}
+
+.changePasswordRow {
+  margin-top: 32px;
+  text-align: center;
+  color: var(--color-secondary);
+}
+
+.error {
+  color: var(--color-danger);
+  text-align: center;
+  margin-top: 16px;
+}

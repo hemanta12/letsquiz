@@ -57,11 +57,13 @@ export const groupQuizSlice = createSlice({
     // Reducers for updating player scores and details within the group session
     updatePlayerScore: (state, action: PayloadAction<{ playerId: number; score: number }>) => {
       if (state.groupSession) {
-        state.groupSession.players = state.groupSession.players.map((player) =>
-          player.id === action.payload.playerId
-            ? { ...player, score: player.score + action.payload.score }
-            : player
-        );
+        if (state.groupSession.players) {
+          state.groupSession.players = state.groupSession.players.map((player) =>
+            player.id === action.payload.playerId
+              ? { ...player, score: player.score + action.payload.score }
+              : player
+          );
+        }
 
         // Update session activity timestamps
         state.groupSession.lastActive = new Date().toISOString();
@@ -71,35 +73,43 @@ export const groupQuizSlice = createSlice({
     // Reducer for setting temporary score for UI display
     setTempPlayerScore: (state, action: PayloadAction<{ playerId: number; tempScore: number }>) => {
       if (state.groupSession) {
-        state.groupSession.players = state.groupSession.players.map((player) =>
-          player.id === action.payload.playerId
-            ? { ...player, uiScore: player.score + action.payload.tempScore }
-            : { ...player, uiScore: undefined }
-        );
+        if (state.groupSession.players) {
+          state.groupSession.players = state.groupSession.players.map((player) =>
+            player.id === action.payload.playerId
+              ? { ...player, uiScore: player.score + action.payload.tempScore }
+              : { ...player, uiScore: undefined }
+          );
+        }
       }
     },
     // Reducer to reset temporary scores
     resetTempScores: (state) => {
       if (state.groupSession) {
-        state.groupSession.players = state.groupSession.players.map((player) => ({
-          ...player,
-          uiScore: undefined,
-        }));
+        if (state.groupSession.players) {
+          state.groupSession.players = state.groupSession.players.map((player) => ({
+            ...player,
+            uiScore: undefined,
+          }));
+        }
       }
     },
     updatePlayers: (state, action: PayloadAction<GroupPlayer[]>) => {
       if (state.groupSession) {
-        state.groupSession.players = action.payload;
+        if (state.groupSession.players) {
+          state.groupSession.players = action.payload;
+        }
       }
     },
 
     nextPlayer: (state) => {
       if (!state.groupSession) return;
-      const currentIndex = state.groupSession.players.findIndex(
-        (p) => p.id === state.groupSession?.currentPlayer
-      );
-      const nextIndex = (currentIndex + 1) % state.groupSession.players.length;
-      state.groupSession.currentPlayer = state.groupSession.players[nextIndex].id;
+      if (state.groupSession.players) {
+        const currentIndex = state.groupSession.players.findIndex(
+          (p) => p.id === state.groupSession?.currentPlayer
+        );
+        const nextIndex = (currentIndex + 1) % state.groupSession.players.length;
+        state.groupSession.currentPlayer = state.groupSession.players[nextIndex].id;
+      }
     },
     // Add loading and error reducers for potential thunks in this slice
     setLoading: (state, action: PayloadAction<boolean>) => {
