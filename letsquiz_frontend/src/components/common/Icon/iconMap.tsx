@@ -1,29 +1,74 @@
-import React from 'react';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
-import CloseIcon from '@mui/icons-material/Close';
-import CheckIcon from '@mui/icons-material/Check';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import PersonIcon from '@mui/icons-material/Person';
-import GroupIcon from '@mui/icons-material/Group';
-import ShuffleIcon from '@mui/icons-material/Shuffle';
-import MenuIcon from '@mui/icons-material/Menu';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { HiUserGroup } from 'react-icons/hi';
+import {
+  FiUser,
+  FiEdit2,
+  FiTrash2,
+  FiHome,
+  FiSettings,
+  FiLogIn,
+  FiLogOut,
+  FiPlus,
+  FiMinus,
+  FiCheck,
+  FiX,
+  FiMenu,
+  FiSearch,
+  FiBook,
+  FiClock,
+  FiAward,
+  FiHelpCircle,
+  FiAlertCircle,
+  FiBarChart,
+  FiList,
+  FiArrowRight,
+} from 'react-icons/fi';
+import { RiShuffleLine } from 'react-icons/ri';
+import { MdExpandMore, MdQuiz, MdTimer, MdLeaderboard, MdPlayArrow } from 'react-icons/md';
+import {
+  BsQuestionCircle,
+  BsCheckCircle,
+  BsTrophy,
+  BsXCircle,
+  BsBookmark,
+  BsBookmarkFill,
+} from 'react-icons/bs';
 import { IconName } from './types';
+import { IconType } from 'react-icons';
 
-export const icons: Record<IconName, React.FC> = {
-  play: PlayArrowIcon,
-  pause: PauseIcon,
-  close: CloseIcon,
-  check: CheckIcon,
-  arrowRight: ArrowForwardIcon,
-  person: PersonIcon,
-  group: GroupIcon,
-  shuffle: ShuffleIcon,
-  menu: MenuIcon,
-  edit: EditIcon,
-  expandMore: ExpandMoreIcon,
-  delete: DeleteIcon,
+export const icons: Record<IconName, IconType> = {
+  group: HiUserGroup,
+  person: FiUser,
+  shuffle: RiShuffleLine,
+  edit: FiEdit2,
+  delete: FiTrash2,
+  expandMore: MdExpandMore,
+  bookmarkFilled: BsBookmarkFill,
+
+  home: FiHome,
+  settings: FiSettings,
+  login: FiLogIn,
+  logout: FiLogOut,
+  add: FiPlus,
+  remove: FiMinus,
+  check: FiCheck,
+  close: FiX,
+  menu: FiMenu,
+  search: FiSearch,
+  book: FiBook,
+  timer: FiClock,
+  award: FiAward,
+  help: FiHelpCircle,
+  alert: FiAlertCircle,
+  chart: FiBarChart,
+  list: FiList,
+  question: BsQuestionCircle,
+  correct: BsCheckCircle,
+  wrong: BsXCircle,
+  trophy: BsTrophy,
+  bookmark: BsBookmark,
+  quiz: MdQuiz,
+  countdown: MdTimer,
+  leaderboard: MdLeaderboard,
+  play: MdPlayArrow,
+  arrowRight: FiArrowRight,
 };

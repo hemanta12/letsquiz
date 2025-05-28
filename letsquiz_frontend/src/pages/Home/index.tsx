@@ -8,11 +8,13 @@ import DifficultySelector from '../../components/Home/DifficultySelector';
 import useHomeSettings from '../../hooks/useHomeSettings';
 import QuizService from '../../services/quizService';
 import AuthService from '../../services/authService';
-import { useAppSelector } from '../../hooks/reduxHooks';
+import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
+import { setQuizSettings, resetQuiz } from '../../store/slices/quizSlice';
 import styles from './Home.module.css';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -52,9 +54,22 @@ const Home: React.FC = () => {
     })();
   }, []);
 
+  useEffect(() => {
+    dispatch(resetQuiz());
+  }, [dispatch]);
+
   const handleContinue = async () => {
     resetErrors();
     setFetchError('');
+    dispatch(
+      setQuizSettings({
+        mode: selectedMode,
+        category: selectedCategory?.name || '',
+        categoryId: isMixUpMode ? null : (selectedCategory?.id ?? null),
+        difficulty: selectedDifficulty,
+        numberOfQuestions: Number(numberOfQuestions),
+      })
+    );
 
     if (!validate()) return;
 

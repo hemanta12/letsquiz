@@ -1,21 +1,47 @@
 .results {
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
-  padding: var(--space-sm) 0;
+  padding: var(--space-md) 0;
   text-align: center;
-  background-color: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
 }
 
-.score {
-  margin-bottom: var(--space-xl);
+/* Solo mode card container */
+.scoreCard {
+  max-width: 90%;
+  margin: var(--space-lg) auto;
+  padding: var(--space-md);
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  text-align: center;
 }
 
-.scoreValue {
-  font-size: 64px;
+.iconPlaceholder {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto var(--space-md);
+  background-color: var(--color-primary-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.trophyIcon {
+  width: 48px;
+  height: 48px;
   color: var(--color-primary);
-  margin: var(--space-lg) 0;
+}
+
+.subtext {
+  margin-top: 5px;
+}
+
+.category,
+.difficulty {
+  color: var(--color-primary);
+  font-weight: bold;
+  letter-spacing: 1px;
 }
 
 .breakdown {
@@ -23,6 +49,7 @@
   grid-template-columns: repeat(2, 1fr);
   gap: var(--space-md);
   margin: var(--space-xl) 0;
+  padding: 0 var(--space-md);
 }
 
 .stat {
@@ -30,14 +57,41 @@
   border-radius: 8px;
 }
 
-.correct {
-  background-color: var(--color-easy);
-  color: white;
+.yourScore :first-child,
+.correctAnswers :first-child {
+  color: var(--color-text-secondary);
 }
 
-.incorrect {
-  background-color: var(--color-quiz-genius);
-  color: white;
+.yourScore :nth-child(2) {
+  color: var(--color-primary);
+  font-size: var(--font-size-title);
+}
+
+.yourScore {
+  background-color: var(--color-primary-light);
+}
+
+.correctAnswers {
+  background-color: var(--color-success-light);
+}
+.correctAnswers :nth-child(2) {
+  color: var(--color-success);
+  font-size: var(--font-size-title);
+}
+
+/* Encouragement banner */
+.banner {
+  margin: var(--space-xl) 0;
+  padding: var(--space-md) var(--space-lg);
+  background-color: var(--color-primary-light);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.bannerTitle {
+  font-weight: bold;
+  color: var(--color-primary);
+  margin-bottom: var(--space-xs);
 }
 
 .actions {
@@ -49,10 +103,14 @@
 }
 
 .groupResults {
-  margin: var(--space-xl) 0;
+  max-width: 90%;
+  margin: var(--space-xl) auto;
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+  padding: var(--space-xl);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .categoryInfo {

@@ -26,6 +26,7 @@ export default function useHomeSettings() {
 
   const handleInputChange = (value: string) => {
     if (value === '') {
+      setNumberOfQuestions('');
       handlePresetSelect('custom');
       setInputConfirmed(false);
       return;

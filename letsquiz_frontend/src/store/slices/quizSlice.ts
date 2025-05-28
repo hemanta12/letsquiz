@@ -202,6 +202,7 @@ export const startGroupQuiz = createAsyncThunk<
       const difficultyMap: { [key: string]: number } = {
         Easy: 1,
         Medium: 2,
+        Hard: 3,
         'Quiz Genius': 3,
       };
       const difficultyId = difficultyMap[difficulty];

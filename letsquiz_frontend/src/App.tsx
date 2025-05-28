@@ -28,11 +28,9 @@ const Quiz = lazy(() =>
 );
 
 const Results = lazy(() =>
-  import('./pages/Results')
-    .then((module) => ({ default: module.Results }))
-    .catch(() => ({
-      default: () => <ErrorFallback />,
-    }))
+  import('./pages/Results').catch(() => ({
+    default: () => <ErrorFallback />,
+  }))
 );
 
 const NotFound = () => (

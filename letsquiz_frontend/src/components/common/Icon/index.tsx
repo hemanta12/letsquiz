@@ -1,5 +1,4 @@
-import React from 'react';
-import { SvgIcon } from '@mui/material';
+import React, { ElementType } from 'react';
 import { icons } from './iconMap';
 import { IconProps } from './types';
 import styles from './Icon.module.css';
@@ -12,17 +11,23 @@ export const Icon: React.FC<IconProps> = ({
   style,
   ...props
 }) => {
-  const IconComponent = icons[name];
+  const IconComponent = icons[name] as ElementType;
   if (!IconComponent) return null;
 
-  const iconClassName = `${styles.icon} ${styles[size]} ${styles[color]} ${className || ''}`.trim();
+  const sizeMap = {
+    small: '20px',
+    medium: '24px',
+    large: '32px',
+  };
+
+  const finalSize = sizeMap[size] || size;
 
   return (
-    <span className={iconClassName} style={style}>
-      <SvgIcon
-        component={IconComponent}
-        fontSize={size}
-        color={color === 'inherit' ? 'inherit' : color}
+    <span className={`${styles.icon} ${className || ''}`} style={style}>
+      <IconComponent
+        size={finalSize}
+        color={color === 'inherit' ? 'currentColor' : color}
+        {...props}
       />
     </span>
   );
