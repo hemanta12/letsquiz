@@ -1,29 +1,31 @@
+/* ---------- Base Navbar Styles ---------- */
 .navbar {
-  background-color: var(--color-primary);
+  background-color: var(--color-background);
   padding: var(--space-lg) 0;
-  color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 10;
+  margin: 0 auto;
+  width: 100%;
+  border-bottom: 4px solid var(--color-border);
 }
 
 .container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: var(--container-desktop);
-  margin: 0 auto;
-  padding: 0 var(--space-md);
 }
 
+/* ---------- Left Zone: Logo ---------- */
 .logo {
+  position: relative;
+  display: flex;
+  align-items: center;
   font-size: var(--font-size-h2);
   font-weight: 900;
-  color: white;
+  color: var(--color-primary);
   text-decoration: none;
-  transition: color 0.2s ease-in-out;
-}
-
-.logo:hover {
-  color: var(--color-secondary-light);
+  margin-right: var(--space-lg);
+  padding-left: var(--space-md);
 }
 
 .logoIcon {
@@ -31,158 +33,223 @@
   vertical-align: middle;
 }
 
-.menuItems {
+/* ---------- Center Zone: Links ---------- */
+.centerLinks {
   display: flex;
+  align-items: center;
   gap: var(--space-lg);
 }
-.authSection {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-}
 
-.authenticatedUserGroup {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-}
-
-.welcomeIcon {
-  margin-right: var(--space-xs);
-  vertical-align: middle;
-}
-.welcomeMessage {
-  color: var(--color-secondary-light);
-  font-style: italic;
-  font-weight: bold;
-}
-
-.logoutButton {
-  color: var(--color-error);
-  background-color: white;
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  padding: var(--space-md) var(--space-xxl);
-  font: bolder;
-  border-radius: 8px;
-  text-decoration: none;
+.navLink {
+  background-color: var(--color-primary);
+  color: var(--color-background);
   font-size: var(--font-size-body);
-  padding: var(--space-md) var(--space-xxl);
+  font-weight: 600;
+  padding: var(--space-sm) var(--space-md);
+  text-decoration: none;
+  border-radius: 0.5rem;
+  border: 2px solid transparent;
   transition: background-color 0.3s ease-in-out;
 }
 
-.logoutButton:hover {
-  background-color: var(--color-quit);
-  color: white;
-}
-
-.profileButton {
+.navLink:hover,
+.navLinkActive {
+  background-color: var(--color-background);
   color: var(--color-primary);
-  background-color: white;
-  border: none;
-  border-radius: var(--border-radius);
   cursor: pointer;
-  padding: var(--space-md) var(--space-xxl);
-  font-weight: bold;
-  font-size: var(--font-size-body);
-  margin-left: var(--space-sm);
-  margin-right: var(--space-sm);
-  transition: background-color 0.2s;
+  transition: 0.3s ease-in-out;
+  border-bottom: 2px solid var(--color-primary);
+  border-radius: 0;
 }
 
-.profileButton:hover,
-.profileButton:focus {
-  background-color: var(--color-secondary-light);
+.navLink:hover {
+  transform: translateY(-2px);
+}
+
+/* ---------- Right Zone: Guest Buttons ---------- */
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+.hiddenButton {
+  visibility: hidden;
+}
+
+/* Login Button (secondary) */
+.loginButton {
+  background-color: transparent;
+  color: var(--color-text);
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--border-radius);
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease-in-out,
+    color 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
+}
+
+.loginButton:hover {
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+/* Sign Up Button (primary) */
+.signupButton {
+  background-color: var(--color-primary);
+  color: var(--color-background);
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  padding: var(--space-sm) var(--space-md);
+  text-decoration: none;
+  border-radius: 0.5rem;
+  border: 2px solid transparent;
+  transition:
+    background-color 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
+}
+
+.signupButton:hover {
+  background-color: var(--color-background);
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+/* ---------- Right Zone: Authenticated Section ---------- */
+.authenticatedSection {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.greeting {
   color: white;
+  font-size: var(--font-size-body);
+  font-weight: 500;
+  font-style: italic;
+}
+
+.avatarButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease-in-out;
+  border-radius: var(--border-radius);
+}
+
+.avatarButton:hover,
+.avatarButton:focus {
+  background-color: rgba(255, 255, 255, 0.1);
   outline: none;
 }
 
-.menuItem {
+.avatarIcon {
   color: white;
+  font-size: var(--icon-size-medium);
+}
+
+/* ---------- Dropdown Menu ---------- */
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--space-xs);
+  background-color: var(--color-background);
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-width: 160px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-xs) 0;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--color-text);
+  font-size: var(--font-size-body);
+  font-weight: 500;
   text-decoration: none;
-  transition: opacity 0.2s;
+  padding: var(--space-sm) var(--space-md);
+  transition: background-color 0.2s ease-in-out;
 }
 
-.menuItem:hover {
-  opacity: 0.8;
+.dropdownItem:hover,
+.dropdownItem:focus {
+  background-color: var(--color-skeleton-start);
+  outline: none;
 }
 
-.mobileMenuButton {
-  display: none;
+.dropdownIcon {
+  color: var(--color-icon-secondary);
+  font-size: var(--icon-size-small);
+}
+
+/* Logout (Danger) */
+.dropdownItemDanger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
   background: none;
   border: none;
-  color: white;
-  padding: var(--space-sm);
+  color: var(--color-error);
+  font-size: var(--font-size-body);
+  font-weight: 500;
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  width: 100%;
+  transition: background-color 0.2s ease-in-out;
   cursor: pointer;
 }
 
-.mobileMenuButton svg {
-  width: 24px;
-  height: 24px;
+.dropdownItemDanger:hover,
+.dropdownItemDanger:focus {
+  background-color: var(--color-error-light); /* rgba(239, 68, 68, 0.2) */
+  outline: none;
 }
 
-.loginLink {
-  color: white;
-  background-color: var(--color-easy);
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: var(--font-size-body);
-  padding: var(--space-md) var(--space-xxl);
-  transition: background-color 0.2s;
-}
-
-.loginLink:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.dashboardLink {
-  color: white;
-  text-decoration: none;
-  font-size: var(--font-size-body);
-  padding: var(--space-sm) var(--space-md);
-  border-radius: var(--border-radius);
-  transition: background-color 0.2s ease-in-out;
+/* ---------- Theme Toggle ---------- */
+.themeToggle {
+  background: none;
+  border: none;
+  color: var(--color-text);
+  padding: var(--space-sm);
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
   margin-right: var(--space-md);
 }
 
-.dashboardLink:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.3);
+.themeToggle:hover {
+  background-color: var(--color-primary-light);
 }
 
-@media (max-width: 768px) {
-  .mobileMenuButton {
-    display: block;
-    cursor: pointer;
-  }
-
-  .menuItems {
+/* ---------- Responsive (Placeholder for future mobile) ---------- */
+@media (max-width: var(--tablet)) {
+  /* 768px */
+  /* Hide center links on smaller screens until mobile layout is implemented */
+  .centerLinks {
     display: none;
-    position: fixed;
-    top: 60px;
-    left: 0;
-    right: 0;
-    background-color: var(--color-primary);
-    padding: var(--space-md);
-    flex-direction: column;
-    gap: var(--space-md);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
   }
-
-  .menuItems.isOpen {
-    display: flex;
-  }
-
-  .menuItem {
-    padding: var(--space-md);
-    width: 100%;
-    text-align: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .menuItem:last-child {
-    border-bottom: none;
+  .rightSection {
+    gap: var(--space-sm); /* 8px between items */
   }
 }

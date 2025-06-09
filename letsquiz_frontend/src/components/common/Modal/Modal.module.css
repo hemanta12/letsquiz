@@ -76,7 +76,8 @@
 .content {
   margin-top: var(--space-lg);
   line-height: 1.6;
-  color: var(--color-text);
+  /* color: var(--color-text); */
+  color: #2d3436;
 }
 
 .correctAnswer {

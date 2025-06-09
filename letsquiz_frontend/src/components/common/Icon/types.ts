@@ -32,7 +32,9 @@ export type IconName =
   | 'bookmarkFilled'
   | 'leaderboard'
   | 'quiz'
-  | 'countdown';
+  | 'countdown'
+  | 'sun'
+  | 'moon';
 
 export interface IconProps {
   name: IconName;

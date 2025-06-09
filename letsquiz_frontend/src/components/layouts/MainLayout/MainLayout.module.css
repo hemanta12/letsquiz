@@ -2,9 +2,9 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: var(--color-background);
 }
 
 .main {
   flex: 1;
-  padding: var(--space-md) 0;
 }

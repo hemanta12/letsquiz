@@ -21,6 +21,8 @@ import {
   FiBarChart,
   FiList,
   FiArrowRight,
+  FiSun,
+  FiMoon,
 } from 'react-icons/fi';
 import { RiShuffleLine } from 'react-icons/ri';
 import { MdExpandMore, MdQuiz, MdTimer, MdLeaderboard, MdPlayArrow } from 'react-icons/md';
@@ -71,4 +73,6 @@ export const icons: Record<IconName, IconType> = {
   leaderboard: MdLeaderboard,
   play: MdPlayArrow,
   arrowRight: FiArrowRight,
+  sun: FiSun,
+  moon: FiMoon,
 };

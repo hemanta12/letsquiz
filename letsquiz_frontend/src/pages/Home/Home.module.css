@@ -4,6 +4,7 @@
   gap: var(--space-lg);
   padding: var(--space-md) var(--space-md);
   width: 100%;
+  background-color: var(--color-background);
 }
 
 .welcomeMessage {
@@ -13,7 +14,8 @@
 }
 
 .guestBanner {
-  background-color: rgb(185, 185, 231);
+  background-color: var(--color-border);
+  color: var(--color-text);
   border-radius: 8px;
   padding: var(--space-md);
   margin: 0 auto var(--space-lg);
@@ -68,7 +70,7 @@
   width: 28px;
   height: 28px;
   background-color: var(--color-primary);
-  color: white;
+  color: var(--color-background);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -84,12 +86,12 @@
 }
 
 .modeSelector button {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  border: 3px solid var(--color-primary);
   padding: var(--space-md) var(--space-xl);
   width: 190px;
   height: 70px;
-  background-color: white;
-  color: var(--color-text);
-  border: 3px solid var(--color-primary);
   transition: all 0.3s ease;
   position: relative;
 }
@@ -101,16 +103,11 @@
   color: var(--color-text-secondary);
 }
 
-.modeSelector button:hover:not(:disabled) {
-  background-color: var(--color-primary);
-  color: white;
-  transform: translateY(-2px);
-}
-
+.modeSelector button:hover:not(:disabled),
 .modeSelector .selected {
   background-color: var(--color-primary);
-  color: white;
-  box-shadow: 0 2px 8px rgba(108, 92, 231, 0.4);
+  color: var(--color-background);
+  transform: translateY(-2px);
 }
 
 .categoryGrid {
@@ -133,6 +130,8 @@
   cursor: pointer;
   transition: transform 0.2s ease;
   position: relative;
+  background-color: var(--color-background);
+  color: var(--color-text);
 }
 
 .categoryCard.locked {
@@ -142,6 +141,7 @@
 }
 
 .categoryCard:not(.locked):hover {
+  border: 3px solid var(--color-primary);
   transform: translateY(-4px);
   will-change: transform;
 }
@@ -160,13 +160,6 @@
 
 .mixUpButton:hover {
   transform: translateY(-4px);
-  border: 3px solid var(--color-primary);
-  will-change: transform;
-}
-
-.mixUpButton.selected {
-  border: 3px solid var(--color-primary);
-  box-shadow: 0 2px 8px rgba(108, 92, 231, 0.2);
 }
 
 .difficultySelector {
@@ -178,6 +171,8 @@
 }
 
 .difficultySelector button {
+  background-color: var(--color-background);
+  color: var(--color-text);
   width: 180px;
   height: 60px;
   padding: var(--space-md) var(--space-xl);
@@ -185,40 +180,48 @@
   border: 5px solid transparent;
 }
 
-.easy {
-  border-color: var(--color-easy) !important;
+.easy,
+.medium,
+.quizgenius {
   background-color: transparent;
   color: black;
+}
+
+.easy {
+  border-color: var(--color-easy) !important;
 }
 
 .medium {
   border-color: var(--color-medium) !important;
-  background-color: transparent;
-  color: black;
 }
 
 .quizgenius {
   border-color: var(--color-quiz-genius) !important;
-  background-color: transparent;
-  color: black;
+}
+
+.easy:hover,
+.easy.selected,
+.medium:hover,
+.medium.selected,
+.quizgenius:hover,
+.quizgenius.selected {
+  color: var(--color-background) !important;
+  color: white;
 }
 
 .easy:hover,
 .easy.selected {
   background-color: var(--color-easy) !important;
-  color: white;
 }
 
 .medium:hover,
 .medium.selected {
   background-color: var(--color-medium) !important;
-  color: white;
 }
 
 .quizgenius:hover,
 .quizgenius.selected {
   background-color: var(--color-quiz-genius) !important;
-  color: white;
 }
 
 .minimalQuestionCount {

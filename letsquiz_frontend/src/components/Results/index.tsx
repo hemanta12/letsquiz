@@ -139,7 +139,7 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({
             {/* Action Buttons */}
             <div className={styles.actions}>
               <Button variant="primary" onClick={handlePlayAgain} aria-label="Play again">
-                Play Again
+                Play Another
               </Button>
               <Button
                 variant="secondary"
@@ -196,6 +196,7 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({
               </Button>
               <Button
                 variant="secondary"
+                className={styles.reviewButton}
                 onClick={handleReviewSession}
                 aria-label="Review your recent quiz session"
               >

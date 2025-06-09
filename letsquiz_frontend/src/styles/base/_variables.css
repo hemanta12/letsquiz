@@ -2,7 +2,7 @@
   /* Colors */
   --color-primary: #4f46e5;
   --color-secondary: #a8a5e6;
-  --color-background: #ffffff;
+  --color-background: #f9fafb;
   --color-text: #2d3436;
   --color-text-secondary: #64748b;
   --color-disabled: #b4b6b9;
@@ -66,9 +66,41 @@
   --container-mobile: calc(100% - 8px);
   --container-tablet: 740px;
   --container-desktop: 1140px;
+  --container-wide: 1500px;
 
   /* Component Sizes */
   --icon-size-small: 16px;
   --icon-size-medium: 24px;
   --icon-size-large: 32px;
+
+  /* Dark Theme Colors */
+  --color-primary-dark-theme: #c4b5fd;
+  --color-primary-dark-dark-theme: #a78bfa;
+  --color-secondary-dark-theme: #818df883;
+  --color-background-dark-theme: #1f2937;
+  --color-text-dark-theme: #f9fafb;
+
+  --color-text-secondary-dark-theme: #9ca3af;
+  --color-border-dark-theme: #374151;
+  --color-card-dark-theme: #111827;
+  --color-skeleton-start-dark-theme: #374151;
+  --color-skeleton-end-dark-theme: #4b5563;
+
+  /* Button Colors */
+  --color-button-text: #f9fafb;
+  --color-button-text-dark-theme: #1f2937;
+}
+
+/* Dark theme class */
+[data-theme='dark'] {
+  --color-primary: var(--color-primary-dark-theme);
+  --color-primary-dark: var(--color-primary-dark-dark-theme);
+  --color-secondary: var(--color-secondary-dark-theme);
+  --color-background: var(--color-background-dark-theme);
+  --color-text: var(--color-text-dark-theme);
+  --color-text-secondary: var(--color-text-secondary-dark-theme);
+  --color-border: var(--color-border-dark-theme);
+  --color-skeleton-start: var(--color-skeleton-start-dark-theme);
+  --color-skeleton-end: var(--color-skeleton-end-dark-theme);
+  --color-button-text: var(--color-button-text-dark-theme);
 }

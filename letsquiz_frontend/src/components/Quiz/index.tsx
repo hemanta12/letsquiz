@@ -368,6 +368,7 @@ export const QuizComponent: React.FC = () => {
         </Button>
         <Button
           variant="primary"
+          className={styles.nextOrFinishButton}
           disabled={!hasSelectedAnswer || isLoading || quizLoading}
           onClick={handleNext}
         >

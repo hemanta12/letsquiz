@@ -13,6 +13,7 @@
   .container {
     max-width: var(--container-desktop);
     margin: 0 auto;
+    padding: var(--space-sm) var(--space-xl);
     /* width: 100%; */
   }
 }

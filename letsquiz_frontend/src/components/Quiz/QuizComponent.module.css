@@ -2,9 +2,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
-  max-width: 900px;
+  max-width: 800px;
   margin: 0 auto;
-  padding: var(--space-md) 0;
+  padding: var(--space-sm) 0;
   position: relative;
 }
 
@@ -19,7 +19,7 @@
   height: 4px;
   background-color: var(--color-border);
   border-radius: 2px;
-  margin: var(--space-md) 0;
+  margin: var(--space-xs) 0;
 }
 
 .progressBar {
@@ -39,16 +39,29 @@
   flex-direction: column;
   gap: var(--space-lg);
   padding: var(--space-lg) 0;
+  margin-top: var(--space-md);
 }
 
 .option {
   margin: 0 auto;
-  width: 90%;
-  padding: var(--space-lg) var(--space-md);
+  width: 80%;
+  padding: var(--space-md) var(--space-sm);
   text-align: left;
   font-size: var(--font-size-h3);
   transition: all 0.2s ease;
   border: 2px solid transparent;
+  color: var(--color-button-text-dark-theme) !important;
+}
+.option:hover:not(:disabled) {
+  color: var(--color-background) !important;
+}
+
+.option:disabled:not(.correct) {
+  background-color: var(--color-danger-light) !important;
+}
+
+.option.correct:disabled {
+  background-color: var(--color-correct-light) !important;
 }
 
 .option.selected {
@@ -61,13 +74,52 @@
 }
 
 .option.incorrect {
-  background-color: rgba(181, 0, 0, 0.1) !important;
-  border-color: var(--color-quit) !important;
+  background-color: var(--color-danger-light) !important;
 }
 
-.option.wrong {
-  background-color: rgba(181, 0, 0, 0.1) !important;
-  border-color: transparent !important;
+.option.incorrect::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 6px;
+  height: 100%;
+  background-color: var(--color-quit);
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+.option.correct.selected::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 6px;
+  height: 100%;
+  background-color: var(--color-success);
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.option.incorrect::after,
+.option.correct.selected::after {
+  content: 'Your answer';
+  position: absolute;
+  right: var(--space-md);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--color-quit);
+  color: white;
+  font-size: 0.75rem;
+  padding: 0 var(--space-sm);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.option.correct.selected::after {
+  background-color: var(--color-success);
+}
+.option.incorrect::after {
+  background-color: var(--color-quit);
 }
 
 .feedback {
@@ -85,18 +137,8 @@
   margin-top: var(--space-sm);
 }
 
-.quitButton {
-  background-color: white;
-  color: black;
-  border: 3px solid var(--color-primary);
-}
-
-.quitButton:hover:not(:disabled) {
-  background-color: var(--color-quit);
-  transform: translateY(-2px);
-  will-change: transform;
-  color: white;
-  border: 3px solid transparent;
+.nextOrFinishButton {
+  color: var(--color-button-text);
 }
 
 .error {

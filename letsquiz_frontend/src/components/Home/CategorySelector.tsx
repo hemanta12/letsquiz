@@ -28,7 +28,7 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
     <div role="group" aria-label="Select category" className={styles.categoryGrid}>
       {categories.map((cat) => {
         const requiresAuth = cat.id > 3;
-        const isSelected = selectedCategoryId === cat.id;
+        const isSelected = selectedCategoryId === cat.id && !isMixUp;
         return (
           <Card
             key={cat.id}

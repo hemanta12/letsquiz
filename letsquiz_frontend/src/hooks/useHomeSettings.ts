@@ -12,8 +12,15 @@ export default function useHomeSettings() {
   const [error, setError] = useState<string>('');
 
   const toggleMixUp = () => {
-    setCategory(null);
-    setMixUpMode((prev) => !prev);
+    if (!isMixUpMode) {
+      setCategory(null);
+      setMixUpMode(true);
+    }
+  };
+
+  const handleCategorySelect = (cat: Category) => {
+    setMixUpMode(false);
+    setCategory(cat);
   };
 
   const handlePresetSelect = (count: number | 'custom') => {
@@ -66,7 +73,7 @@ export default function useHomeSettings() {
     selectedMode,
     setMode,
     selectedCategory,
-    setCategory,
+    setCategory: handleCategorySelect,
     isMixUpMode,
     toggleMixUp,
     selectedDifficulty,

@@ -11,7 +11,7 @@
   max-width: 90%;
   margin: var(--space-lg) auto;
   padding: var(--space-md);
-  background-color: #ffffff;
+  background-color: var(--color-background);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   text-align: center;
@@ -100,6 +100,9 @@
   align-items: center;
   gap: var(--space-md);
   margin: var(--space-xl) auto 0;
+}
+.reviewButton {
+  color: var(--color-button-text) !important;
 }
 
 .groupResults {

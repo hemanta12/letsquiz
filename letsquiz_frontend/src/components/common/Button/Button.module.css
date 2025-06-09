@@ -1,6 +1,5 @@
 .button {
-  border: none;
-  border-radius: 4px;
+  border: 1px solid transparent;
   font-family: var(--font-family);
   font-weight: 500;
   cursor: pointer;
@@ -14,27 +13,28 @@
 
 .primary {
   background-color: var(--color-primary);
-  color: white;
+  color: var(--color-button-text);
 }
 
 .primary:hover:not(:disabled) {
-  background-color: var(--color-primary-dark);
+  /* background-color: var(--color-primary-dark); */
   transform: translateY(-2px);
 }
 
 .secondary {
-  background-color: var(--color-secondary);
+  background-color: var(--color-secondary-dark);
   color: var(--color-text);
 }
 
 .secondary:hover:not(:disabled) {
-  background-color: var(--color-secondary-dark);
+  background-color: var(--color-primary);
+  color: var(--color-background);
   transform: translateY(-2px);
 }
 
 .quit {
   background-color: var(--color-quit);
-  color: white;
+  color: #f9fafb;
 }
 
 .text {

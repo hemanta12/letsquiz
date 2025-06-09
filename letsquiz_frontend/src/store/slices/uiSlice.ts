@@ -21,6 +21,7 @@ interface UIState {
     isSharing: boolean;
     error: string | null;
   };
+  theme: 'light' | 'dark';
 }
 
 const initialState: UIState = {
@@ -40,6 +41,7 @@ const initialState: UIState = {
     isSharing: false,
     error: null,
   },
+  theme: (localStorage.getItem('theme') as 'light' | 'dark') || 'light',
 };
 
 export const uiSlice = createSlice({
@@ -73,12 +75,24 @@ export const uiSlice = createSlice({
         error: action.payload.error || null,
       };
     },
+    toggleTheme: (state) => {
+      state.theme = state.theme === 'light' ? 'dark' : 'light';
+      localStorage.setItem('theme', state.theme);
+      document.documentElement.setAttribute('data-theme', state.theme);
+    },
     resetUI: () => initialState,
   },
 });
 
-export const { setLoading, setError, setModal, setFeedback, setSharingState, resetUI } =
-  uiSlice.actions;
+export const {
+  setLoading,
+  setError,
+  setModal,
+  setFeedback,
+  setSharingState,
+  toggleTheme,
+  resetUI,
+} = uiSlice.actions;
 
 // Selectors
 export const selectUI = (state: RootState) => state.ui;
