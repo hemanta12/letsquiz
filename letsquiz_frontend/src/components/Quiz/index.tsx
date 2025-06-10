@@ -2,7 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
 import { Button, Typography, Loading, Modal } from '../../components/common';
-import { selectUI, setLoading, setError, setModal, setFeedback } from '../../store/slices/uiSlice';
+import {
+  selectUI,
+  setLoading,
+  setError,
+  setModal,
+  setFeedback,
+  resetUI,
+} from '../../store/slices/uiSlice';
 import { updateGuestProgress } from '../../store/slices/authSlice';
 import { GroupPlayer } from '../../types/quiz.types';
 import {
@@ -21,6 +28,7 @@ import UserService from '../../services/userService';
 export const QuizComponent: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
   const { isLoading, error, modals, feedback } = useAppSelector(selectUI);
   const { isGuest, featureGates, user } = useAppSelector((state) => state.auth);
   const {
@@ -86,10 +94,17 @@ export const QuizComponent: React.FC = () => {
   }, [migrationState.inProgress, user, isGuest, dispatch]);
 
   useEffect(() => {
-    if (questions.length === 0 && !quizLoading && !quizError) {
-      dispatch(fetchQuizQuestions({ category: categoryId, difficulty }));
+    // Only fetch if we don't have questions and aren't already loading
+    if (!questions.length && !quizLoading && !quizError && categoryId && difficulty) {
+      dispatch(
+        fetchQuizQuestions({
+          category: categoryId,
+          difficulty,
+          count: settings.numberOfQuestions,
+        })
+      );
     }
-  }, [dispatch, categoryId, difficulty, questions.length, quizLoading, quizError]);
+  }, [categoryId, difficulty]);
 
   const handleAnswerSelect = async (answer: string) => {
     if (!hasSelectedAnswer && !isLoading && !quizLoading) {
@@ -129,6 +144,19 @@ export const QuizComponent: React.FC = () => {
     if (event.key === 'Enter' || event.key === ' ') {
       handleAnswerSelect(option);
     }
+  };
+
+  const cleanupAndNavigate = (path: string) => {
+    dispatch(resetQuiz());
+    dispatch(resetTempScores());
+    dispatch(resetUI());
+    dispatch(setFeedback({ show: false, isCorrect: false }));
+    setTimeout(() => navigate(path), 0);
+  };
+
+  const handleQuitConfirm = () => {
+    dispatch(setModal({ type: 'quitQuiz', isOpen: false }));
+    cleanupAndNavigate('/');
   };
 
   const handleNext = async () => {
@@ -188,11 +216,9 @@ export const QuizComponent: React.FC = () => {
             });
           }
 
-          console.log('[Quiz] Saving quiz session with payload:', quizSessionData);
-
           const resultAction = await dispatch(saveQuizSessionThunk(quizSessionData));
           if (saveQuizSessionThunk.rejected.match(resultAction)) {
-            console.error('Error saving quiz session:', resultAction.payload);
+            dispatch(setError('Failed to save quiz session. Your progress might not be recorded.'));
           }
         }
 
@@ -210,33 +236,11 @@ export const QuizComponent: React.FC = () => {
         dispatch(nextQuestion());
       }
     } catch (err) {
-      dispatch(setError('Error moving to next question'));
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
+      dispatch(setError(errorMessage));
     } finally {
       dispatch(setLoading(false));
     }
-  };
-
-  const handleQuitConfirm = () => {
-    dispatch(resetQuiz());
-    dispatch(setModal({ type: 'quitQuiz', isOpen: false }));
-    navigate('/');
-  };
-
-  const handleUpgradeStart = async () => {
-    if (user && 'id' in user && !isGuest) {
-      setMigrationState({
-        inProgress: true,
-        progress: 0,
-        currentStep: 'Initializing migration',
-      });
-      try {
-        await UserService.transferGuestData(String(user.id));
-      } catch (error) {
-        console.error('Migration error:', error);
-      }
-    }
-    dispatch(setModal({ type: 'upgradePrompt', isOpen: false }));
-    navigate('/signup');
   };
 
   if (isLoading || quizLoading) {

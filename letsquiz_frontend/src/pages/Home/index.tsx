@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Typography, Button } from '../../components/common';
+import { Typography, Button, Icon } from '../../components/common';
 import ModeSelector from '../../components/Home/ModeSelector';
 import QuestionCountSelector from '../../components/Home/QuestionCountSelector';
-import CategorySelector, { Category } from '../../components/Home/CategorySelector';
+import CategorySelector from '../../components/Home/CategorySelector';
 import DifficultySelector from '../../components/Home/DifficultySelector';
 import useHomeSettings from '../../hooks/useHomeSettings';
-import QuizService from '../../services/quizService';
 import AuthService from '../../services/authService';
 import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
 import { setQuizSettings, resetQuiz } from '../../store/slices/quizSlice';
@@ -17,8 +16,6 @@ const Home: React.FC = () => {
   const dispatch = useAppDispatch();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loadingCategories, setLoadingCategories] = useState(true);
   const [fetchError, setFetchError] = useState<string>('');
 
   const {
@@ -31,28 +28,11 @@ const Home: React.FC = () => {
     selectedDifficulty,
     setDifficulty,
     selectedQuestionCount,
-    handlePresetSelect,
-    numberOfQuestions,
-    handleInputChange,
-    handleInputBlur,
-    inputConfirmed,
+    handleQuestionCountSelect,
     error,
     resetErrors,
     validate,
   } = useHomeSettings();
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const data = await QuizService.fetchCategories();
-        setCategories(data);
-      } catch (e: any) {
-        setFetchError(e.message);
-      } finally {
-        setLoadingCategories(false);
-      }
-    })();
-  }, []);
 
   useEffect(() => {
     dispatch(resetQuiz());
@@ -61,46 +41,43 @@ const Home: React.FC = () => {
   const handleContinue = async () => {
     resetErrors();
     setFetchError('');
-    dispatch(
-      setQuizSettings({
-        mode: selectedMode,
-        category: selectedCategory?.name || '',
-        categoryId: isMixUpMode ? null : (selectedCategory?.id ?? null),
-        difficulty: selectedDifficulty,
-        numberOfQuestions: Number(numberOfQuestions),
-      })
-    );
 
     if (!validate()) return;
 
     if (selectedMode === 'Group') {
+      dispatch(
+        setQuizSettings({
+          mode: selectedMode,
+          category: selectedCategory?.name || '',
+          categoryId: isMixUpMode ? null : (selectedCategory?.id ?? null),
+          difficulty: selectedDifficulty,
+          numberOfQuestions: selectedQuestionCount,
+        })
+      );
       navigate('/player-setup');
       return;
     }
 
     try {
       await AuthService.createGuestSession();
-      const available = await QuizService.checkQuizDataAvailability(
-        isMixUpMode ? null : selectedCategory?.id,
-        selectedDifficulty
+      dispatch(
+        setQuizSettings({
+          mode: selectedMode,
+          category: selectedCategory?.name || '',
+          categoryId: isMixUpMode ? null : (selectedCategory?.id ?? null),
+          difficulty: selectedDifficulty,
+          numberOfQuestions: selectedQuestionCount,
+        })
       );
-      if (!available) {
-        setFetchError('No quiz data available for the selected category and difficulty.');
-        return;
-      }
       navigate('/quiz');
     } catch (e: any) {
       setFetchError(e.message);
     }
   };
 
-  if (loadingCategories) {
-    return <Typography className={styles.home}>Loading categories...</Typography>;
-  }
-
   return (
     <div className={styles.home}>
-      <Typography variant="h2" className={styles.welcomeMessage}>
+      <Typography variant="h1" className={styles.welcomeMessage}>
         Welcome to LetsQuiz
       </Typography>
 
@@ -124,11 +101,7 @@ const Home: React.FC = () => {
           <ModeSelector value={selectedMode} onChange={setMode} />
           <QuestionCountSelector
             selectedCount={selectedQuestionCount}
-            numberInput={numberOfQuestions}
-            inputConfirmed={inputConfirmed}
-            onSelectPreset={handlePresetSelect}
-            onInputChange={handleInputChange}
-            onInputBlur={handleInputBlur}
+            onSelectPreset={handleQuestionCountSelect}
           />
         </div>
       </div>
@@ -143,7 +116,6 @@ const Home: React.FC = () => {
         </div>
         <div className={styles.sectionContent}>
           <CategorySelector
-            categories={categories}
             selectedCategoryId={selectedCategory?.id ?? null}
             isMixUp={isMixUpMode}
             onSelect={(cat) => setCategory(cat)}
@@ -175,6 +147,7 @@ const Home: React.FC = () => {
       <div className={styles.startQuiz}>
         <Button variant="primary" onClick={handleContinue} className={styles.continueButton}>
           Start Quiz
+          <Icon name="arrowRight" className={styles.arrowIcon} />
         </Button>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { MainLayout } from './components/layouts/MainLayout';
 import { RouteTransition } from './components/layouts/RouteTransition';
 import ProtectedRoute from './utils/ProtectedRoute';
 import styles from './App.module.css';
+import { QuizStateHandler } from './components/Quiz/QuizStateHandler';
 
 const Home = lazy(() => import('./pages/Home'));
 const Profile = lazy(() => import('./pages/Profile'));
@@ -51,6 +52,7 @@ const App: React.FC = () => {
   return (
     <div className={styles.appContainer}>
       <MainLayout>
+        <QuizStateHandler />
         <AnimatePresence mode="wait">
           <Suspense fallback={<LoadingFallback />}>
             <Routes>

@@ -1,13 +1,13 @@
 import React, { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button, Typography, Modal, Icon } from '../../components/common';
-import { useAppDispatch } from '../../hooks/reduxHooks';
-import { resetQuiz } from '../../store/slices/quizSlice';
-import { clearSelectedDetailedSession } from '../../store/slices/userSlice';
 import ActivityDetailContent from '../../components/Dashboard/ActivityDetailContent';
 import { GroupPlayer, SessionDetail, QuestionDetail } from '../../types/dashboard.types';
 import { Question } from '../../types/api.types';
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../../hooks/reduxHooks';
+import { resetQuiz } from '../../store/slices/quizSlice';
+import { resetTempScores } from '../../store/slices/groupQuizSlice';
 import styles from './Results.module.css';
 
 interface ResultsComponentProps {
@@ -29,23 +29,25 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({
   selectedAnswers,
   groupSession,
 }) => {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const totalQuestions = questions.length;
   const percentage = Math.round((score / totalQuestions) * 100);
 
   const [showModal, setShowModal] = useState(false);
   const [selectedSession, setSelectedSession] = useState<SessionDetail | null>(null);
 
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  // Only reset state when navigating away from results
   const handlePlayAgain = () => {
     dispatch(resetQuiz());
+    dispatch(resetTempScores());
     navigate('/');
   };
 
   const handleCloseModal = useCallback(() => {
     setShowModal(false);
-    dispatch(clearSelectedDetailedSession());
-  }, [dispatch]);
+  }, []);
 
   const handleReviewSession = () => {
     const sessionDetail: SessionDetail = {

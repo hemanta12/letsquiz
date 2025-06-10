@@ -57,9 +57,7 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Error creating user account")
 
     def to_representation(self, instance):
-        # logger.info(f"[UserSerializer] Serializing user instance: {instance.id}, {instance.email}")
         data = super().to_representation(instance)
-        # logger.info(f"[UserSerializer] Serialized data: {data}")
         return data
 
 class AccountVerificationSerializer(serializers.Serializer):
@@ -145,32 +143,20 @@ class QuizSessionStartSerializer(serializers.Serializer):
     players = serializers.ListField(child=serializers.CharField(max_length=100), required=False)
 
     def validate(self, data):
-        # Validate category_id if provided
+        # Only validate if questions exist for the given category
         category_id = data.get('category_id')
-        if category_id is not None:
-            try:
-                Category.objects.get(id=category_id)
-            except Category.DoesNotExist:
-                raise ValidationError({"category_id": ["Invalid category ID."]})
+        if category_id and not Question.objects.filter(category_id=category_id).exists():
+            raise ValidationError({"category_id": ["No questions available for this category."]})
 
-        # Validate difficulty_id if provided
-        difficulty_id = data.get('difficulty_id')
-        if difficulty_id is not None:
-            try:
-                DifficultyLevel.objects.get(id=difficulty_id)
-            except DifficultyLevel.DoesNotExist:
-                raise ValidationError({"difficulty_id": ["Invalid difficulty ID."]})
-
-        # Validate players for group mode
+        # Validate group mode requirements
         mode = data.get('mode')
-        players = data.get('players')
-        if mode == 'group' and not players:
-            raise ValidationError({"players": ["Player names are required for group mode."]})
-        if mode == 'group' and players:
-            if len(players) < 2:
+        players = data.get('players', [])
+        if mode == 'group':
+            if not players or len(players) < 2:
                 raise ValidationError({"players": ["At least two players are required for group mode."]})
             if len(set(name.strip().lower() for name in players)) != len(players):
                 raise ValidationError({"players": ["All player names must be unique."]})
+
         return data
 
 class GroupPlayerSerializer(serializers.ModelSerializer):

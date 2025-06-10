@@ -94,7 +94,8 @@ class QuizService {
       }
     }
 
-    const cacheKey = `${params?.category !== undefined && params.category !== null ? params.category : 'all'}-${params?.difficulty || 'all'}`;
+    // const cacheKey = `${params?.category !== undefined && params.category !== null ? params.category : 'all'}-${params?.difficulty || 'all'}`;
+    const cacheKey = `${params?.category ?? 'all'}-${params?.difficulty || 'all'}-${params?.count ?? 10}`;
 
     try {
       const cached = questionCache[cacheKey];

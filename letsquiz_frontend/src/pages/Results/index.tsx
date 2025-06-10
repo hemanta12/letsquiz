@@ -7,8 +7,6 @@ const ResultsPage: React.FC = () => {
     (state) => state.quiz
   );
   const groupSession = useAppSelector((state) => state.groupQuiz.groupSession);
-
-  // Ensure mode is either 'Solo' or 'Group'
   const safeMode = mode === 'Solo' || mode === 'Group' ? mode : 'Solo';
 
   return (

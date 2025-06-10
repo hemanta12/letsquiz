@@ -9,7 +9,7 @@
 
 .welcomeMessage {
   text-align: center;
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-sm);
   font-weight: 700;
 }
 
@@ -17,8 +17,8 @@
   background-color: var(--color-border);
   color: var(--color-text);
   border-radius: 8px;
-  padding: var(--space-md);
-  margin: 0 auto var(--space-lg);
+  padding: var(--space-xs);
+  margin: 0 auto;
   width: 100%;
   max-width: 600px;
   text-align: center;
@@ -38,11 +38,11 @@
 }
 
 .section {
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   border-radius: 8px;
   display: flex;
   align-items: flex-start;
-  gap: var(--space-xl);
+  gap: var(--space-lg);
   padding: var(--space-md);
 }
 
@@ -89,9 +89,8 @@
   background-color: var(--color-background);
   color: var(--color-text);
   border: 3px solid var(--color-primary);
-  padding: var(--space-md) var(--space-xl);
-  width: 190px;
-  height: 70px;
+  width: 160px;
+  height: 55px;
   transition: all 0.3s ease;
   position: relative;
 }
@@ -112,38 +111,51 @@
 
 .categoryGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: var(--space-md);
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-lg);
   justify-items: center;
-  align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
   padding: var(--space-md) 0;
 }
 
 .categoryCard {
-  width: 120px;
-  height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.2s ease;
   position: relative;
-  background-color: var(--color-background);
-  color: var(--color-text);
+  width: 168px;
+  aspect-ratio: 1/1.15;
+  border-radius: 8px;
+  overflow: hidden;
+
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  color: white;
 }
 
-.categoryCard.locked {
-  opacity: 0.7;
-  cursor: not-allowed;
-  border-color: var(--color-gray-300);
+.categoryTitle {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 1rem;
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  z-index: 1;
+  pointer-events: none;
+  letter-spacing: 1px;
 }
 
-.categoryCard:not(.locked):hover {
-  border: 3px solid var(--color-primary);
-  transform: translateY(-4px);
-  will-change: transform;
+.categoryCard:hover,
+.categoryCard:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.selected {
+  outline: 3px solid var(--color-primary) !important;
+  outline-offset: 2px;
 }
 
 .mixUpButton {
@@ -151,15 +163,19 @@
   justify-content: center;
   align-items: center;
   width: fit-content;
-  height: 45px;
+  height: 40px;
   margin: var(--space-md) auto 0;
   padding: var(--space-sm) var(--space-xl);
-  border: 2px solid transparent;
+  background: transparent;
+  border: 3px solid var(--color-secondary);
   transition: all 0.3s ease;
 }
 
-.mixUpButton:hover {
+.mixUpButton:hover,
+.mixUpButton.selected {
+  background-color: var(--color-primary);
   transform: translateY(-4px);
+  border: 3px solid var(--color-primary);
 }
 
 .difficultySelector {
@@ -173,9 +189,8 @@
 .difficultySelector button {
   background-color: var(--color-background);
   color: var(--color-text);
-  width: 180px;
-  height: 60px;
-  padding: var(--space-md) var(--space-xl);
+  width: 160px;
+  height: 55px;
   transition: all 0.3s ease;
   border: 5px solid transparent;
 }
@@ -227,7 +242,7 @@
 .minimalQuestionCount {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
   margin-top: var(--space-md);
   justify-content: center;
 }
@@ -236,6 +251,7 @@
   display: flex;
   gap: var(--space-xs);
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .questionCountButtonMinimal {
@@ -245,28 +261,6 @@
   font-size: var(--font-size-small);
 }
 
-.questionCountInputMinimal {
-  width: 8rem;
-  padding: var(--space-sm) var(--space-md);
-  text-align: center;
-  border: 2px solid var(--color-primary);
-  border-radius: 4px;
-  transition: all 0.3s ease;
-  font-size: var(--font-size-small);
-}
-
-.questionCountInputMinimal.confirmed {
-  border-color: var(--color-success);
-  background-color: var(--color-success-light);
-  box-shadow: 0 4px 6px rgba(0, 122, 51, 0.2);
-}
-
-.questionCountInputMinimal:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 8px var(--color-primary);
-}
-
 .startQuiz {
   display: flex;
   justify-content: flex-end;
@@ -274,7 +268,7 @@
 }
 
 .startQuiz button {
-  width: 280px;
+  width: 250px;
   height: 75px;
   font-size: var(--font-size-h3);
 }
@@ -286,8 +280,20 @@
 }
 
 .continueButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
   width: 100%;
   margin-top: 20px;
+}
+
+.arrowIcon {
+  transition: transform 0.2s ease-in-out;
+}
+
+.continueButton:hover .arrowIcon {
+  transform: translateX(8px);
 }
 
 @media screen and (max-width: 768px) {
@@ -332,7 +338,6 @@
   }
   .modeSelector {
     gap: var(--space-sm);
-    flex-direction: column;
   }
   .modeSelector button {
     width: 100%;
@@ -341,18 +346,16 @@
     font-size: var(--font-size-small);
   }
   .categoryGrid {
-    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
     gap: var(--space-sm);
   }
   .categoryCard {
     width: 90px;
-    height: 90px;
   }
   .mixUpButton {
     margin-top: var(--space-sm);
   }
   .difficultySelector {
-    flex-direction: column;
     width: 100%;
     gap: var(--space-sm);
     padding: var(--space-sm);

@@ -141,54 +141,53 @@ def start_quiz_session_view(request):
         difficulty_id = serializer.validated_data.get('difficulty_id')
         count = serializer.validated_data['count']
         mode = serializer.validated_data['mode']
-        players_data = serializer.validated_data.get('players', []) # Get player names from validated data
+        players_data = serializer.validated_data.get('players', [])
 
-        # Create quiz session
-        quiz_session = QuizSession(score=0) 
-        if request.user.is_authenticated:
-            quiz_session.user = request.user
-        # Set is_group_session to True if mode is 'group'
-        if mode == 'group':
-            quiz_session.is_group_session = True
-        quiz_session.save()
-        
-        # Create GroupPlayer instances for group mode
-        if mode == 'group' and players_data:
-            group_players = [GroupPlayer(quiz_session=quiz_session, name=name) for name in players_data]
-            GroupPlayer.objects.bulk_create(group_players)
-
-        # Select questions
+        # Direct question query without additional category existence check
         queryset = Question.objects.filter(is_seeded=True)
         if category_id:
-            queryset = queryset.filter(category__id=category_id)
-        if difficulty_id:
-            queryset = queryset.filter(difficulty__id=difficulty_id)
+            queryset = queryset.filter(category_id=category_id)
+            if not queryset.exists():
+                return Response({
+                    'error': 'No questions available for the selected category.',
+                    'code': 'invalid_category'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
-        if queryset.count() < count:
+        if difficulty_id:
+            queryset = queryset.filter(difficulty_id=difficulty_id)
+
+        available_questions = queryset.count()
+        if available_questions < count:
             return Response({
                 'error': 'Insufficient questions available for the selected criteria.',
                 'code': 'insufficient_questions'
             }, status=status.HTTP_400_BAD_REQUEST)
 
+        # Create quiz session
+        quiz_session = QuizSession.objects.create(
+            score=0,
+            user=request.user if request.user.is_authenticated else None,
+            is_group_session=(mode == 'group')
+        )
+
+        # Create group players in bulk if needed
+        if mode == 'group' and players_data:
+            GroupPlayer.objects.bulk_create([
+                GroupPlayer(quiz_session=quiz_session, name=name)
+                for name in players_data
+            ])
+
+        # Select and create questions in bulk
         selected_questions = list(queryset.order_by('?')[:count])
-        quiz_session_questions = [
+        QuizSessionQuestion.objects.bulk_create([
             QuizSessionQuestion(quiz_session=quiz_session, question=q)
             for q in selected_questions
-        ]
-        QuizSessionQuestion.objects.bulk_create(quiz_session_questions)
+        ])
 
-        # Fetch category and difficulty objects to include names/labels in response
-        category_name = Category.objects.get(id=category_id).name if category_id else 'Mixed'
-        difficulty_label = DifficultyLevel.objects.get(id=difficulty_id).label if difficulty_id else 'Unknown'
-
-        # Serialize the created quiz session including group players
+        # Serialize and return without additional category/difficulty lookups
         session_serializer = QuizSessionSerializer(quiz_session)
-
-        # Combine serialized session data with category name and difficulty label
         response_data = session_serializer.data
-        response_data['category'] = category_name
-        response_data['difficulty'] = difficulty_label
-        response_data['totalQuestions'] = count 
+        response_data['totalQuestions'] = count
 
         return Response(response_data, status=status.HTTP_201_CREATED)
 
@@ -408,14 +407,11 @@ def delete_quiz_session_view(request, sessionId):
                 'code': 'permission_denied'
             }, status=status.HTTP_403_FORBIDDEN)
 
-        # Delete associated quiz session questions first
         QuizSessionQuestion.objects.filter(quiz_session=quiz_session).delete()
         
-        # Delete group players if it's a group session
         if quiz_session.is_group_session:
             GroupPlayer.objects.filter(quiz_session=quiz_session).delete()
 
-        # Delete the quiz session
         quiz_session.delete()
 
         logger.info(f"delete_quiz_session_view: Quiz session {sessionId} deleted by user {request.user.id}")

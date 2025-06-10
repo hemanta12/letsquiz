@@ -6,9 +6,7 @@ export default function useHomeSettings() {
   const [selectedCategory, setCategory] = useState<Category | null>(null);
   const [isMixUpMode, setMixUpMode] = useState(false);
   const [selectedDifficulty, setDifficulty] = useState('');
-  const [selectedQuestionCount, setQuestionCount] = useState<number | 'custom'>(10);
-  const [numberOfQuestions, setNumberOfQuestions] = useState('');
-  const [inputConfirmed, setInputConfirmed] = useState(false);
+  const [selectedQuestionCount, setQuestionCount] = useState<number>(10);
   const [error, setError] = useState<string>('');
 
   const toggleMixUp = () => {
@@ -23,34 +21,9 @@ export default function useHomeSettings() {
     setCategory(cat);
   };
 
-  const handlePresetSelect = (count: number | 'custom') => {
+  const handleQuestionCountSelect = (count: number) => {
     setQuestionCount(count);
-    if (count !== 'custom') {
-      setNumberOfQuestions('');
-      setInputConfirmed(false);
-    }
   };
-
-  const handleInputChange = (value: string) => {
-    if (value === '') {
-      setNumberOfQuestions('');
-      handlePresetSelect('custom');
-      setInputConfirmed(false);
-      return;
-    }
-    const num = Number(value);
-    if (!Number.isInteger(num) || num < 1) return;
-    setNumberOfQuestions(value);
-    setQuestionCount('custom');
-    setInputConfirmed(false);
-  };
-
-  const handleInputBlur = () => {
-    const num = parseInt(numberOfQuestions, 10);
-    setInputConfirmed(Number.isInteger(num) && num > 0);
-  };
-
-  const resetErrors = () => setError('');
 
   const validate = (): boolean => {
     if (!selectedCategory && !isMixUpMode) {
@@ -61,13 +34,11 @@ export default function useHomeSettings() {
       setError('Please select a difficulty level');
       return false;
     }
-    if (selectedQuestionCount === 'custom' && (!inputConfirmed || !numberOfQuestions)) {
-      setError('Number of questions must be more than 0');
-      return false;
-    }
     setError('');
     return true;
   };
+
+  const resetErrors = () => setError('');
 
   return {
     selectedMode,
@@ -79,11 +50,7 @@ export default function useHomeSettings() {
     selectedDifficulty,
     setDifficulty,
     selectedQuestionCount,
-    handlePresetSelect,
-    numberOfQuestions,
-    handleInputChange,
-    handleInputBlur,
-    inputConfirmed,
+    handleQuestionCountSelect,
     error,
     resetErrors,
     validate,
