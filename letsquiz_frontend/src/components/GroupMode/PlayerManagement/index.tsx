@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Player } from '../../../types/group.types';
-import { Button, Input, Typography } from '../../common';
+import { Button, Input, Typography, Icon } from '../../common';
 import styles from './PlayerManagement.module.css';
 import { RootState } from '../../../store/store';
 
@@ -58,7 +58,9 @@ export const PlayerManagement: React.FC<PlayerManagementProps> = ({ onPlayersCon
   return (
     <div className={styles.playerManagement}>
       <div className={styles.playerSetup}>
-        <Typography variant="h2">Group Mode - Player Setup</Typography>
+        <Typography variant="h2" className={styles.title}>
+          Group Mode - Player Setup
+        </Typography>
         <Typography variant="body1">
           Add players to start the quiz. You can add up to 6 players.
         </Typography>
@@ -77,7 +79,7 @@ export const PlayerManagement: React.FC<PlayerManagementProps> = ({ onPlayersCon
                   disabled={players.length <= 1}
                   className={styles.removeButton}
                 >
-                  Remove
+                  <Icon name="delete" size="small" />
                 </Button>
               )}
             </div>
@@ -103,6 +105,7 @@ export const PlayerManagement: React.FC<PlayerManagementProps> = ({ onPlayersCon
         className={styles.startButton}
       >
         {loading ? 'Loading Questions...' : 'Start Game'}
+        <Icon name="arrowRight" className={styles.arrowIcon} />
       </Button>
     </div>
   );

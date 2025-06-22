@@ -21,6 +21,7 @@ import {
   FiBarChart,
   FiList,
   FiArrowRight,
+  FiArrowLeft,
   FiSun,
   FiMoon,
 } from 'react-icons/fi';
@@ -73,6 +74,7 @@ export const icons: Record<IconName, IconType> = {
   leaderboard: MdLeaderboard,
   play: MdPlayArrow,
   arrowRight: FiArrowRight,
+  arrowLeft: FiArrowLeft,
   sun: FiSun,
   moon: FiMoon,
 };

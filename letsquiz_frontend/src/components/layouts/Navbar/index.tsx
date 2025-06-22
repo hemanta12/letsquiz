@@ -95,25 +95,31 @@ export const Navbar: React.FC = () => {
             <Icon name={theme === 'light' ? 'moon' : 'sun'} size="medium" />
           </button>
 
-          {!isAuthenticated && (
+          {!isAuthenticated && !onAuthPage && (
             <>
               <Link
                 to="/login"
                 onClick={(e) => {
                   if (onQuizPage || onResultPage) e.preventDefault();
                 }}
-                className={`${styles.loginButton} ${onAuthPage ? styles.hiddenButton : ''}`}
+                className={`${styles.loginButton} ${styles.hideOnMobile}`}
+                title="Login"
+                aria-label="Login"
               >
-                Login
+                <span className={styles.desktopText}>Login</span>
+                <Icon name="login" size="small" className={styles.mobileIcon} />
               </Link>
               <Link
                 to="/signup"
                 onClick={(e) => {
                   if (onQuizPage || onResultPage) e.preventDefault();
                 }}
-                className={`${styles.signupButton} ${onAuthPage ? styles.hiddenButton : ''}`}
+                className={styles.signupButton}
+                title="SignUp"
+                aria-label="SignUp"
               >
-                Sign Up
+                <Icon name="login" size="small" className={styles.mobileIcon} />
+                <span className={styles.desktopText}>Sign Up</span>
               </Link>
             </>
           )}

@@ -1,19 +1,16 @@
-/* Container: two-column on desktop, stacked on mobile */
 .groupContainer {
   display: flex;
   flex-direction: row;
   gap: var(--space-lg);
 }
 
-/* Left pane: main question and options */
 .mainContent {
   flex: 0 0 75%;
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: 0;
 }
 
-/* Right pane: interactive scoreboard */
 .sidebar {
   flex: 0 0 25%;
   padding-left: var(--space-md);
@@ -22,58 +19,6 @@
   border-left: 1px solid var(--color-border);
 }
 
-/* Question header */
-.questionHeader {
-  margin-bottom: var(--space-md);
-}
-
-/* Question text */
-.question {
-  text-align: center;
-  margin: var(--space-md) 0 0 0;
-}
-
-/* Feedback styling */
-.feedback {
-  text-align: center;
-  font-weight: 500;
-  width: fit-content;
-  margin: var(--space-md) auto;
-}
-
-/* Options list */
-.options {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-  padding: var(--space-lg) 0;
-}
-
-.option {
-  margin: 0 auto;
-  width: 90%;
-  padding: var(--space-lg) var(--space-md);
-  text-align: left;
-  font-size: var(--font-size-h3);
-  transition: all 0.2s ease;
-  border: 2px solid transparent;
-}
-.option.selected {
-  border: 2px solid var(--color-primary) !important;
-}
-.option.correct {
-  background-color: var(--color-correct-light) !important;
-}
-.option.incorrect {
-  background-color: rgba(181, 0, 0, 0.1) !important;
-  border-color: var(--color-quit) !important;
-}
-.option.wrong {
-  background-color: rgba(181, 0, 0, 0.1) !important;
-  border-color: transparent !important;
-}
-
-/* Interactive player list uses flex for natural single row when few players */
 .playerList {
   display: flex;
   flex-direction: column;
@@ -130,7 +75,6 @@
   border-radius: 4px;
 }
 
-/* Mobile: stack sidebar below main content */
 @media screen and (max-width: 479px) {
   .groupContainer {
     flex-direction: column;

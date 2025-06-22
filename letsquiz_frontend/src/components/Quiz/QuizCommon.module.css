@@ -1,0 +1,184 @@
+.quiz {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--space-sm);
+  position: relative;
+}
+
+.question {
+  text-align: center;
+  margin: var(--space-md) 0 0 0;
+}
+
+.feedback {
+  text-align: center;
+  font-weight: 500;
+  width: fit-content;
+  margin: 0 auto;
+  min-height: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+.feedback:empty {
+  visibility: hidden;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-lg) 0;
+  margin-top: var(--space-md);
+}
+
+.option {
+  margin: 0 auto;
+  width: 80%;
+  padding: var(--space-xm) var(--space-sm);
+  text-align: left;
+  font-size: var(--font-size-h3);
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  color: var(--color-button-text-dark-theme) !important;
+  position: relative;
+}
+
+.option:hover:not(:disabled) {
+  color: var(--color-background) !important;
+}
+
+.option.selected {
+  border: 2px solid var(--color-primary) !important;
+  transform: scale(1.02);
+}
+
+.option.correct {
+  background-color: var(--color-correct-light) !important;
+}
+
+.option.incorrect {
+  background-color: var(--color-danger-light) !important;
+}
+
+/* Feedback markers for selected/correct/incorrect options */
+.option.incorrect::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 6px;
+  height: 100%;
+  background-color: var(--color-quit);
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+.option.correct.selected::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 6px;
+  height: 100%;
+  background-color: var(--color-success);
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.option.incorrect::after,
+.option.correct.selected::after {
+  content: 'Your answer';
+  position: absolute;
+  right: var(--space-md);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--color-quit);
+  color: white;
+  font-size: 0.75rem;
+  padding: 0 var(--space-sm);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.option.correct.selected::after {
+  background-color: var(--color-success);
+}
+.option.incorrect::after {
+  background-color: var(--color-quit);
+}
+
+.progress {
+  width: 100%;
+  height: 4px;
+  background-color: var(--color-border);
+  border-radius: 2px;
+  margin: var(--space-xs) 0;
+}
+
+.progressBar {
+  height: 100%;
+  background-color: var(--color-primary);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-lg) 0;
+  margin-top: var(--space-sm);
+}
+
+.nextOrFinishButton {
+  color: var(--color-button-text);
+}
+
+.error {
+  color: var(--color-error);
+  text-align: center;
+  margin-bottom: var(--space-md);
+}
+.quitDialogText {
+  color: var(--color-text);
+}
+
+/* Animation for feedback appearance */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile adjustments */
+@media screen and (max-width: 479px) {
+  .progress {
+    margin: var(--space-sm);
+  }
+  .question {
+    margin: var(--space-sm);
+  }
+  .options {
+    gap: var(--space-md);
+    padding: var(--space-sm);
+  }
+  .option {
+    width: 90%;
+    font-size: var(--font-size-h3);
+    padding: var(--space-lg) var(--space-md);
+  }
+}

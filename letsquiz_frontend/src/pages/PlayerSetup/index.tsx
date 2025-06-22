@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Typography } from '../../components/common';
+import { Button, Typography, Icon } from '../../components/common';
 import PlayerManagement from '../../components/GroupMode/PlayerManagement';
 import { Player } from '../../types/group.types';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
@@ -52,9 +52,13 @@ export const PlayerSetup: React.FC = () => {
 
   return (
     <div className={styles.playerSetup}>
-      <Button variant="secondary" onClick={handleBack} className={styles.backButton}>
-        Back
-      </Button>
+      <div className={styles.backButtonContainer}>
+        <Icon name="arrowLeft" size="medium" className={styles.backIcon} />
+        <Button variant="secondary" onClick={handleBack} className={styles.backButton}>
+          Back
+        </Button>
+      </div>
+
       <PlayerManagement onPlayersConfirmed={handlePlayersConfirmed} />
       {sessionError && (
         <Typography variant="body2" color="error" className={styles.errorMessage}>

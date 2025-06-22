@@ -5,7 +5,7 @@ export interface QuizSettings {
   category: string;
   categoryId?: number | null;
   difficulty: string;
-  numberOfQuestions: number; // Add numberOfQuestions field
+  numberOfQuestions: number;
   isMixedMode?: boolean;
   groupState?: GroupGameState;
 }
@@ -19,7 +19,7 @@ export interface GroupPlayer {
   name: string;
   score: number;
   uiScore?: number;
-  errors: string[]; // Add errors field
+  errors: string[];
 }
 
 export interface GroupQuizSession {
@@ -34,4 +34,15 @@ export interface GroupQuizSession {
   createdAt: string;
   lastActive: string;
   timeoutAt: string;
+}
+
+export interface BaseQuestionProps {
+  question: string;
+  options: string[];
+  selectedAnswer?: string;
+  showFeedback: boolean;
+  correctAnswer: string;
+  onAnswerSelect: (answer: string) => void;
+  disabled?: boolean;
+  playerId?: string;
 }

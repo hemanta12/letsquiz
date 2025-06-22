@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
 import { Button, Typography, Loading, Modal } from '../../components/common';
+import QuizCore from './QuizCore';
+import { QuestionContent } from './QuestionContent';
 import {
   selectUI,
   setLoading,
@@ -24,6 +26,7 @@ import {
 import { updatePlayerScore, resetTempScores } from '../../store/slices/groupQuizSlice';
 import { GroupQuestionView } from '../../components/GroupMode/GroupQuestionView';
 import styles from './QuizComponent.module.css';
+import commonStyles from './QuizCommon.module.css';
 
 export const QuizComponent: React.FC = () => {
   const navigate = useNavigate();
@@ -56,7 +59,6 @@ export const QuizComponent: React.FC = () => {
   const currentQuestionData = questions[currentQuestionIndex];
 
   useEffect(() => {
-    // Only fetch if we don't have questions and aren't already loading
     if (!questions.length && !quizLoading && !quizError && categoryId && difficulty) {
       dispatch(
         fetchQuizQuestions({
@@ -71,8 +73,6 @@ export const QuizComponent: React.FC = () => {
   const handleAnswerSelect = async (answer: string) => {
     if (!hasSelectedAnswer && !isLoading && !quizLoading) {
       try {
-        // Validate group mode requirements
-
         dispatch(setLoading(true));
         dispatch(selectAnswer({ questionIndex: currentQuestionIndex, answer }));
 
@@ -102,12 +102,6 @@ export const QuizComponent: React.FC = () => {
     }
   };
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLButtonElement>, option: string) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      handleAnswerSelect(option);
-    }
-  };
-
   const cleanupAndNavigate = (path: string) => {
     dispatch(resetQuiz());
     dispatch(resetTempScores());
@@ -126,10 +120,7 @@ export const QuizComponent: React.FC = () => {
       dispatch(setLoading(true));
       dispatch(setFeedback({ show: false, isCorrect: false }));
 
-      // Synchronize group state
-
       if (mode === 'Group' && selectedPlayer) {
-        // Update score for the player selected for the previous question
         dispatch(updatePlayerScore({ playerId: Number(selectedPlayer), score: 5 }));
       }
 
@@ -179,9 +170,7 @@ export const QuizComponent: React.FC = () => {
           }
 
           const resultAction = await dispatch(saveQuizSessionThunk(quizSessionData));
-          // ADD THIS CODE BLOCK RIGHT HERE:
           if (saveQuizSessionThunk.fulfilled.match(resultAction)) {
-            // After saving, we dispatch to fetch the updated quiz history
             dispatch(fetchQuizHistoryThunk());
           } else {
             dispatch(setError('Failed to save quiz session. Your progress might not be recorded.'));
@@ -209,153 +198,87 @@ export const QuizComponent: React.FC = () => {
     }
   };
 
-  if (isLoading || quizLoading) {
-    return (
-      <div className={styles.quiz}>
-        <Loading />
-      </div>
-    );
-  }
-
-  if (error || quizError || !questions || questions.length === 0) {
-    return (
-      <div className={styles.quiz}>
-        <Typography variant="body2" color="error" className={styles.error}>
-          {error || quizError || 'No questions found for the selected criteria.'}
-        </Typography>
-      </div>
-    );
-  }
-
-  if (!currentQuestionData || !currentQuestionData.answer_options) {
-    return (
-      <div className={styles.quiz}>
-        <Typography variant="body2" color="error" className={styles.error}>
-          Error: Invalid question format
-        </Typography>
-      </div>
-    );
-  }
+  const errorMessage =
+    error ||
+    quizError ||
+    (questions.length === 0 ? 'No questions found for the selected criteria.' : null) ||
+    (!currentQuestionData ? 'Error: Invalid question format' : null);
 
   return (
-    <div className={styles.quiz}>
-      <div className={styles.header}>
-        <Typography variant="body1">
-          {mode} - {difficulty} - {category}
-        </Typography>
-        <Typography variant="body1">
-          Question {currentQuestionIndex + 1}/{settings.numberOfQuestions}
-        </Typography>
-      </div>
-
-      <div className={styles.progress}>
-        <div className={styles.progressBar} style={{ width: `${progress}%` }} />
-      </div>
-
-      {mode === 'Group' ? (
-        <>
-          <GroupQuestionView
-            questionNumber={currentQuestionIndex + 1}
-            totalQuestions={settings.numberOfQuestions}
-            question={currentQuestionData.question_text}
-            options={currentQuestionData.answer_options}
-            correctAnswer={currentQuestionData.correct_answer}
-            onAnswerSelect={handleAnswerSelect}
-            showFeedback={feedback.show}
-            selectedAnswer={selectedAnswers[currentQuestionIndex]}
-            onPlayerSelected={(playerId) => {
-              setSelectedPlayer(playerId);
-            }}
-            currentScoredPlayer={selectedPlayer}
-          />
-        </>
-      ) : (
-        <>
-          <div className={styles.question}>
-            <Typography variant="h2">{currentQuestionData.question_text}</Typography>
-          </div>
-
-          {feedback.show && (
-            <Typography
-              variant="h3"
-              className={styles.feedback}
-              style={{
-                color: feedback.isCorrect ? 'var(--color-easy)' : 'var(--color-quit)',
-              }}
-            >
-              {feedback.isCorrect ? 'Correct!' : 'Incorrect!'}
-            </Typography>
-          )}
-
-          <div className={styles.options}>
-            {isLoading ? (
-              <Loading variant="skeleton" />
+    <>
+      <QuizCore
+        mode={mode}
+        difficulty={difficulty}
+        category={category}
+        currentQuestionIndex={currentQuestionIndex}
+        totalQuestions={settings.numberOfQuestions}
+        progress={progress}
+        isLoading={isLoading || quizLoading}
+        error={errorMessage}
+        onQuit={() => dispatch(setModal({ type: 'quitQuiz', isOpen: true }))}
+        onNext={handleNext}
+        isNextDisabled={!hasSelectedAnswer || isLoading || quizLoading}
+        nextButtonLabel={
+          currentQuestionIndex === settings.numberOfQuestions - 1 ? 'Finish Quiz' : 'Next Question'
+        }
+      >
+        {mode === 'Group' ? (
+          <>
+            {currentQuestionData ? (
+              <GroupQuestionView
+                questionNumber={currentQuestionIndex + 1}
+                totalQuestions={settings.numberOfQuestions}
+                question={currentQuestionData.question_text}
+                options={currentQuestionData.answer_options}
+                correctAnswer={currentQuestionData.correct_answer}
+                onAnswerSelect={handleAnswerSelect}
+                showFeedback={feedback.show}
+                selectedAnswer={selectedAnswers[currentQuestionIndex]}
+                onPlayerSelected={(playerId) => {
+                  setSelectedPlayer(playerId);
+                }}
+                currentScoredPlayer={selectedPlayer}
+                difficulty={difficulty}
+                category={category}
+                isLoading={isLoading || quizLoading}
+                error={errorMessage}
+                onQuit={() => dispatch(setModal({ type: 'quitQuiz', isOpen: true }))}
+                onNext={handleNext}
+                isNextDisabled={!hasSelectedAnswer || isLoading || quizLoading}
+                noWrapper={true}
+              />
             ) : (
-              currentQuestionData.answer_options?.map((option: string) => {
-                const isSelected = selectedAnswers[currentQuestionIndex] === option;
-                const isCorrectAnswer = option === currentQuestionData.correct_answer;
-                let optionClassNames = styles.option;
-
-                if (feedback.show) {
-                  if (isSelected) {
-                    optionClassNames += ` ${styles.selected}`;
-                    if (isCorrectAnswer) {
-                      optionClassNames += ` ${styles.correct}`;
-                    } else {
-                      optionClassNames += ` ${styles.incorrect}`;
-                    }
-                  } else if (isCorrectAnswer) {
-                    optionClassNames += ` ${styles.correct}`;
-                  }
-                }
-
-                return (
-                  <Button
-                    key={`${currentQuestionIndex}-${option}`}
-                    variant="secondary"
-                    className={optionClassNames}
-                    onClick={() => handleAnswerSelect(option)}
-                    disabled={hasSelectedAnswer || isLoading || quizLoading}
-                    onKeyPress={(e) => handleKeyPress(e, option)}
-                    tabIndex={0}
-                    aria-selected={isSelected}
-                  >
-                    {option}
-                  </Button>
-                );
-              })
+              <Loading variant="skeleton" />
             )}
-          </div>
-        </>
-      )}
+          </>
+        ) : (
+          <>
+            {currentQuestionData ? (
+              <QuestionContent
+                question={currentQuestionData.question_text}
+                options={currentQuestionData.answer_options}
+                selectedAnswer={selectedAnswers[currentQuestionIndex]}
+                showFeedback={feedback.show}
+                correctAnswer={currentQuestionData.correct_answer}
+                onAnswerSelect={handleAnswerSelect}
+                disabled={hasSelectedAnswer || isLoading || quizLoading}
+              />
+            ) : (
+              <Loading variant="skeleton" />
+            )}
+          </>
+        )}
+      </QuizCore>
 
-      <div className={styles.actions}>
-        <Button
-          variant="quit"
-          onClick={() => dispatch(setModal({ type: 'quitQuiz', isOpen: true }))}
-        >
-          Quit
-        </Button>
-        <Button
-          variant="primary"
-          className={styles.nextOrFinishButton}
-          disabled={!hasSelectedAnswer || isLoading || quizLoading}
-          onClick={handleNext}
-        >
-          {currentQuestionIndex === settings.numberOfQuestions - 1
-            ? 'Finish Quiz'
-            : 'Next Question'}
-        </Button>
-      </div>
-
-      {/* Quit Quiz Modal */}
       <Modal
         open={modals.quitQuiz}
         onClose={() => dispatch(setModal({ type: 'quitQuiz', isOpen: false }))}
         title="Quit Quiz"
       >
         <div className={styles.quitDialog}>
-          <Typography variant="body1">Are you sure you want to quit?</Typography>
+          <Typography variant="body1" className={commonStyles.quitDialogText}>
+            Are you sure you want to quit?
+          </Typography>
           <div className={styles.modalActions}>
             <Button
               variant="secondary"
@@ -369,7 +292,7 @@ export const QuizComponent: React.FC = () => {
           </div>
         </div>
       </Modal>
-    </div>
+    </>
   );
 };
 

@@ -143,6 +143,7 @@
   z-index: 1;
   pointer-events: none;
   letter-spacing: 1px;
+  overflow: auto;
 }
 
 .categoryCard:hover,
@@ -260,6 +261,11 @@
   text-align: center;
   font-size: var(--font-size-small);
 }
+/* .questionCountButtonMinimal:hover,
+.questionCountButtonMinimal.foxus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+} */
 
 .startQuiz {
   display: flex;
@@ -337,20 +343,27 @@
     font-size: 14px;
   }
   .modeSelector {
-    gap: var(--space-sm);
+    gap: var(--space-md);
+    transition: all 0.1s ease;
   }
   .modeSelector button {
-    width: 100%;
-    height: 3.3rem;
+    width: 140px;
+    height: 50px;
     padding: var(--space-sm);
     font-size: var(--font-size-small);
   }
+
   .categoryGrid {
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: var(--space-sm);
   }
   .categoryCard {
-    width: 90px;
+    width: 100px;
+  }
+  .categoryTitle {
+    left: 0.2rem;
+    font-size: var(--font-size-small) !important;
+    bottom: 0.1rem;
   }
   .mixUpButton {
     margin-top: var(--space-sm);
@@ -369,7 +382,7 @@
     font-size: var(--font-size-small);
   }
   .startQuiz button {
-    width: 100%;
-    font-size: var(--font-size-body);
+    width: 90%;
+    font-size: var(--font-size-h2);
   }
 }

@@ -20,6 +20,11 @@
   border: 5px solid var(--color-border);
 }
 
+.title {
+  text-align: center;
+  margin-bottom: var(--space-md);
+}
+
 .playerList {
   display: flex;
   flex-direction: column;
@@ -42,8 +47,15 @@
 }
 
 .removeButton {
-  width: fit-content;
   flex-shrink: 0;
+  background-color: var(--color-quit);
+  color: white;
+}
+
+.removeButton:hover,
+.removeButton:focus,
+.removeButton:active {
+  background-color: var(--color-quit) !important;
 }
 
 .playerInput input {
@@ -59,7 +71,7 @@
 .actions {
   gap: var(--space-md);
   margin-top: var(--space-md);
-  align-self: flex-start;
+  align-self: center;
 }
 
 .startButton {
@@ -69,14 +81,31 @@
   font-size: var(--font-size-h3);
   align-items: right;
 }
+.startButton:hover {
+  transform: translateY(0) !important;
+}
+
+.arrowIcon {
+  transition: transform 0.2s ease-in-out;
+}
+
+.startButton:hover .arrowIcon {
+  transform: translateX(8px);
+}
 
 @media screen and (max-width: 479px) {
   .playerInput {
-    flex-direction: column;
-    align-items: stretch;
+    padding: var(--space-xxs);
+  }
+  .playerInput > :first-child {
+    min-width: 120px !important;
   }
 
   .actions {
     flex-direction: column;
+  }
+  .removeButton {
+    width: 45px;
+    height: 45px;
   }
 }

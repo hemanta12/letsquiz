@@ -26,6 +26,7 @@ export type IconName =
   | 'trophy'
   | 'play'
   | 'arrowRight'
+  | 'arrowLeft'
   | 'correct'
   | 'wrong'
   | 'bookmark'
