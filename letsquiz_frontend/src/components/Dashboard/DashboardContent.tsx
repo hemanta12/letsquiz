@@ -12,12 +12,10 @@ import ActivityDetailContent from './ActivityDetailContent';
 import CategoryList from './CategoryList';
 import RecentActivity from './RecentActivity';
 import StatsPanel from './StatsPanel';
-import { UserProfile, CategoryStats, UserStatsResponse } from '../../types/api.types';
+import { UserProfile, CategoryStats } from '../../types/api.types';
 import { QuizSession } from '../../types/dashboard.types';
 import { calculateCategoryStats } from '../../utils/dashboardUtils';
-import userService from '../../services/userService';
-import { fetchUserStats } from '../../services/apiClient';
-import quizService from '../../services/quizService';
+import { fetchQuizHistoryThunk } from '../../store/slices/quizSlice';
 import styles from './DashboardContent.module.css';
 
 interface DashboardContentProps {
@@ -33,75 +31,26 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
   const { selectedDetailedSession, loadingSelectedDetailedSession, errorSelectedDetailedSession } =
     useAppSelector((state) => state.user);
 
-  const [sessions, setSessions] = useState<QuizSession[]>([]);
-  const [categoryStats, setCategoryStats] = useState<CategoryStats[]>([]);
-  const [userApiStats, setUserApiStats] = useState<UserStatsResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    sessions: reduxSessions,
+    historyLoading,
+    historyError,
+  } = useAppSelector((state) => state.quiz);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [showModal, setShowModal] = useState(false);
 
-  const fetchDashboardData = useCallback(async () => {
-    const userIdString = userId ? userId.toString() : '';
+  const categoryStats = useMemo(() => {
+    return calculateCategoryStats(reduxSessions || []);
+  }, [reduxSessions]);
 
-    if (!userIdString || !isAuthenticated) {
-      setError('User not authenticated');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError(null);
-
-      /* Fetch both quiz history and stats concurrently for better performance */
-      const [rawSessions, apiStats] = await Promise.all([
-        userService.fetchUserQuizHistory(userIdString),
-        fetchUserStats(userIdString),
-      ]);
-
-      /* Enhance sessions with question counts and handle potential failures gracefully */
-      const sessionsWithQuestionCounts = await Promise.all(
-        rawSessions.map(async (session) => {
-          try {
-            const totalQuestions = await quizService.fetchQuestionCount(session.id);
-            return { ...session, totalQuestions };
-          } catch (error) {
-            console.error(`Failed to fetch question count for session ${session.id}:`, error);
-            return { ...session, totalQuestions: 0 };
-          }
-        })
-      );
-
-      setSessions(sessionsWithQuestionCounts);
-      setCategoryStats(calculateCategoryStats(sessionsWithQuestionCounts));
-      setUserApiStats(apiStats.data);
-    } catch (e: any) {
-      console.error('Dashboard data fetch error:', e);
-      setError(e.message || 'Failed to load dashboard');
-    } finally {
-      setLoading(false);
-    }
-  }, [userId, isAuthenticated]);
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, [fetchDashboardData]);
-
-  const handleDeleteSuccess = useCallback(() => {
-    fetchDashboardData();
-  }, [fetchDashboardData]);
-
-  /* Filter and sort recent activities for efficient rendering */
   const recentActivities = useMemo(() => {
-    if (!sessions.length) return [];
-    return sessions
+    if (!reduxSessions || reduxSessions.length === 0) return [];
+    return reduxSessions
       .filter((session) => session.completed_at)
       .sort(
         (a, b) => new Date(b.completed_at || 0).getTime() - new Date(a.completed_at || 0).getTime()
-      )
-      .slice(0, 5);
-  }, [sessions]);
+      );
+  }, [reduxSessions]);
 
   const handleCategoryToggle = useCallback((cat: string) => {
     setExpandedCategories((prev) => {
@@ -124,7 +73,13 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
     dispatch(clearSelectedDetailedSession());
   }, [dispatch]);
 
-  if (!isAuthenticated && !loading) {
+  useEffect(() => {
+    if (isAuthenticated && userId) {
+      dispatch(fetchQuizHistoryThunk());
+    }
+  }, [dispatch, isAuthenticated, userId]);
+
+  if (!isAuthenticated) {
     return (
       <div className={styles.dashboardError}>
         <Typography variant="h3">Authentication Required</Typography>
@@ -133,13 +88,13 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
     );
   }
 
-  if (loading) return <Loading />;
+  if (historyLoading) return <Loading />;
 
-  if (error) {
+  if (historyError) {
     return (
       <div className={styles.dashboardError}>
         <Typography variant="h3">Error Loading Dashboard</Typography>
-        <p>{error}</p>
+        <p>{historyError}</p>
         <Button onClick={() => window.location.reload()}>Retry</Button>
       </div>
     );
@@ -149,8 +104,8 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
     <div className={styles.dashboardContent}>
       <StatsPanel
         profile={{ ...profile, quiz_history: profile.quiz_history || [] }}
-        sessions={sessions}
-        userApiStats={userApiStats}
+        sessions={reduxSessions || []}
+        categoryStats={categoryStats}
       />
 
       <div className={styles.contentRow}>
@@ -158,14 +113,14 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
           <div className={styles.historyHeader}>
             <Typography variant="h3">Quiz History</Typography>
           </div>
-          {sessions.length === 0 ? (
+          {reduxSessions.length === 0 ? (
             <div className={styles.emptyState}>
               <Typography variant="body1">No quiz history available yet.</Typography>
             </div>
           ) : (
             <CategoryList
               categoryStats={categoryStats}
-              sessions={sessions}
+              sessions={reduxSessions}
               expandedCategories={expandedCategories}
               onCategoryToggle={handleCategoryToggle}
               onQuizCardClick={(session) => openDetail(session.id)}
@@ -176,7 +131,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
         <RecentActivity
           activities={recentActivities}
           onActivityClick={(sessionId) => openDetail(sessionId)}
-          onDeleteSuccess={handleDeleteSuccess}
+          onDeleteSuccess={() => dispatch(fetchQuizHistoryThunk())}
         />
       </div>
 

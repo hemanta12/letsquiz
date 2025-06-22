@@ -17,8 +17,8 @@ const RecentActivity: React.FC<RecentActivityProps> = ({
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [sessionActivities, setSessionActivities] = useState(activities);
-
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
   const handleToggleEditMode = useCallback(() => {
     setIsEditMode((prev) => {
@@ -41,11 +41,11 @@ const RecentActivity: React.FC<RecentActivityProps> = ({
       await quizService.deleteQuizSession(confirmDeleteId);
       setSessionActivities((prev) => prev.filter((a) => a.id !== confirmDeleteId));
       setConfirmDeleteId(null);
-      onDeleteSuccess(); // Call the callback on success
+      onDeleteSuccess();
     } catch (err: any) {
       alert(`Deletion failed: ${err.message || 'Unexpected error'}`);
     }
-  }, [confirmDeleteId, onDeleteSuccess]); // Add onDeleteSuccess to dependency array
+  }, [confirmDeleteId, onDeleteSuccess]);
 
   const getRelativeTimeGroup = useCallback((dateString: string) => {
     const date = new Date(dateString);
@@ -89,6 +89,13 @@ const RecentActivity: React.FC<RecentActivityProps> = ({
     return groups;
   }, [completedActivities, getRelativeTimeGroup]);
 
+  const toggleGroup = useCallback((group: string) => {
+    setExpandedGroups((prev) => ({
+      ...prev,
+      [group]: !prev[group],
+    }));
+  }, []);
+
   return (
     <>
       <Card className={styles.recentActivityCard}>
@@ -109,10 +116,14 @@ const RecentActivity: React.FC<RecentActivityProps> = ({
           {['Today', 'Yesterday', 'This Month', 'Earlier'].map((group) => {
             const items = groupedActivities[group];
             if (!items || items.length === 0) return null;
+
+            const isExpanded = expandedGroups[group];
+            const visibleItems = isExpanded ? items : items.slice(0, 5);
+
             return (
               <div key={group} className={styles.activityGroup} data-group={group}>
                 <div className={styles.activityDate}>{group}</div>
-                {items.map((activity) => (
+                {visibleItems.map((activity) => (
                   <div key={activity.id} className={styles.activityRow}>
                     <button
                       className={styles.activityItem}
@@ -123,8 +134,8 @@ const RecentActivity: React.FC<RecentActivityProps> = ({
                           {formatDate(activity.completed_at!)}
                         </Typography>
                         <Typography variant="body1" className={styles.activityTitle}>
-                          {activity.is_group_session ? 'Group Quiz' : 'Solo Quiz'} –{' '}
-                          {activity.category} – {activity.difficulty}
+                          {activity.is_group_session ? 'Group Quiz' : 'Solo Quiz'} -{' '}
+                          {activity.category} - {activity.difficulty}
                         </Typography>
                         {activity.is_group_session && activity.group_players && (
                           <Typography variant="body2" className={styles.groupPlayers}>
@@ -134,7 +145,8 @@ const RecentActivity: React.FC<RecentActivityProps> = ({
                       </div>
                       <div className={styles.scoreInfo}>
                         <span className={styles.score}>
-                          {activity.score ?? 0} / {activity.totalQuestions ?? 'N/A'}
+                          {activity.score ?? 0} /{' '}
+                          {(activity.total_questions ?? 0) > 0 ? activity.total_questions : 'N/A'}
                         </span>
                       </div>
                     </button>
@@ -161,6 +173,17 @@ const RecentActivity: React.FC<RecentActivityProps> = ({
                       ))}
                   </div>
                 ))}
+                {items.length > 5 && (
+                  <div className={styles.showMoreContainer}>
+                    <Button
+                      variant="secondary"
+                      onClick={() => toggleGroup(group)}
+                      className={styles.showMoreButton}
+                    >
+                      {isExpanded ? 'Show Less' : 'Show More'}
+                    </Button>
+                  </div>
+                )}
               </div>
             );
           })}

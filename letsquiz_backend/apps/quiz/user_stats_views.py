@@ -1,5 +1,5 @@
 import logging
-from django.db.models import Sum, Avg
+from django.db.models import Sum, Avg, Count
 from django.utils import timezone
 
 from rest_framework.decorators import api_view, permission_classes
@@ -109,20 +109,18 @@ def get_user_sessions_view(request, userId):
 
         # Get quiz sessions with pagination
         try:
-            paginator = PageNumberPagination()
-            paginator.page_size = 10
-
-            quiz_sessions = QuizSession.objects.filter(user_id=userId).order_by('-started_at')
+            quiz_sessions = QuizSession.objects.filter(user_id=userId).annotate(
+                total_questions=Count('session_questions')
+            ).order_by('-started_at')
             logger.info(f"Quiz sessions count: {quiz_sessions.count()}")
-            paginated_sessions = paginator.paginate_queryset(quiz_sessions, request)
 
             sessions_data = []
-            for session in paginated_sessions:
+            for session in quiz_sessions:
                 first_question = session.session_questions.first()
                 session_data = {
                     'id': session.id,
                     'score': session.score,
-                    'total_questions': session.session_questions.count(),
+                    'total_questions': session.total_questions,
                     'started_at': session.started_at,
                     'completed_at': session.completed_at,
                     'category': first_question.question.category.name if first_question else None,
@@ -131,7 +129,7 @@ def get_user_sessions_view(request, userId):
                 }
                 sessions_data.append(session_data)
 
-            return paginator.get_paginated_response(sessions_data)
+            return Response(sessions_data, status=status.HTTP_200_OK)
         except Exception as e:
             logger.error(f"Error retrieving user sessions: {e}", exc_info=True)
             return Response({

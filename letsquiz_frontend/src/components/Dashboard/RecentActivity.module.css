@@ -34,7 +34,7 @@
   border-radius: 8px;
   padding: var(--space-sm);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  background-color: whitesmoke;
+  background-color: var(--color-skeleton-end);
 }
 
 /* Sticky date header for each activity group */
@@ -91,10 +91,11 @@
 .activityTitle {
   font-weight: 500;
   margin-bottom: var(--space-xs);
+  color: var(--color-text);
 }
 
 .activityTime {
-  color: var(--color-text-secondary);
+  color: var(--color-text);
   font-size: 14px;
 }
 
@@ -195,4 +196,25 @@
     position: static;
     max-height: 400px;
   }
+}
+
+/* New styles for Show More button */
+.showMoreContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--spacing-2);
+}
+
+.showMoreButton {
+  padding: var(--spacing-1) var(--spacing-3);
+  font-size: var(--text-sm);
+  background-color: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.showMoreButton:hover {
+  background-color: var(--color-bg);
 }

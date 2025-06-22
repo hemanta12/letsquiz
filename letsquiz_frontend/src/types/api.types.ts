@@ -130,7 +130,7 @@ export interface QuizSessionHistory {
     name: string;
     score: number;
   }[];
-  totalQuestions?: number;
+  total_questions?: number;
 }
 
 /* User profile and leaderboard types */

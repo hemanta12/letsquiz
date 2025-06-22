@@ -107,7 +107,11 @@ export const fetchQuizHistoryThunk = createAsyncThunk<
   const userId = getState().auth.userId;
   if (!userId) return rejectWithValue('Not authenticated');
   try {
-    return await QuizService.fetchUserSessions(userId);
+    const sessions = await QuizService.fetchUserSessions(userId);
+    return sessions.map((session) => ({
+      ...session,
+      total_questions: session.total_questions,
+    }));
   } catch (err: any) {
     return rejectWithValue(err.message || 'Failed to load history');
   }

@@ -5,7 +5,7 @@
   border-radius: 8px;
   padding: var(--space-sm);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  background-color: whitesmoke;
+  background-color: var(--color-skeleton-end);
 }
 
 .categoryTitle {
@@ -46,10 +46,11 @@
   width: 100%;
 }
 
-.statsRow {
+.statsRow > * {
   margin-top: var(--space-xs);
-
   padding-left: calc(var(--space-md) + 40px);
+  color: var(--color-text);
+  font-weight: 500 !important;
 }
 
 .categoryIcon {

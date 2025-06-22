@@ -4,7 +4,7 @@
 
 .statCard {
   background: var(--color-primary);
-  color: white;
+  color: var(--color-background);
   padding: var(--space-xl);
   border-radius: 12px;
   transition: transform 0.2s ease;

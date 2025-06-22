@@ -17,7 +17,7 @@ const QuizCard: React.FC<QuizCardProps> = ({ session, onClick }) => {
 
   // Handle potential null score
   const score = session.score !== null ? session.score : 'N/A';
-  const totalQuestions = session.totalQuestions ?? 0;
+  const totalQuestions = session.total_questions ?? 0;
   const scorePercentage =
     session.score !== null && totalQuestions > 0 ? (session.score / totalQuestions) * 100 : 0;
 

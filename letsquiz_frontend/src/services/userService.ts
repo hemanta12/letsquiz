@@ -246,36 +246,43 @@ class UserService {
             userAnswer: answer.selected,
             correctAnswer: answer.correct,
           })),
+          total_questions: Object.keys(data.answers || {}).length,
         }));
       }
 
-      const response = await apiClient.get<QuizHistoryResponse>(`/users/${userId}/sessions/`);
+      const response = await apiClient.get<QuizSession[]>(`/quiz-session/user/${userId}/`);
 
       if (!response.data) {
         return [];
       }
-      const raw = response.data?.results;
+      // const raw = response.data?.results;
 
-      if (!Array.isArray(response.data.results)) {
-        return [];
-      }
+      // if (!Array.isArray(response.data.results)) {
+      //   return [];
+      // }
 
-      return raw.map((session) => ({
-        id: session.id,
-        category: session.category ?? 'General',
-        difficulty: session.difficulty ?? 'Medium',
-        score: Number(session.score) || 0,
-        started_at: session.started_at || new Date().toISOString(),
-        completed_at: session.completed_at || null,
-        is_group_session: session.is_group_session ?? false,
-        group_players: session.group_players ?? [],
-        details: Array.isArray(session.details)
-          ? session.details.map((d: any) => ({
-              question: d.question_text ?? d.userAnswer ?? '',
-              userAnswer: d.selected_answer ?? d.userAnswer ?? '',
-              correctAnswer: d.correct_answer ?? d.correctAnswer ?? '',
-            }))
-          : [],
+      // return sessions.map((session) => ({
+      //   id: session.id,
+      //   category: session.category ?? 'General',
+      //   difficulty: session.difficulty ?? 'Medium',
+      //   score: Number(session.score) || 0,
+      //   started_at: session.started_at || new Date().toISOString(),
+      //   completed_at: session.completed_at || null,
+      //   is_group_session: session.is_group_session ?? false,
+      //   group_players: session.group_players ?? [],
+      //   totalQuestions: session.total_questions ?? 0,
+      //   details: Array.isArray(session.details)
+      //     ? session.details.map((d: any) => ({
+      //         question: d.question_text ?? d.userAnswer ?? '',
+      //         userAnswer: d.selected_answer ?? d.userAnswer ?? '',
+      //         correctAnswer: d.correct_answer ?? d.correctAnswer ?? '',
+      //       }))
+      //     : [],
+      // }));
+      return response.data.map((session) => ({
+        ...session,
+        // Add totalQuestions if missing in response
+        totalQuestions: session.total_questions || 0,
       }));
     } catch (error: any) {
       return [];

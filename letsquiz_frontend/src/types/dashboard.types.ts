@@ -15,6 +15,7 @@ export type QuizSession = {
   is_group_session: boolean;
   group_players?: GroupPlayer[];
   details: { question: string; userAnswer: string; correctAnswer: string }[];
+  total_questions: number;
 };
 
 export type CategoryStats = {

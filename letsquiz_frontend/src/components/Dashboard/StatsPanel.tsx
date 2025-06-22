@@ -1,41 +1,35 @@
 import React from 'react';
 import { Typography, Card } from '../common';
-import { UserProfile, QuizSessionHistory, UserStatsResponse } from '../../types/api.types';
+import { UserProfile, QuizSessionHistory, CategoryStats } from '../../types/api.types';
 import styles from './StatsPanel.module.css';
 
 interface StatsPanelProps {
   profile: UserProfile;
   sessions: QuizSessionHistory[];
-  userApiStats: UserStatsResponse | null;
+  categoryStats: CategoryStats[];
 }
 
-const StatsPanel: React.FC<StatsPanelProps> = ({ profile, sessions, userApiStats }) => {
-  const overallStats = userApiStats?.overall_stats;
-  const categoryStats = userApiStats?.category_stats;
-
-  const totalQuizzes = overallStats?.total_quizzes ?? sessions.length;
+const StatsPanel: React.FC<StatsPanelProps> = ({ profile, sessions, categoryStats }) => {
+  const totalQuizzes = sessions.length;
   const averageScore =
-    overallStats?.accuracy ??
-    (sessions.length > 0
+    sessions.length > 0
       ? Math.round(
-          (sessions.reduce((acc, s) => acc + (s.score ?? 0), 0) / (sessions.length * 10)) * 100
+          (sessions.reduce((acc, s) => acc + (s.score ?? 0), 0) /
+            sessions.reduce((acc, s) => acc + (s.total_questions ?? 0), 0)) *
+            100
         )
-      : 0);
+      : 0;
 
-  // Calculate best category from category stats
+  // Calculate best category from passed categoryStats
   let bestCategoryDisplay = 'N/A';
-  if (categoryStats) {
-    const bestCat = Object.entries(categoryStats).reduce(
-      (best, [catName, catData]) => {
-        const currentAccuracy = catData.total > 0 ? (catData.correct / catData.total) * 100 : 0;
-        if (currentAccuracy > best.accuracy) {
-          return { name: catName, accuracy: currentAccuracy };
-        }
-        return best;
-      },
-      { name: 'N/A', accuracy: 0 }
-    );
-    bestCategoryDisplay = bestCat.name;
+  if (categoryStats.length > 0) {
+    // Find category with highest average score
+    const bestCategory = categoryStats.reduce((prev, current) => {
+      const prevAvg = prev.totalQuizzes > 0 ? prev.totalScore / prev.totalQuizzes : 0;
+      const currentAvg = current.totalQuizzes > 0 ? current.totalScore / current.totalQuizzes : 0;
+      return prevAvg > currentAvg ? prev : current;
+    });
+    bestCategoryDisplay = bestCategory.category;
   }
 
   return (

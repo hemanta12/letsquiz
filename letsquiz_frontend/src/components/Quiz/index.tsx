@@ -19,18 +19,18 @@ import {
   resetQuiz,
   fetchQuizQuestions,
   saveQuizSessionThunk,
+  fetchQuizHistoryThunk,
 } from '../../store/slices/quizSlice';
 import { updatePlayerScore, resetTempScores } from '../../store/slices/groupQuizSlice';
 import { GroupQuestionView } from '../../components/GroupMode/GroupQuestionView';
 import styles from './QuizComponent.module.css';
-import UserService from '../../services/userService';
 
 export const QuizComponent: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const { isLoading, error, modals, feedback } = useAppSelector(selectUI);
-  const { isGuest, featureGates, user } = useAppSelector((state) => state.auth);
+  const { isGuest, featureGates } = useAppSelector((state) => state.auth);
   const {
     settings,
     currentQuestionIndex,
@@ -47,15 +47,6 @@ export const QuizComponent: React.FC = () => {
   const { groupSession } = useAppSelector((state) => state.groupQuiz);
 
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
-  const [migrationState, setMigrationState] = useState<{
-    inProgress: boolean;
-    progress: number;
-    currentStep: string;
-  }>({
-    inProgress: false,
-    progress: 0,
-    currentStep: '',
-  });
 
   const hasSelectedAnswer = selectedAnswers[currentQuestionIndex] !== undefined;
   const progress =
@@ -63,35 +54,6 @@ export const QuizComponent: React.FC = () => {
       ? ((currentQuestionIndex + 1) / settings.numberOfQuestions) * 100
       : 0;
   const currentQuestionData = questions[currentQuestionIndex];
-
-  // Monitor migration progress
-  useEffect(() => {
-    let migrationMonitor: NodeJS.Timeout;
-    if (migrationState.inProgress && user && !isGuest) {
-      migrationMonitor = setInterval(() => {
-        const progress = UserService.getMigrationProgress();
-        setMigrationState((prev) => ({
-          ...prev,
-          progress: (progress.completedSteps / progress.totalSteps) * 100,
-          currentStep: progress.currentStep,
-        }));
-
-        if (progress.status === 'completed' || progress.status === 'failed') {
-          clearInterval(migrationMonitor);
-          setMigrationState((prev) => ({ ...prev, inProgress: false }));
-
-          if (progress.status === 'failed' && progress.error) {
-            dispatch(setError(`Migration failed: ${progress.error}`));
-          }
-        }
-      }, 500);
-    }
-    return () => {
-      if (migrationMonitor) {
-        clearInterval(migrationMonitor);
-      }
-    };
-  }, [migrationState.inProgress, user, isGuest, dispatch]);
 
   useEffect(() => {
     // Only fetch if we don't have questions and aren't already loading
@@ -217,7 +179,11 @@ export const QuizComponent: React.FC = () => {
           }
 
           const resultAction = await dispatch(saveQuizSessionThunk(quizSessionData));
-          if (saveQuizSessionThunk.rejected.match(resultAction)) {
+          // ADD THIS CODE BLOCK RIGHT HERE:
+          if (saveQuizSessionThunk.fulfilled.match(resultAction)) {
+            // After saving, we dispatch to fetch the updated quiz history
+            dispatch(fetchQuizHistoryThunk());
+          } else {
             dispatch(setError('Failed to save quiz session. Your progress might not be recorded.'));
           }
         }
@@ -400,20 +366,6 @@ export const QuizComponent: React.FC = () => {
             <Button variant="quit" onClick={handleQuitConfirm}>
               Yes
             </Button>
-          </div>
-        </div>
-      </Modal>
-
-      {/* Migration Progress Modal */}
-      <Modal open={migrationState.inProgress} onClose={() => {}} title="Migrating Your Progress">
-        <div className={styles.migrationDialog}>
-          <Typography variant="h3">Please wait while we migrate your progress</Typography>
-          <Typography variant="body1">{migrationState.currentStep}</Typography>
-          <div className={styles.migrationProgress}>
-            <div
-              className={styles.migrationProgressBar}
-              style={{ width: `${migrationState.progress}%` }}
-            />
           </div>
         </div>
       </Modal>

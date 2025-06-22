@@ -73,7 +73,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
                         session.category === categoryName && session.completed_at !== null
                     );
                     const totalQuestionsForCategory = sessionsInCategory.reduce(
-                      (sum, session) => sum + (session.totalQuestions ?? 0),
+                      (sum, session) => sum + (session.total_questions ?? 0),
                       0
                     );
                     const totalScoreForCategory = sessionsInCategory.reduce(

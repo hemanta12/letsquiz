@@ -374,8 +374,8 @@ class QuizService {
   }
 
   async fetchUserSessions(userId: number): Promise<QuizSession[]> {
-    const resp = await apiClient.get<{ results: QuizSession[] }>(`/users/${userId}/sessions/`);
-    return resp.data.results;
+    const resp = await apiClient.get<QuizSession[]>(`/users/${userId}/sessions/`);
+    return resp.data;
   }
 
   /* Error handling with specific error messages */
