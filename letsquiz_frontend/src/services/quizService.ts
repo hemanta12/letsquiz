@@ -175,7 +175,8 @@ class QuizService {
   }
 
   async submitAnswer(
-    data: SubmitAnswerRequest | GuestAnswerSubmission
+    data: SubmitAnswerRequest | GuestAnswerSubmission,
+    playerId?: number
   ): Promise<SubmitAnswerResponse> {
     try {
       if (AuthService.isGuestSession()) {
@@ -212,7 +213,17 @@ class QuizService {
         };
       }
 
-      const response = await apiClient.post<SubmitAnswerResponse>('/score/', data);
+      const payload = {
+        ...data,
+        ...(playerId !== undefined ? { player_id: playerId } : {}),
+      };
+
+      const response = await apiClient.post<SubmitAnswerResponse>(
+        `/sessions/${data.quiz_session_id}/submit-answer/`,
+        payload
+      );
+
+      // const response = await apiClient.post<SubmitAnswerResponse>('/score/', data);
       return response.data;
     } catch (error: any) {
       throw new Error(
@@ -351,14 +362,48 @@ class QuizService {
     difficulty: string;
     is_group_session?: boolean;
     players?: { name: string; score: number }[];
+    correctnessData?: { questionId: string; playerId: number }[];
   }): Promise<any> {
     try {
-      const response = await apiClient.post('/quiz-sessions/', quizSessionData);
-      return response.data;
+      // Check auth headers and refresh token if needed
+      if (!apiClient.axiosInstance.defaults.headers['Authorization']) {
+        await AuthService.refreshSession();
+      }
+
+      console.log('[DEBUG] saveQuizSession input:', {
+        hasCorrectness: !!quizSessionData.correctnessData,
+        correctnessCount: quizSessionData.correctnessData?.length || 0,
+        isGroupSession: quizSessionData.is_group_session,
+        playersCount: quizSessionData.players?.length || 0,
+      });
+
+      // Validate required fields
+      if (!quizSessionData.questions || !quizSessionData.players) {
+        throw new Error('Invalid quiz session payload');
+      }
+
+      // Transform correctness data to snake_case
+      const correctnessPayload =
+        quizSessionData.correctnessData?.map((item) => ({
+          question_id: item.questionId,
+          player_id: item.playerId,
+        })) || [];
+
+      // Build payload with standardized correctness data
+      const payload = {
+        ...quizSessionData,
+        correctness: correctnessPayload,
+        has_correctness: correctnessPayload.length > 0,
+      };
+
+      console.log('[DEBUG] Final payload:', payload);
+      return apiClient.post('/quiz-sessions/', payload);
     } catch (error: any) {
-      throw new Error(
-        `Failed to save quiz session: ${error.response?.data?.detail || error.message || 'An error occurred'}`
-      );
+      if (error.response?.status === 401) {
+        console.error('Authentication failed, redirecting to login');
+        AuthService.logout();
+      }
+      throw error;
     }
   }
 

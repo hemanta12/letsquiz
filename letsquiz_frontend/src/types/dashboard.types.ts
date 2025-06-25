@@ -3,6 +3,7 @@ export type GroupPlayer = {
   name: string;
   score: number;
   errors: string[];
+  answers: Array<{ question_id: number; answer: string }>;
 };
 
 export type QuizSession = {
@@ -31,9 +32,11 @@ export type CategoryStats = {
 };
 
 export interface QuestionDetail {
+  id: number;
   question: string;
   userAnswer: string;
   correctAnswer: string;
+  correctPlayer: string | undefined;
 }
 
 export interface SessionDetail {

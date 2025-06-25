@@ -14,14 +14,16 @@ const QuestionCountSelector: React.FC<QuestionCountSelectorProps> = ({
   onSelectPreset,
 }) => (
   <div className={styles.minimalQuestionCount} role="group" aria-label="Select number of questions">
-    <Typography variant="body1">Questions:</Typography>
+    <Typography variant="body1">
+      <span>Questions:</span>
+    </Typography>
     <div className={styles.questionCountOptionsMinimal}>
       {presets.map((n) => (
         <Button
           key={n}
           variant={selectedCount === n ? 'primary' : 'secondary'}
           onClick={() => onSelectPreset(n)}
-          className={styles.questionCountButtonMinimal}
+          className={`${styles.questionCountButtonMinimal} ${selectedCount === n ? styles.selected : ''}`}
           aria-pressed={selectedCount === n}
         >
           {n}

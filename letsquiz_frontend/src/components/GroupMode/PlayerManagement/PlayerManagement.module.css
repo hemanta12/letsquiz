@@ -5,8 +5,7 @@
   width: 100%;
   max-width: 500px;
   margin: 0 auto;
-  padding: var(--space-lg);
-  align-items: center;
+  /* align-items: center; */
 }
 .playerSetup {
   display: flex;
@@ -28,7 +27,7 @@
 .playerList {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-sm);
   width: 100%;
 }
 
@@ -37,7 +36,7 @@
   gap: var(--space-sm);
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-sm);
+  padding: 0;
   width: 100%;
 }
 
@@ -59,7 +58,7 @@
 }
 
 .playerInput input {
-  padding: var(--space-md);
+  padding: var(--space-sm);
   width: 100%;
 }
 
@@ -71,7 +70,6 @@
 .actions {
   gap: var(--space-md);
   margin-top: var(--space-md);
-  align-self: center;
 }
 
 .startButton {
@@ -79,7 +77,8 @@
   max-width: 300px;
   height: 75px;
   font-size: var(--font-size-h3);
-  align-items: right;
+  align-self: end;
+  margin-top: var(--space-lg);
 }
 .startButton:hover {
   transform: translateY(0) !important;

@@ -18,6 +18,7 @@ interface ResultsComponentProps {
   score: number;
   selectedAnswers: string[];
   groupSession?: { players: GroupPlayer[] };
+  correctnessData?: Array<{ questionId: string; playerId: number }>;
 }
 
 const ResultsComponent: React.FC<ResultsComponentProps> = ({
@@ -28,7 +29,39 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({
   score,
   selectedAnswers,
   groupSession,
+  correctnessData,
 }) => {
+  // Helper to get correct player name for a question with debug logging
+  const getCorrectPlayer = (questionId: string) => {
+    // Debug log the matching process
+    console.log('[DEBUG] Finding correct player for question:', questionId);
+    console.log('[DEBUG] Correctness data:', correctnessData);
+
+    if (!correctnessData || !groupSession?.players) {
+      console.log('[DEBUG] Missing correctness data or players');
+      return 'None';
+    }
+
+    const correctAnswer = correctnessData.find(
+      (cd) => String(cd.questionId) === String(questionId)
+    );
+
+    if (!correctAnswer) {
+      console.log('[DEBUG] No correctness data found for question:', questionId);
+      return 'None';
+    }
+
+    const player = groupSession.players.find((p) => p.id === correctAnswer.playerId);
+    console.log('[DEBUG] Found player:', player?.name || 'None');
+
+    return player?.name || 'None';
+  };
+  console.log('[DEBUG] ResultsComponent received:', {
+    mode,
+    hasCorrectnessData: !!correctnessData,
+    correctnessDataCount: correctnessData?.length || 0,
+    groupPlayersCount: groupSession?.players?.length || 0,
+  });
   const totalQuestions = questions.length;
   const percentage = Math.round((score / totalQuestions) * 100);
 
@@ -50,6 +83,14 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({
   }, []);
 
   const handleReviewSession = () => {
+    console.log('[DEBUG] Reviewing session with correctness data:', {
+      correctnessData,
+      groupPlayers: groupSession?.players?.map((p) => ({
+        name: p.name,
+        score: p.score,
+        answers: p.answers,
+      })),
+    });
     const sessionDetail: SessionDetail = {
       session_id: Date.now(),
       category,
@@ -58,11 +99,34 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({
       started_at: new Date().toISOString(),
       is_group_session: mode === 'Group',
       group_players: groupSession?.players,
-      questions: questions.map<QuestionDetail>((q, idx) => ({
-        question: q.question_text,
-        userAnswer: selectedAnswers[idx] || '',
-        correctAnswer: q.correct_answer,
-      })),
+      questions: questions.map<QuestionDetail>((q, idx) => {
+        const questionId = String(q.id);
+        console.log('[DEBUG] Passing to QuestionDetail:', {
+          questionId: questionId,
+          correctPlayer: mode === 'Group' ? getCorrectPlayer(questionId) : undefined,
+          correctAnswer: q.correct_answer,
+          debugInfo: {
+            correctnessData: correctnessData,
+            players: groupSession?.players,
+          },
+        });
+
+        return {
+          id: typeof q.id === 'number' ? q.id : idx,
+          question: q.question_text,
+          userAnswer: selectedAnswers[idx] || '',
+          correctAnswer: q.correct_answer,
+          correctPlayer: mode === 'Group' ? getCorrectPlayer(questionId) : undefined,
+          debugInfo:
+            mode === 'Group'
+              ? {
+                  questionId: questionId,
+                  correctnessData: correctnessData,
+                  players: groupSession?.players,
+                }
+              : undefined,
+        };
+      }),
       totalQuestions,
     };
     setSelectedSession(sessionDetail);

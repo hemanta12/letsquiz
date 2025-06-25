@@ -64,27 +64,39 @@ export const fetchSingleDetailedQuizSession = createAsyncThunk<
   try {
     const raw = await UserService.fetchQuizSessionDetails(sessionId);
     const detail: SessionDetail = {
-      session_id: raw.id, // Use raw.id for session_id
+      session_id: raw.id,
       category: raw.category ?? 'General',
       difficulty: raw.difficulty ?? 'Medium',
       score: raw.score,
       started_at: raw.started_at,
       is_group_session: raw.is_group_session ?? false,
+      questions: raw.questions.map((q) => ({
+        id: q.id,
+        question: q.text,
+        userAnswer: q.selected_answer ?? '',
+        correctAnswer: q.correct_answer,
+      })) as QuestionDetail[],
       group_players:
         raw.group_players?.map((player) => ({
           id: player.id,
           name: player.name,
           score: player.score,
-          errors: player.errors ?? [], // Ensure errors is an array
+          errors: player.errors ?? [],
+          answers: (player.answers ?? []).map((a: any) => {
+            if (typeof a === 'string') {
+              return {
+                question_id: 0,
+                answer: a,
+              };
+            }
+            return {
+              question_id: a.question_id,
+              answer: a.answer,
+            };
+          }),
         })) ?? [],
-
-      questions: raw.questions.map((q) => ({
-        // Use raw.questions from the backend response
-        question: q.text,
-        userAnswer: q.selected_answer ?? '',
-        correctAnswer: q.correct_answer,
-      })) as QuestionDetail[],
     };
+
     return detail;
   } catch (err: any) {
     return rejectWithValue(err.response?.data?.detail || err.message);

@@ -8,6 +8,7 @@ interface GroupQuizState {
   loading: boolean;
   error: string | null;
   sessionTimeoutId?: NodeJS.Timeout;
+  playerCorrectness: Record<number, number>; // questionIndex: playerId
 }
 
 const initialState: GroupQuizState = {
@@ -17,6 +18,7 @@ const initialState: GroupQuizState = {
   loading: false,
   error: null,
   sessionTimeoutId: undefined,
+  playerCorrectness: {},
 };
 
 export const groupQuizSlice = createSlice({
@@ -125,6 +127,33 @@ export const groupQuizSlice = createSlice({
       }
       return initialState;
     },
+    recordPlayerAnswer: (
+      state,
+      action: PayloadAction<{ playerId: number; questionIndex: number; answer: string }>
+    ) => {
+      if (state.groupSession) {
+        const player = state.groupSession.players.find((p) => p.id === action.payload.playerId);
+        if (player) {
+          // Ensure answers array exists
+          if (!player.answers) player.answers = [];
+
+          // Resize array if needed
+          while (player.answers.length <= action.payload.questionIndex) {
+            player.answers.push('');
+          }
+
+          // Record answer
+          player.answers[action.payload.questionIndex] = action.payload.answer;
+        }
+      }
+    },
+    // Record which player got each question correct
+    recordPlayerCorrectness: (
+      state,
+      action: PayloadAction<{ questionIndex: number; playerId: number }>
+    ) => {
+      state.playerCorrectness[action.payload.questionIndex] = action.payload.playerId;
+    },
   },
   extraReducers: (builder) => {
     // Add extraReducers for any async thunks defined in this slice later
@@ -143,6 +172,8 @@ export const {
   setLoading,
   setError,
   resetGroupQuiz,
+  recordPlayerAnswer,
+  recordPlayerCorrectness,
 } = groupQuizSlice.actions;
 
 export default groupQuizSlice.reducer;

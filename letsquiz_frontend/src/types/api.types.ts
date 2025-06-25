@@ -109,6 +109,7 @@ export interface SubmitAnswerRequest {
   quiz_session_id: number;
   question_id: number;
   selected_answer: string;
+  player_id?: number;
 }
 
 export interface SubmitAnswerResponse {
@@ -211,6 +212,7 @@ export interface BackendQuizSessionResponse {
     name: string;
     score: number;
     errors: string[];
+    answers: string[];
   }[];
   category: string;
   difficulty: string;

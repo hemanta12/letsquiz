@@ -1,7 +1,7 @@
 .home {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-md);
   padding: var(--space-md) var(--space-md);
   width: 100%;
   background-color: var(--color-background);
@@ -89,10 +89,11 @@
   background-color: var(--color-background);
   color: var(--color-text);
   border: 3px solid var(--color-primary);
-  width: 160px;
+  width: 150px;
   height: 55px;
   transition: all 0.3s ease;
   position: relative;
+  font-size: var(--font-size-small) !important;
 }
 
 .modeSelector button:disabled {
@@ -111,15 +112,15 @@
 
 .categoryGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: var(--space-lg);
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--space-md);
   justify-items: center;
-  padding: var(--space-md) 0;
+  padding: var(--space-sm) 0;
 }
 
 .categoryCard {
   position: relative;
-  width: 168px;
+  width: 140px;
   aspect-ratio: 1/1.15;
   border-radius: 8px;
   overflow: hidden;
@@ -247,25 +248,31 @@
   margin-top: var(--space-md);
   justify-content: center;
 }
+.minimalQuestionCount span {
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
 
 .questionCountOptionsMinimal {
   display: flex;
-  gap: var(--space-xs);
+  gap: var(--space-sm);
   align-items: center;
   flex-wrap: wrap;
 }
 
-.questionCountButtonMinimal {
+.questionCountOptionsMinimal button {
   padding: var(--space-sm) var(--space-md);
   min-width: 50px;
   text-align: center;
   font-size: var(--font-size-small);
+  transition: all 0.2s ease-in-out;
 }
-/* .questionCountButtonMinimal:hover,
-.questionCountButtonMinimal.foxus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-} */
+
+.questionCountOptionsMinimal button.selected {
+  outline: 1px solid var(--color-primary) !important;
+  outline-offset: 1px;
+}
 
 .startQuiz {
   display: flex;
@@ -333,6 +340,12 @@
   .home {
     gap: var(--space-md);
   }
+  .welcomeMessage {
+    font-size: var(--font-size-h2);
+  }
+  .guestBanner span {
+    font-size: var(--font-size-small) !important;
+  }
   .section {
     padding: var(--space-sm);
     margin-bottom: var(--space-sm);
@@ -345,9 +358,10 @@
   .modeSelector {
     gap: var(--space-md);
     transition: all 0.1s ease;
+    padding: var(--space-sm) var(--space-md);
   }
   .modeSelector button {
-    width: 140px;
+    width: 130px;
     height: 50px;
     padding: var(--space-sm);
     font-size: var(--font-size-small);
@@ -355,10 +369,12 @@
 
   .categoryGrid {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: var(--space-sm);
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
   }
   .categoryCard {
     width: 100px;
+    aspect-ratio: 1/1.05;
   }
   .categoryTitle {
     left: 0.2rem;
@@ -371,7 +387,7 @@
   .difficultySelector {
     width: 100%;
     gap: var(--space-sm);
-    padding: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
     justify-content: center;
     align-items: center;
   }
@@ -380,6 +396,21 @@
     height: 45px;
     padding: var(--space-xs) var(--space-sm);
     font-size: var(--font-size-small);
+  }
+  .minimalQuestionCount {
+    margin-top: var(--space-sm);
+  }
+
+  .minimalQuestionCount span {
+    font-size: var(--font-size-small) !important;
+  }
+
+  .questionCountOptionsMinimal {
+  }
+
+  .questionCountOptionsMinimal button {
+    /* padding: var(--space-xs) var(--space-sm); */
+    font-size: var(--font-size-xsmall);
   }
   .startQuiz button {
     width: 90%;

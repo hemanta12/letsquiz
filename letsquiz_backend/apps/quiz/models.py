@@ -106,7 +106,9 @@ class GroupPlayer(models.Model):
     quiz_session = models.ForeignKey(QuizSession, on_delete=models.CASCADE, related_name='group_players')
     name = models.CharField(max_length=100)
     score = models.IntegerField(default=0)
-    errors = models.JSONField(default=list, blank=True, null=True) 
+    errors = models.JSONField(default=list, blank=True, null=True)
+    answers = models.JSONField(default=list)
+    correct_answers = models.JSONField(default=dict)  # Stores {question_id: boolean} for correctness
 
     def __str__(self):
         return f"{self.name} in Session {self.quiz_session.id}"

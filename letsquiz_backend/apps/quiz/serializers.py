@@ -1,6 +1,5 @@
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.contrib.auth.password_validation import validate_password
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from django.utils import timezone
@@ -9,7 +8,6 @@ import logging
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
 from letsquiz_backend.apps.quiz.models import (
     Question,
     Category,
@@ -25,7 +23,7 @@ logger = logging.getLogger(__name__)
 class UserSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     email = serializers.EmailField(required=True)
-    username = serializers.CharField(read_only=True)  # <-- Add this line
+    username = serializers.CharField(read_only=True)
     password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
     
     class Meta:
@@ -55,10 +53,6 @@ class UserSerializer(serializers.ModelSerializer):
         except Exception as e:
             logger.error(f"Error creating user: {str(e)}")
             raise serializers.ValidationError("Error creating user account")
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        return data
 
 class AccountVerificationSerializer(serializers.Serializer):
     uidb64 = serializers.CharField()
@@ -143,12 +137,10 @@ class QuizSessionStartSerializer(serializers.Serializer):
     players = serializers.ListField(child=serializers.CharField(max_length=100), required=False)
 
     def validate(self, data):
-        # Only validate if questions exist for the given category
         category_id = data.get('category_id')
         if category_id and not Question.objects.filter(category_id=category_id).exists():
             raise ValidationError({"category_id": ["No questions available for this category."]})
 
-        # Validate group mode requirements
         mode = data.get('mode')
         players = data.get('players', [])
         if mode == 'group':
@@ -162,7 +154,7 @@ class QuizSessionStartSerializer(serializers.Serializer):
 class GroupPlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = GroupPlayer
-        fields = ('id', 'name', 'score', 'errors') 
+        fields = ('id', 'name', 'score', 'errors', 'answers', 'correct_answers')
 
 class QuizSessionQuestionSerializer(serializers.ModelSerializer):
     question = QuestionSerializer(read_only=True)
@@ -198,58 +190,100 @@ class QuizSessionSaveSerializer(serializers.Serializer):
     is_group_session = serializers.BooleanField(default=False)
     players = serializers.ListField(child=serializers.DictField(), required=False)
 
+    def validate(self, data):
+        players_data = data.get('players', [])
+        for player in players_data:
+            if 'correct_answers' in player:
+                if not isinstance(player['correct_answers'], dict):
+                    raise ValidationError({"players": ["correct_answers must be a dictionary for each player."]})
+                for question_id, player_id in player['correct_answers'].items():
+                    if not isinstance(question_id, str) or not question_id.isdigit():
+                        raise ValidationError({
+                            "players": [f"Invalid question ID format in correct_answers: {question_id}"]
+                        })
+                    if not isinstance(player_id, int):
+                        raise ValidationError({
+                            "players": [f"Invalid player ID format in correct_answers: {player_id}"]
+                        })
+        return data
+
     def create(self, validated_data):
         user = self.context['request'].user
         questions_data = validated_data.pop('questions')
         score = validated_data.pop('score')
         is_group_session = validated_data.pop('is_group_session', False)
-        players_data = validated_data.pop('players', []) 
-        # Infer is_group_session from presence of players data
+        players_data = validated_data.pop('players', [])
         is_group_session = is_group_session or bool(players_data)
 
-        # Create QuizSession
         quiz_session = QuizSession.objects.create(
             user=user,
             score=score,
             completed_at=timezone.now(),
             is_group_session=is_group_session
         )
-        logger.info(f"QuizSessionSaveSerializer: QuizSession created with is_group_session: {quiz_session.is_group_session}") 
 
-        # Create GroupPlayer instances for group mode
         if is_group_session and players_data:
             group_players = [
                 GroupPlayer(
                     quiz_session=quiz_session,
                     name=player['name'],
-                    score=player.get('score', 0), 
-                    errors=player.get('errors', []) 
+                    score=player.get('score', 0),
+                    errors=player.get('errors', []),
+                    answers=player.get('answers', []),
+                    correct_answers=player.get('correct_answers', {})
                 ) for player in players_data
             ]
             GroupPlayer.objects.bulk_create(group_players)
-            logger.info(f"QuizSessionSaveSerializer: Created {len(group_players)} GroupPlayer instances.") 
 
-        # Create QuizSessionQuestion instances
+        questions_in_order = []
         for question_data in questions_data:
             try:
                 question = Question.objects.get(id=question_data['id'])
+                questions_in_order.append(question)
                 is_correct = question.correct_answer == question_data['selected_answer']
                 QuizSessionQuestion.objects.create(
-                    quiz_session=quiz_session, 
+                    quiz_session=quiz_session,
                     question=question,
                     selected_answer=question_data['selected_answer'],
                     is_correct=is_correct,
                     answered_at=timezone.now()
                 )
             except Question.DoesNotExist:
-                logger.warning(f"QuizSessionSaveSerializer: Question with ID {question_data['id']} not found. Skipping.") 
                 pass
+
+        if is_group_session and players_data:
+            group_players = GroupPlayer.objects.filter(quiz_session=quiz_session)
+            player_by_name = {player.name: player for player in group_players}
+
+            for player_data in players_data:
+                player_name = player_data['name']
+                if player_name not in player_by_name:
+                    logger.warning(f"Player {player_name} not found in session {quiz_session.id}")
+                    continue
+                player = player_by_name[player_name]
+                if 'correct_answers' in player_data:
+                    if not isinstance(player_data['correct_answers'], dict):
+                        logger.error(f"Invalid correct_answers format for player {player_name}")
+                        continue
+                    correct_answers_dict = player_data['correct_answers']
+                else:
+                    player_answers = player_data.get('answers', [])
+                    correct_answers_dict = {}
+                    for idx, question in enumerate(questions_in_order):
+                        if idx >= len(player_answers):
+                            break
+                        answer = player_answers[idx]
+                        is_correct = (answer.lower() == question.correct_answer.lower())
+                        correct_answers_dict[str(question.id)] = is_correct
+                player.correct_answers = correct_answers_dict
+                player.save()
 
         return quiz_session
 
 class AnswerSubmissionSerializer(serializers.Serializer):
     question_id = serializers.IntegerField()
     selected_answer = serializers.CharField(max_length=255)
+    player_id = serializers.IntegerField(required=False)
 
     def validate_question_id(self, value):
         try:
@@ -277,10 +311,8 @@ class LoginSerializer(serializers.Serializer):
                 'code': 'missing_fields',
             })
 
-        user = None
         try:
             user = authenticate(request=self.context.get('request'), username=email, password=password)
-
             if user:
                 if not user.is_active:
                     raise AuthenticationFailed('User account is disabled.', code='account_disabled')
@@ -288,23 +320,17 @@ class LoginSerializer(serializers.Serializer):
                 return data
             else:
                 raise AuthenticationFailed('Invalid credentials.', code='invalid_credentials')
-
         except AuthenticationFailed as e:
             raise AuthenticationFailed(e.detail, code=e.code if hasattr(e, 'code') else 'authentication_failed')
-
-        except Exception as e:
+        except Exception:
             raise AuthenticationFailed('An unexpected error occurred during authentication.', code='server_error')
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
-
-        user_serializer = UserSerializer(self.user)
-        data['user'] = user_serializer.data
-        
+        data['user'] = UserSerializer(self.user).data
         return data
 
     @classmethod
     def get_token(cls, user):
-        token = super().get_token(user)
-        return token
+        return super().get_token(user)

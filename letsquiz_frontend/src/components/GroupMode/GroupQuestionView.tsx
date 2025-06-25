@@ -3,7 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { GroupPlayer } from '../../types/quiz.types';
 import { Typography } from '../common';
 import styles from './GroupQuestionView.module.css';
-import { setTempPlayerScore } from '../../store/slices/groupQuizSlice';
+import {
+  setTempPlayerScore,
+  recordPlayerAnswer,
+  recordPlayerCorrectness,
+} from '../../store/slices/groupQuizSlice';
 import { QuizCore } from '../Quiz/QuizCore';
 import { QuestionContent } from '../Quiz/QuestionContent';
 
@@ -52,10 +56,32 @@ export const GroupQuestionView: React.FC<GroupQuestionViewProps> = ({
   const players: GroupPlayer[] = useSelector(
     (state: any) => state.groupQuiz.groupSession?.players || []
   );
+  const currentPlayer = useSelector((state: any) => state.groupQuiz.currentPlayer);
+
+  const handleAnswerSelect = (answer: string) => {
+    if (currentPlayer) {
+      dispatch(
+        recordPlayerAnswer({
+          playerId: currentPlayer.id,
+          questionIndex: questionNumber - 1,
+          answer,
+        })
+      );
+    }
+    onAnswerSelect(answer);
+  };
 
   const handlePlayerScore = (playerId: number) => {
     if (!showFeedback) return;
     dispatch(setTempPlayerScore({ playerId, tempScore: 5 }));
+
+    // Record player correctness for this question
+    const correctnessPayload = {
+      questionIndex: questionNumber - 1,
+      playerId,
+    };
+    dispatch(recordPlayerCorrectness(correctnessPayload));
+
     onPlayerSelected(playerId.toString());
   };
 
@@ -72,7 +98,7 @@ export const GroupQuestionView: React.FC<GroupQuestionViewProps> = ({
           selectedAnswer={selectedAnswer}
           showFeedback={showFeedback}
           correctAnswer={correctAnswer}
-          onAnswerSelect={onAnswerSelect}
+          onAnswerSelect={handleAnswerSelect}
           disabled={showFeedback}
           playerId={currentScoredPlayer || undefined}
         />

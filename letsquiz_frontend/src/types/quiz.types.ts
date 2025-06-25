@@ -20,6 +20,7 @@ export interface GroupPlayer {
   score: number;
   uiScore?: number;
   errors: string[];
+  answers?: string[];
 }
 
 export interface GroupQuizSession {

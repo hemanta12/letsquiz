@@ -2,12 +2,7 @@ import React from 'react';
 import styles from './ActivityDetailContent.module.css';
 import Typography from '../common/Typography';
 import { GroupPlayer } from '../../types/dashboard.types';
-
-interface QuestionDetail {
-  question: string;
-  userAnswer: string;
-  correctAnswer: string;
-}
+import { QuestionDetail } from '../../types/dashboard.types';
 
 interface SessionDetail {
   session_id: number;
@@ -28,24 +23,46 @@ const ActivityDetailContent: React.FC<ActivityDetailContentProps> = ({ sessionDe
   const { category, difficulty, started_at, score, questions, is_group_session, group_players } =
     sessionDetail;
 
+  const getCorrectPlayers = (questionIdx: number, correctAnswer: string): string[] => {
+    if (!is_group_session || !group_players?.length) return [];
+
+    const question = questions[questionIdx];
+    const questionId = question.id;
+
+    // Use correctPlayer if valid, otherwise check player answers
+    if (question.correctPlayer && question.correctPlayer !== 'None') {
+      return [question.correctPlayer];
+    }
+
+    return group_players
+      .filter((player) => {
+        // Find the answer object for this question
+        const answerObj = player.answers?.find((ans) => ans.question_id === questionId);
+        return answerObj && answerObj.answer === correctAnswer;
+      })
+      .map((player) => player.name);
+  };
+
   return (
     <div className={styles.container}>
+      {/* -------- top bar -------- */}
       <div className={styles.topBar}>
         <Typography variant="h3" className={styles.titleInBar}>
           {is_group_session ? 'Group Quiz' : 'Solo Quiz'} - {category} – {difficulty}
         </Typography>
+
         <Typography variant="body2" className={styles.dateInBar}>
           {started_at ? new Date(started_at).toLocaleDateString() : 'Date N/A'}
         </Typography>
 
-        {is_group_session && Array.isArray(group_players) && group_players.length > 0 && (
+        {is_group_session && (group_players?.length ?? 0) > 0 && (
           <div className={styles.groupPlayersInBar}>
             <Typography variant="body2">
-              Players:{' '}
-              {group_players.map((player) => `${player.name} (${player.score})`).join(', ')}
+              Players: {group_players?.map((p) => `${p.name} (${p.score})`).join(', ')}
             </Typography>
           </div>
         )}
+
         {!is_group_session && (
           <div className={styles.scoreInBar}>
             <Typography variant="body1">
@@ -55,79 +72,51 @@ const ActivityDetailContent: React.FC<ActivityDetailContentProps> = ({ sessionDe
         )}
       </div>
 
-      {is_group_session && Array.isArray(group_players) && group_players.length > 0 && (
-        <div className={styles.groupPlayersDetails}>
-          <Typography variant="h3">Players</Typography>
-          {group_players.map((player) => (
-            <div key={player.id} className={styles.playerDetailItem}>
-              <Typography variant="body1">
-                {player.name} - Score: {player.score}
+      {/* -------- questions -------- */}
+      {questions.length ? (
+        questions.map((detail, idx) => {
+          const correctPlayers = getCorrectPlayers(idx, detail.correctAnswer);
+          const isCorrect = is_group_session
+            ? correctPlayers.length > 0
+            : detail.userAnswer === detail.correctAnswer;
+
+          return (
+            <div
+              key={idx}
+              className={`${styles.questionDetailItem} ${
+                isCorrect ? styles.correct : styles.incorrect
+              }`}
+            >
+              <Typography variant="body2" className={styles.questionText}>
+                Question: {detail.question}
               </Typography>
-              {Array.isArray(player.errors) && player.errors.length > 0 && (
-                <div className={styles.playerErrors}>
-                  <Typography variant="body2">Errors:</Typography>
-                  <ul>
-                    {player.errors.map((error, errorIdx) => (
-                      <li key={errorIdx}>
-                        <Typography variant="body2">{error}</Typography>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
 
-      {Array.isArray(questions) && questions.length > 0 ? (
-        questions.map((detail, idx) => (
-          <div
-            key={idx}
-            className={`${styles.questionDetailItem} ${
-              detail.userAnswer === detail.correctAnswer ? styles.correct : styles.incorrect
-            }`}
-          >
-            <Typography variant="body2" className={styles.questionText}>
-              Question: {detail.question}
-            </Typography>
-
-            <div className={styles.answersContainer}>
-              <div className={styles.answerBlock}>
-                <span className={styles.label}>Your Answer:</span>
-                <span className={styles.answerText}>{detail.userAnswer}</span>
-              </div>
               {is_group_session ? (
-                <div className={`${styles.answerBlock} ${styles.correctAnswerBlock}`}>
-                  <span className={styles.label}>Correct Answer:</span>
-                  <span className={styles.answerText}>
-                    {detail.correctAnswer}
-                    {/* Find players who answered correctly */}
-                    {group_players &&
-                      group_players.length > 0 &&
-                      (() => {
-                        const correctPlayers = group_players
-                          .filter(
-                            (player) =>
-                              (player as any).answers &&
-                              (player as any).answers[idx] === detail.correctAnswer
-                          )
-                          .map((player) => player.name);
-                        return correctPlayers.length > 0
-                          ? ` (by ${correctPlayers.join(', ')})`
-                          : '';
-                      })()}
-                  </span>
+                <div className={styles.answersContainer}>
+                  <Typography variant="body2">
+                    <strong>Correct answer by:</strong>{' '}
+                    {detail.correctPlayer ||
+                      (correctPlayers.length > 0 ? correctPlayers.join(', ') : 'None')}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Correct Answer:</strong> {detail.correctAnswer}
+                  </Typography>
                 </div>
               ) : (
-                <div className={`${styles.answerBlock} ${styles.correctAnswerBlock}`}>
-                  <span className={styles.label}>Correct Answer:</span>
-                  <span className={styles.answerText}>{detail.correctAnswer}</span>
+                <div className={styles.answersContainer}>
+                  <div className={styles.answerBlock}>
+                    <span className={styles.label}>Your Answer:</span>
+                    <span className={styles.answerText}>{detail.userAnswer || 'No Answer'}</span>
+                  </div>
+                  <div className={`${styles.answerBlock} ${styles.correctAnswerBlock}`}>
+                    <span className={styles.label}>Correct Answer:</span>
+                    <span className={styles.answerText}>{detail.correctAnswer}</span>
+                  </div>
                 </div>
               )}
             </div>
-          </div>
-        ))
+          );
+        })
       ) : (
         <Typography variant="body1">No question details available.</Typography>
       )}

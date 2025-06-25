@@ -84,7 +84,9 @@ const Home: React.FC = () => {
       {!isAuthenticated && (
         <div className={styles.guestBanner}>
           <Typography variant="body1">
-            Sign in for free to <b>Save your quiz history</b> and <b>Track your progress</b>
+            <span>
+              Sign in for free to <b>Save your quiz history</b> and <b>Track your progress</b>
+            </span>
           </Typography>
         </div>
       )}
