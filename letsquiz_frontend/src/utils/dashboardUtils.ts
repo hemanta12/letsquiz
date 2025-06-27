@@ -1,5 +1,4 @@
 import { CategoryStats, QuizSessionHistory } from '../types/api.types';
-import { QuizSession } from '../types/dashboard.types';
 
 export const calculateCategoryStats = (
   sessions: QuizSessionHistory[] | undefined | null
@@ -40,34 +39,4 @@ export const calculateCategoryStats = (
       }
       return acc;
     }, []);
-};
-
-export const groupActivitiesByDate = (activities: QuizSession[]) => {
-  const today = new Date().setHours(0, 0, 0, 0);
-  const yesterday = today - 86400000;
-
-  return activities.reduce(
-    (groups, activity) => {
-      // Skip activities without completion date
-      if (!activity.completed_at) {
-        return groups;
-      }
-
-      const activityDate = new Date(activity.completed_at).setHours(0, 0, 0, 0);
-      let group =
-        activityDate === today
-          ? 'today'
-          : activityDate === yesterday
-            ? 'yesterday'
-            : activityDate > today - 7 * 86400000
-              ? 'thisWeek'
-              : 'older';
-
-      return {
-        ...groups,
-        [group]: [...(groups[group] || []), activity],
-      };
-    },
-    {} as Record<string, QuizSession[]>
-  );
 };

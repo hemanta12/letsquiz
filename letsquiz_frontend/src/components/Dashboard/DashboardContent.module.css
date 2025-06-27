@@ -1,12 +1,6 @@
-.dashboardContent {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xl);
-}
-
 .contentRow {
   display: grid;
-  grid-template-columns: 3fr 2fr;
+  grid-template-columns: 2fr 2fr;
   gap: var(--space-xl);
   align-items: start;
 }
@@ -25,7 +19,12 @@
 
 @media (max-width: 1024px) {
   .contentRow {
-    grid-template-columns: 1fr;
     gap: var(--space-lg);
+  }
+}
+
+@media (max-width: 768px) {
+  .contentRow {
+    grid-template-columns: 1fr;
   }
 }

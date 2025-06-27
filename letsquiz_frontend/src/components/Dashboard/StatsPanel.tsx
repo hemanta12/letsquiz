@@ -10,12 +10,13 @@ interface StatsPanelProps {
 }
 
 const StatsPanel: React.FC<StatsPanelProps> = ({ profile, sessions, categoryStats }) => {
-  const totalQuizzes = sessions.length;
+  const soloSessions = sessions.filter((s) => !s.is_group_session);
+  const totalQuizzes = soloSessions.length;
   const averageScore =
-    sessions.length > 0
+    soloSessions.length > 0
       ? Math.round(
-          (sessions.reduce((acc, s) => acc + (s.score ?? 0), 0) /
-            sessions.reduce((acc, s) => acc + (s.total_questions ?? 0), 0)) *
+          (soloSessions.reduce((acc, s) => acc + (s.score ?? 0), 0) /
+            soloSessions.reduce((acc, s) => acc + (s.total_questions ?? 0), 0)) *
             100
         )
       : 0;

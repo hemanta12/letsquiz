@@ -7,13 +7,13 @@ import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
 import {
   fetchSingleDetailedQuizSession,
   clearSelectedDetailedSession,
+  cleanExpiredCache,
 } from '../../store/slices/userSlice';
 import ActivityDetailContent from './ActivityDetailContent';
 import CategoryList from './CategoryList';
 import RecentActivity from './RecentActivity';
 import StatsPanel from './StatsPanel';
-import { UserProfile, CategoryStats } from '../../types/api.types';
-import { QuizSession } from '../../types/dashboard.types';
+import { UserProfile } from '../../types/api.types';
 import { calculateCategoryStats } from '../../utils/dashboardUtils';
 import { fetchQuizHistoryThunk } from '../../store/slices/quizSlice';
 import styles from './DashboardContent.module.css';
@@ -78,6 +78,18 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
       dispatch(fetchQuizHistoryThunk());
     }
   }, [dispatch, isAuthenticated, userId]);
+
+  // Periodic cache cleanup - runs every 2 minutes
+  useEffect(() => {
+    const cleanup = setInterval(
+      () => {
+        dispatch(cleanExpiredCache());
+      },
+      2 * 60 * 1000
+    );
+
+    return () => clearInterval(cleanup);
+  }, [dispatch]);
 
   if (!isAuthenticated) {
     return (

@@ -117,6 +117,22 @@ def get_user_sessions_view(request, userId):
             sessions_data = []
             for session in quiz_sessions:
                 first_question = session.session_questions.first()
+                
+                # Include group players data for group sessions
+                group_players_data = []
+                if session.is_group_session:
+                    group_players_data = [
+                        {
+                            'id': player.id,
+                            'name': player.name,
+                            'score': player.score,
+                            'errors': player.errors,
+                            'answers': player.answers,
+                            'correct_answers': player.correct_answers
+                        }
+                        for player in session.group_players.all()
+                    ]
+                
                 session_data = {
                     'id': session.id,
                     'score': session.score,
@@ -125,7 +141,8 @@ def get_user_sessions_view(request, userId):
                     'completed_at': session.completed_at,
                     'category': first_question.question.category.name if first_question else None,
                     'difficulty': first_question.question.difficulty.label if first_question else None,
-                    'is_group_session': session.is_group_session
+                    'is_group_session': session.is_group_session,
+                    'group_players': group_players_data if session.is_group_session else None
                 }
                 sessions_data.append(session_data)
 

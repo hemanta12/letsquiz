@@ -3,11 +3,19 @@ import { RootState } from '../store';
 import UserService from '../../services/userService';
 import { UserProfile, FetchLeaderboardResponse, LeaderboardEntry } from '../../types/api.types';
 import { SessionDetail, QuestionDetail } from '../../types/dashboard.types';
+import { fetchQuizHistoryThunk } from './quizSlice';
+
+interface CachedSessionDetail {
+  data: SessionDetail;
+  timestamp: number;
+  sessionId: number;
+}
 
 interface UserState {
   profile: UserProfile | null;
   leaderboard: LeaderboardEntry[];
   selectedDetailedSession: SessionDetail | null;
+  cachedSessionDetails: Record<number, CachedSessionDetail>;
   loadingProfile: boolean;
   loadingLeaderboard: boolean;
   loadingSelectedDetailedSession: boolean;
@@ -20,6 +28,7 @@ const initialState: UserState = {
   profile: null,
   leaderboard: [],
   selectedDetailedSession: null,
+  cachedSessionDetails: {},
   loadingProfile: false,
   loadingLeaderboard: false,
   loadingSelectedDetailedSession: false,
@@ -52,15 +61,30 @@ export const fetchLeaderboard = createAsyncThunk<
   }
 });
 
+// Cache duration: 5 minutes (300,000 ms)
+const CACHE_DURATION_MS = 5 * 60 * 1000;
+
 export const fetchSingleDetailedQuizSession = createAsyncThunk<
   SessionDetail,
   number,
   { state: RootState; rejectValue: string }
 >('user/fetchSingleDetailedQuizSession', async (sessionId, { getState, rejectWithValue }) => {
-  const userId = getState().auth.userId;
+  const state = getState();
+  const userId = state.auth.userId;
+
   if (!userId) {
     return rejectWithValue('User not authenticated or user ID not available');
   }
+
+  // Check cache first
+  const cachedSession = state.user.cachedSessionDetails[sessionId];
+  const now = Date.now();
+
+  if (cachedSession && now - cachedSession.timestamp < CACHE_DURATION_MS) {
+    // Return cached data if it's still fresh
+    return cachedSession.data;
+  }
+
   try {
     const raw = await UserService.fetchQuizSessionDetails(sessionId);
     const detail: SessionDetail = {
@@ -112,6 +136,25 @@ const userSlice = createSlice({
       state.selectedDetailedSession = null;
       state.errorSelectedDetailedSession = null;
     },
+    clearSessionCache(state) {
+      state.cachedSessionDetails = {};
+    },
+    invalidateSessionCache(state, action) {
+      const sessionId = action.payload;
+      if (sessionId && state.cachedSessionDetails[sessionId]) {
+        delete state.cachedSessionDetails[sessionId];
+      }
+    },
+    cleanExpiredCache(state) {
+      const now = Date.now();
+      Object.keys(state.cachedSessionDetails).forEach((sessionIdStr) => {
+        const sessionId = parseInt(sessionIdStr, 10);
+        const cachedSession = state.cachedSessionDetails[sessionId];
+        if (cachedSession && now - cachedSession.timestamp >= CACHE_DURATION_MS) {
+          delete state.cachedSessionDetails[sessionId];
+        }
+      });
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -149,17 +192,53 @@ const userSlice = createSlice({
         state.errorSelectedDetailedSession = null;
         state.selectedDetailedSession = null;
       })
-      .addCase(fetchSingleDetailedQuizSession.fulfilled, (state, { payload }) => {
+      .addCase(fetchSingleDetailedQuizSession.fulfilled, (state, { payload, meta }) => {
         state.loadingSelectedDetailedSession = false;
         state.selectedDetailedSession = payload;
+        // Cache the session details
+        const sessionId = meta.arg;
+        state.cachedSessionDetails[sessionId] = {
+          data: payload,
+          timestamp: Date.now(),
+          sessionId,
+        };
       })
       .addCase(fetchSingleDetailedQuizSession.rejected, (state, { payload, error }) => {
         state.loadingSelectedDetailedSession = false;
         state.errorSelectedDetailedSession =
           payload ?? error.message ?? 'Failed to fetch detailed quiz session';
+      })
+
+      // Clear session cache when quiz history is refreshed
+      .addCase(fetchQuizHistoryThunk.fulfilled, (state) => {
+        state.cachedSessionDetails = {};
       });
   },
 });
 
-export const { clearSelectedDetailedSession } = userSlice.actions;
+// Selectors
+export const selectIsSessionCached = (state: RootState, sessionId: number): boolean => {
+  const cachedSession = state.user.cachedSessionDetails[sessionId];
+  if (!cachedSession) return false;
+
+  const now = Date.now();
+  return now - cachedSession.timestamp < CACHE_DURATION_MS;
+};
+
+export const selectCachedSession = (state: RootState, sessionId: number): SessionDetail | null => {
+  const cachedSession = state.user.cachedSessionDetails[sessionId];
+  if (!cachedSession) return null;
+
+  const now = Date.now();
+  if (now - cachedSession.timestamp >= CACHE_DURATION_MS) return null;
+
+  return cachedSession.data;
+};
+
+export const {
+  clearSelectedDetailedSession,
+  clearSessionCache,
+  invalidateSessionCache,
+  cleanExpiredCache,
+} = userSlice.actions;
 export default userSlice.reducer;

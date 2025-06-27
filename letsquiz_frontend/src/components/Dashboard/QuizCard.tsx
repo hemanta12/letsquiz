@@ -2,6 +2,7 @@ import React from 'react';
 import { Typography } from '../common';
 import { QuizSessionHistory } from '../../types/api.types';
 import styles from './QuizCard.module.css';
+import { getWinnerDisplay, formatDate } from '../../utils/activityUtils';
 
 type QuizCardProps = {
   session: QuizSessionHistory;
@@ -9,9 +10,11 @@ type QuizCardProps = {
 };
 
 const QuizCard: React.FC<QuizCardProps> = ({ session, onClick }) => {
+  // Handles both click and keyboard activation for accessibility
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
+      onClick();
     }
   };
 
@@ -21,6 +24,9 @@ const QuizCard: React.FC<QuizCardProps> = ({ session, onClick }) => {
   const scorePercentage =
     session.score !== null && totalQuestions > 0 ? (session.score / totalQuestions) * 100 : 0;
 
+  const displayText = getWinnerDisplay(session);
+  const isGroupSession = session.is_group_session;
+
   return (
     <div
       id={`quiz-${session.id}`}
@@ -29,32 +35,42 @@ const QuizCard: React.FC<QuizCardProps> = ({ session, onClick }) => {
       onKeyDown={handleKeyDown}
       role="button"
       tabIndex={0}
+      // Optionally, add aria-pressed or other ARIA props if needed
     >
       <div className={styles.quizHeader}>
         <div>
           <Typography variant="h3">Quiz #{session.id}</Typography>
-          {/* Use started_at for the date */}
+          {/* Use started_at for the date, formatted consistently */}
           <time className={styles.quizTime}>
-            {session.started_at ? new Date(session.started_at).toLocaleDateString() : 'Date N/A'}
+            {session.started_at ? formatDate(session.started_at) : 'Date N/A'}
           </time>
         </div>
-
-        <div className={`${styles.difficultyBadge} ${styles[session.difficulty.toLowerCase()]}`}>
-          {session.difficulty}
+        <div className={styles.quizHeaderRight}>
+          <span className={styles.difficultyBadge + ' ' + styles[session.difficulty.toLowerCase()]}>
+            {' '}
+            {session.difficulty}
+          </span>
+          <span
+            className={styles.quizTypeLabel + ' ' + (isGroupSession ? styles.group : styles.solo)}
+            style={{ marginLeft: 8 }}
+          >
+            {isGroupSession ? 'Group' : 'Solo'}
+          </span>
         </div>
       </div>
 
       <div className={styles.scoreIndicator}>
-        <Typography variant="h3" style={{ color: 'var(--color-primary)' }}>
-          {totalQuestions > 0 ? `${score}/${totalQuestions}` : `${score}/N/A`}
+        <Typography
+          variant="body1"
+          className={displayText.isWinner ? styles.winnerText : ''}
+          style={{ color: 'var(--color-primary)' }}
+        >
+          {/* Show percentage for solo mode */}
+          {!isGroupSession && totalQuestions > 0 && session.score !== null
+            ? `${score} / ${totalQuestions} (${Math.round(scorePercentage)}%)`
+            : displayText.text}
         </Typography>
-        <div className={styles.scoreBar}>
-          <div
-            className={styles.scoreProgress}
-            style={{ width: `${scorePercentage}%` }}
-            aria-label={`Score progress: ${score} out of 10`}
-          />
-        </div>
+        {/* Progress bar removed as per new requirement */}
       </div>
     </div>
   );

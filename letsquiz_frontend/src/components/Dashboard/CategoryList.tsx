@@ -70,7 +70,9 @@ const CategoryList: React.FC<CategoryListProps> = ({
                   {(() => {
                     const sessionsInCategory = sessions.filter(
                       (session) =>
-                        session.category === categoryName && session.completed_at !== null
+                        session.category === categoryName &&
+                        session.completed_at !== null &&
+                        session.is_group_session === false
                     );
                     const totalQuestionsForCategory = sessionsInCategory.reduce(
                       (sum, session) => sum + (session.total_questions ?? 0),
@@ -111,7 +113,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
               {sessions
                 .filter(
                   (session) => session.category === categoryName && session.completed_at !== null
-                ) // Filter out incomplete sessions
+                )
                 .sort(
                   (a, b) =>
                     new Date(b.completed_at as string).getTime() -

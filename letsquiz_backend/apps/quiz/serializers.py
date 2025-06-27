@@ -4,7 +4,6 @@ from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from django.utils import timezone
 
-import logging
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -18,7 +17,6 @@ from letsquiz_backend.apps.quiz.models import (
 )
 
 User = get_user_model()
-logger = logging.getLogger(__name__)
 
 class UserSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
@@ -51,7 +49,6 @@ class UserSerializer(serializers.ModelSerializer):
             )
             return user
         except Exception as e:
-            logger.error(f"Error creating user: {str(e)}")
             raise serializers.ValidationError("Error creating user account")
 
 class AccountVerificationSerializer(serializers.Serializer):
@@ -222,19 +219,6 @@ class QuizSessionSaveSerializer(serializers.Serializer):
             is_group_session=is_group_session
         )
 
-        if is_group_session and players_data:
-            group_players = [
-                GroupPlayer(
-                    quiz_session=quiz_session,
-                    name=player['name'],
-                    score=player.get('score', 0),
-                    errors=player.get('errors', []),
-                    answers=player.get('answers', []),
-                    correct_answers=player.get('correct_answers', {})
-                ) for player in players_data
-            ]
-            GroupPlayer.objects.bulk_create(group_players)
-
         questions_in_order = []
         for question_data in questions_data:
             try:
@@ -252,22 +236,17 @@ class QuizSessionSaveSerializer(serializers.Serializer):
                 pass
 
         if is_group_session and players_data:
-            group_players = GroupPlayer.objects.filter(quiz_session=quiz_session)
-            player_by_name = {player.name: player for player in group_players}
-
+            # Delete any existing group players to avoid duplicates and ensure clean state
+            existing_players = GroupPlayer.objects.filter(quiz_session=quiz_session)
+            if existing_players.exists():
+                existing_players.delete()
+            # Create fresh GroupPlayer objects with the correct data from frontend
+            group_players_to_create = []
             for player_data in players_data:
-                player_name = player_data['name']
-                if player_name not in player_by_name:
-                    logger.warning(f"Player {player_name} not found in session {quiz_session.id}")
-                    continue
-                player = player_by_name[player_name]
-                if 'correct_answers' in player_data:
-                    if not isinstance(player_data['correct_answers'], dict):
-                        logger.error(f"Invalid correct_answers format for player {player_name}")
-                        continue
-                    correct_answers_dict = player_data['correct_answers']
-                else:
-                    player_answers = player_data.get('answers', [])
+                # Build correct_answers dict if not provided
+                correct_answers_dict = player_data.get('correct_answers', {})
+                if not correct_answers_dict and 'answers' in player_data:
+                    player_answers = player_data['answers']
                     correct_answers_dict = {}
                     for idx, question in enumerate(questions_in_order):
                         if idx >= len(player_answers):
@@ -275,8 +254,16 @@ class QuizSessionSaveSerializer(serializers.Serializer):
                         answer = player_answers[idx]
                         is_correct = (answer.lower() == question.correct_answer.lower())
                         correct_answers_dict[str(question.id)] = is_correct
-                player.correct_answers = correct_answers_dict
-                player.save()
+                group_player = GroupPlayer(
+                    quiz_session=quiz_session,
+                    name=player_data['name'],
+                    score=player_data.get('score', 0),
+                    errors=player_data.get('errors', []),
+                    answers=player_data.get('answers', []),
+                    correct_answers=correct_answers_dict
+                )
+                group_players_to_create.append(group_player)
+            GroupPlayer.objects.bulk_create(group_players_to_create)
 
         return quiz_session
 

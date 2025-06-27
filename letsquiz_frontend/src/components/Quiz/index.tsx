@@ -164,14 +164,20 @@ export const QuizComponent: React.FC = () => {
               players: groupSession.players.map((player: GroupPlayer) => {
                 // Build correct_answers object for this player
                 const correct_answers: Record<string, boolean> = {};
+                let playerFinalScore = 0;
+
                 questions.forEach((question, questionIndex) => {
                   const correctPlayerId = playerCorrectness[questionIndex];
-                  correct_answers[String(question.id)] = correctPlayerId === player.id;
+                  const isCorrect = correctPlayerId === player.id;
+                  correct_answers[String(question.id)] = isCorrect;
+                  if (isCorrect) {
+                    playerFinalScore += 5;
+                  }
                 });
 
                 return {
                   name: player.name,
-                  score: player.score,
+                  score: playerFinalScore,
                   errors: player.errors,
                   answers: player.answers || [],
                   correct_answers,

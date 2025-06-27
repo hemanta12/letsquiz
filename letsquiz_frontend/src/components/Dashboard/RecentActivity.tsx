@@ -1,14 +1,15 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { Typography, Card, Icon, Button } from '../common';
 import { QuizSessionHistory } from '../../types/api.types';
+import { getWinnerDisplay, getRelativeTimeGroup, formatDate } from '../../utils/activityUtils';
 import quizService from '../../services/quizService';
 import styles from './RecentActivity.module.css';
 
-type RecentActivityProps = {
+interface RecentActivityProps {
   activities: QuizSessionHistory[];
   onActivityClick: (sessionId: number) => void;
   onDeleteSuccess: () => void;
-};
+}
 
 const RecentActivity: React.FC<RecentActivityProps> = ({
   activities,
@@ -19,6 +20,11 @@ const RecentActivity: React.FC<RecentActivityProps> = ({
   const [sessionActivities, setSessionActivities] = useState(activities);
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+
+  // Sync sessionActivities with activities prop
+  useEffect(() => {
+    setSessionActivities(activities);
+  }, [activities]);
 
   const handleToggleEditMode = useCallback(() => {
     setIsEditMode((prev) => {
@@ -47,47 +53,19 @@ const RecentActivity: React.FC<RecentActivityProps> = ({
     }
   }, [confirmDeleteId, onDeleteSuccess]);
 
-  const getRelativeTimeGroup = useCallback((dateString: string) => {
-    const date = new Date(dateString);
-    const today = new Date();
-    const msInDay = 24 * 60 * 60 * 1000;
-    const diffDays = Math.round(
-      (new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime() -
-        new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()) /
-        msInDay
-    );
-    if (diffDays === 0) return 'Today';
-    if (diffDays === 1) return 'Yesterday';
-    if (
-      date.getFullYear() === today.getFullYear() &&
-      date.getMonth() === today.getMonth() &&
-      diffDays > 1
-    )
-      return 'This Month';
-    return 'Earlier';
-  }, []);
-
-  const formatDate = useCallback((iso: string) => {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    }).format(new Date(iso));
-  }, []);
-
-  const completedActivities = useMemo(
+  const completedActivities = useMemo<QuizSessionHistory[]>(
     () => sessionActivities.filter((a) => a.completed_at),
     [sessionActivities]
   );
 
-  const groupedActivities = useMemo(() => {
+  const groupedActivities = useMemo<Record<string, QuizSessionHistory[]>>(() => {
     const groups: Record<string, QuizSessionHistory[]> = {};
     for (const act of completedActivities) {
       const grp = getRelativeTimeGroup(act.completed_at as string);
       groups[grp] = [...(groups[grp] || []), act];
     }
     return groups;
-  }, [completedActivities, getRelativeTimeGroup]);
+  }, [completedActivities]);
 
   const toggleGroup = useCallback((group: string) => {
     setExpandedGroups((prev) => ({
@@ -123,7 +101,7 @@ const RecentActivity: React.FC<RecentActivityProps> = ({
             return (
               <div key={group} className={styles.activityGroup} data-group={group}>
                 <div className={styles.activityDate}>{group}</div>
-                {visibleItems.map((activity) => (
+                {visibleItems.map((activity: QuizSessionHistory) => (
                   <div key={activity.id} className={styles.activityRow}>
                     <button
                       className={styles.activityItem}
@@ -138,15 +116,23 @@ const RecentActivity: React.FC<RecentActivityProps> = ({
                           {activity.category} - {activity.difficulty}
                         </Typography>
                         {activity.is_group_session && activity.group_players && (
-                          <Typography variant="body2" className={styles.groupPlayers}>
-                            Players: {activity.group_players.map((p) => p.name).join(', ')}
+                          <Typography variant="caption" className={styles.groupPlayers}>
+                            {' '}
+                            Players:{' '}
+                            {activity.group_players.map((p: { name: string }) => p.name).join(', ')}
                           </Typography>
                         )}
                       </div>
                       <div className={styles.scoreInfo}>
-                        <span className={styles.score}>
-                          {activity.score ?? 0} /{' '}
-                          {(activity.total_questions ?? 0) > 0 ? activity.total_questions : 'N/A'}
+                        <span
+                          className={`${styles.score} ${getWinnerDisplay(activity).isWinner ? styles.winnerText : ''}`}
+                        >
+                          {/* Show percentage for solo mode */}
+                          {!activity.is_group_session &&
+                          (activity.total_questions ?? 0) > 0 &&
+                          activity.score !== null
+                            ? `${activity.score} / ${activity.total_questions} (${Math.round((activity.score / (activity.total_questions ?? 1)) * 100)}%)`
+                            : getWinnerDisplay(activity).text}
                         </span>
                       </div>
                     </button>

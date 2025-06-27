@@ -3,17 +3,9 @@
   padding: 0 var(--space-xs);
 }
 
-@media (min-width: 768px) {
-  /* .container {
-    width: var(--container-tablet);
-  } */
-}
-
 @media (min-width: 1024px) {
   .container {
     max-width: var(--container-desktop);
     margin: 0 auto;
-    padding: var(--space-sm) var(--space-xl);
-    /* width: 100%; */
   }
 }

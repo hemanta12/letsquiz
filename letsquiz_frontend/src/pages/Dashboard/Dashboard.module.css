@@ -1,11 +1,10 @@
 .dashboard {
-  padding: var(--space-lg);
-  max-width: 1400px;
   margin: 0 auto;
 }
 
 .heading {
   font-size: 1.6rem;
+  margin-top: 1rem;
   margin-bottom: 1rem;
   text-align: center;
 }
