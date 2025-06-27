@@ -94,6 +94,7 @@ export const fetchSingleDetailedQuizSession = createAsyncThunk<
               answer: a.answer,
             };
           }),
+          correct_answers: player.correct_answers ?? {},
         })) ?? [],
     };
 

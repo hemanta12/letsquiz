@@ -405,11 +405,7 @@
     font-size: var(--font-size-small) !important;
   }
 
-  .questionCountOptionsMinimal {
-  }
-
   .questionCountOptionsMinimal button {
-    /* padding: var(--space-xs) var(--space-sm); */
     font-size: var(--font-size-xsmall);
   }
   .startQuiz button {

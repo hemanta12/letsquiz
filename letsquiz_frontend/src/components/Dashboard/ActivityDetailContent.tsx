@@ -34,13 +34,28 @@ const ActivityDetailContent: React.FC<ActivityDetailContentProps> = ({ sessionDe
       return [question.correctPlayer];
     }
 
-    return group_players
+    // First try to use correct_answers field from backend
+    const playersFromCorrectAnswers = group_players
+      .filter((player) => {
+        const isCorrect = player.correct_answers?.[String(questionId)];
+        return isCorrect === true;
+      })
+      .map((player) => player.name);
+
+    if (playersFromCorrectAnswers.length > 0) {
+      return playersFromCorrectAnswers;
+    }
+
+    // Fallback to checking player answers manually
+    const playersFromAnswers = group_players
       .filter((player) => {
         // Find the answer object for this question
         const answerObj = player.answers?.find((ans) => ans.question_id === questionId);
         return answerObj && answerObj.answer === correctAnswer;
       })
       .map((player) => player.name);
+
+    return playersFromAnswers;
   };
 
   return (

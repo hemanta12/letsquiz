@@ -213,6 +213,7 @@ export interface BackendQuizSessionResponse {
     score: number;
     errors: string[];
     answers: string[];
+    correct_answers: Record<string, boolean>;
   }[];
   category: string;
   difficulty: string;

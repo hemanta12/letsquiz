@@ -4,6 +4,7 @@ export type GroupPlayer = {
   score: number;
   errors: string[];
   answers: Array<{ question_id: number; answer: string }>;
+  correct_answers?: Record<string, boolean>;
 };
 
 export type QuizSession = {

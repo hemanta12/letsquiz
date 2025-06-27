@@ -175,7 +175,8 @@ def get_quiz_session_view(request, sessionId, category=None, difficulty=None):
             'name': player.name,
             'score': player.score,
             'errors': player.errors,
-            'answers': player.answers
+            'answers': player.answers,
+            'correct_answers': player.correct_answers
         }
         for player in quiz_session.group_players.all()
     ]

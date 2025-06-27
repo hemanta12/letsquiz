@@ -47,7 +47,7 @@ export const QuizComponent: React.FC = () => {
     error: quizError,
   } = useAppSelector((state) => state.quiz);
 
-  const { groupSession } = useAppSelector((state) => state.groupQuiz);
+  const { groupSession, playerCorrectness } = useAppSelector((state) => state.groupQuiz);
 
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
 
@@ -161,11 +161,22 @@ export const QuizComponent: React.FC = () => {
           if (mode === 'Group' && groupSession?.players) {
             Object.assign(quizSessionData, {
               is_group_session: true,
-              players: groupSession.players.map((player: GroupPlayer) => ({
-                name: player.name,
-                score: player.score,
-                errors: player.errors,
-              })),
+              players: groupSession.players.map((player: GroupPlayer) => {
+                // Build correct_answers object for this player
+                const correct_answers: Record<string, boolean> = {};
+                questions.forEach((question, questionIndex) => {
+                  const correctPlayerId = playerCorrectness[questionIndex];
+                  correct_answers[String(question.id)] = correctPlayerId === player.id;
+                });
+
+                return {
+                  name: player.name,
+                  score: player.score,
+                  errors: player.errors,
+                  answers: player.answers || [],
+                  correct_answers,
+                };
+              }),
             });
           }
 
