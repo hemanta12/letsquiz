@@ -1,4 +1,5 @@
 import logging
+import random
 from django.shortcuts import get_object_or_404
 from django.db.models import Q, Count
 from django.utils import timezone
@@ -71,7 +72,13 @@ def fetch_seeded_questions_view(request):
 
     questions = queryset.order_by('?')[:count]
     serializer = QuestionSerializer(questions, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    data = serializer.data
+    # Shuffle options for each question
+    for q in data:
+        options = list(q['answer_options'])
+        random.shuffle(options)
+        q['answer_options'] = options
+    return Response(data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -146,10 +153,12 @@ def get_quiz_session_view(request, sessionId, category=None, difficulty=None):
 
     questions = []
     for sq in quiz_session.session_questions.all():
+        options = list(sq.question.answer_options)
+        random.shuffle(options)
         question_data = {
             'id': sq.question.id,
             'text': sq.question.question_text,
-            'options': sq.question.answer_options,
+            'options': options,
             'selected_answer': sq.selected_answer,
             'correct_answer': sq.question.correct_answer,
             'category': sq.question.category.name,
