@@ -5,7 +5,7 @@
 .statCard {
   background: var(--color-primary);
   color: var(--color-background);
-  padding: var(--space-xl);
+  padding: var(--space-md);
   border-radius: 12px;
   transition: transform 0.2s ease;
 }
@@ -28,14 +28,14 @@
 }
 
 .statValue {
-  font-size: 32px;
+  font-size: var(--font-size-h2);
   font-weight: bold;
   margin: var(--space-md) 0;
 }
 
 .statTitle {
   text-align: center;
-  margin-bottom: var(--space-lg);
+  margin-top: var(--space-lg);
 }
 
 @media (max-width: 768px) {

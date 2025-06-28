@@ -15,6 +15,33 @@ const REFRESH_TOKEN_LIFETIME = 24 * 60 * 60 * 1000; // 1 day in milliseconds
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'default-key';
 const TOKEN_REFRESH_THRESHOLD = 5 * 60 * 1000; // 5 minutes before expiration
 
+export const setRefreshToken = (token: string | null): void => {
+  if (token) {
+    const encrypted = AES.encrypt(token, ENCRYPTION_KEY).toString();
+    localStorage.setItem('refreshToken', encrypted);
+
+    const refreshTokenData = {
+      token: token,
+      expiresAt: Date.now() + REFRESH_TOKEN_LIFETIME,
+    };
+    localStorage.setItem('refreshTokenData', JSON.stringify(refreshTokenData));
+  } else {
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('refreshTokenData');
+  }
+};
+
+export const getRefreshToken = (): string | null => {
+  const encrypted = localStorage.getItem('refreshToken');
+  if (!encrypted) return null;
+
+  try {
+    return AES.decrypt(encrypted, ENCRYPTION_KEY).toString(enc.Utf8);
+  } catch {
+    return null;
+  }
+};
+
 interface GuestUser {
   id: string;
   isGuest: true;
@@ -52,6 +79,17 @@ interface RefreshResponseData {
   refresh: string;
 }
 
+class CustomAuthError extends Error {
+  code: string;
+  status: number;
+  constructor(message: string, code: string, status: number) {
+    super(message);
+    this.name = 'CustomAuthError';
+    this.code = code;
+    this.status = status;
+  }
+}
+
 class AuthService {
   private sessionCheckInterval: NodeJS.Timeout | null = null;
 
@@ -79,19 +117,16 @@ class AuthService {
       }
 
       if (timeUntilExpiry <= TOKEN_REFRESH_THRESHOLD) {
-        console.log('[Session] Token approaching expiration, attempting refresh');
         const refreshSuccess = await this.refreshSession();
 
         if (!refreshSuccess) {
-          console.error('[Session] Failed to refresh token');
           this.logout();
           window.dispatchEvent(new CustomEvent('sessionExpired'));
         } else {
-          console.log('[Session] Token refreshed successfully');
+          window.dispatchEvent(new CustomEvent('tokenRefreshed'));
         }
       }
-    } catch (error) {
-      console.error('[Session] Error during session check:', error);
+    } catch {
       this.logout();
       window.dispatchEvent(new CustomEvent('sessionExpired'));
     }
@@ -115,8 +150,6 @@ class AuthService {
   }
 
   createGuestSession(): GuestSession {
-    console.log('[Guest Session] Creating new guest session');
-
     const guestUser: GuestUser = {
       id: uuidv4(),
       isGuest: true,
@@ -141,12 +174,12 @@ class AuthService {
     };
   }
 
-  private securelyStoreGuestData(key: string, data: any): void {
+  private securelyStoreGuestData(key: string, data: unknown): void {
     const encrypted = AES.encrypt(JSON.stringify(data), ENCRYPTION_KEY).toString();
     localStorage.setItem(key, encrypted);
   }
 
-  private securelyRetrieveGuestData(key: string): any {
+  private securelyRetrieveGuestData(key: string): unknown {
     const encrypted = localStorage.getItem(key);
     if (!encrypted) return null;
 
@@ -202,15 +235,18 @@ class AuthService {
         const backendError = response.data as any;
         const errorMessage =
           backendError?.detail || backendError?.message || JSON.stringify(backendError);
-        throw {
-          message: errorMessage,
-          code: backendError?.code || 'auth_error',
-          status: response.status,
-        };
+        throw new CustomAuthError(
+          errorMessage,
+          backendError?.code || 'auth_error',
+          response.status
+        );
       }
     } catch (error: any) {
-      if (error.code != null && error.status != null) {
+      if (error instanceof CustomAuthError) {
         throw error;
+      }
+      if (error.code != null && error.status != null) {
+        throw new CustomAuthError(error.message, error.code, error.status);
       }
 
       // Legacy fallback formatting
@@ -233,11 +269,7 @@ class AuthService {
         errorCode = 'api_response_error';
       }
 
-      throw {
-        message: errorMessage,
-        code: errorCode,
-        status: statusCode,
-      };
+      throw new CustomAuthError(errorMessage, errorCode, statusCode);
     }
   }
 
@@ -377,18 +409,20 @@ class AuthService {
 
       setAuthToken(access);
       setRefreshToken(refresh);
+
+      // Dispatch token refreshed event
+      window.dispatchEvent(
+        new CustomEvent('tokenRefreshed', {
+          detail: { newToken: access },
+        })
+      );
+
       return true;
     } catch (error: any) {
-      // console.error('Token refresh failed:', error);
-
       if (error.response?.status === 401) {
-        console.log('Refresh token is invalid or expired');
         this.logout();
         window.dispatchEvent(new CustomEvent('sessionExpired'));
-      } else {
-        console.error('Unexpected error during token refresh:', error);
       }
-
       return false;
     }
   }
@@ -438,7 +472,7 @@ class AuthService {
   }
 
   isGuestSession(): boolean {
-    const guestUser = this.securelyRetrieveGuestData('guestUser');
+    const guestUser = this.securelyRetrieveGuestData('guestUser') as GuestUser | null;
     if (!guestUser) return false;
 
     const expiresAt = new Date(guestUser.expiresAt).getTime();
@@ -456,33 +490,6 @@ class AuthService {
     });
   }
 }
-
-export const setRefreshToken = (token: string | null): void => {
-  if (token) {
-    const encrypted = AES.encrypt(token, ENCRYPTION_KEY).toString();
-    localStorage.setItem('refreshToken', encrypted);
-
-    const refreshTokenData = {
-      token: token,
-      expiresAt: Date.now() + REFRESH_TOKEN_LIFETIME,
-    };
-    localStorage.setItem('refreshTokenData', JSON.stringify(refreshTokenData));
-  } else {
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('refreshTokenData');
-  }
-};
-
-export const getRefreshToken = (): string | null => {
-  const encrypted = localStorage.getItem('refreshToken');
-  if (!encrypted) return null;
-
-  try {
-    return AES.decrypt(encrypted, ENCRYPTION_KEY).toString(enc.Utf8);
-  } catch {
-    return null;
-  }
-};
 
 const authService = new AuthService();
 export default authService;

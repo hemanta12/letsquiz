@@ -59,7 +59,7 @@
 }
 
 .closeButton {
-  background: none;
+  background: var(--color-border);
   border: none;
   font-size: var(--font-size-lg);
   cursor: pointer;
@@ -70,13 +70,12 @@
 }
 
 .closeButton:hover {
-  color: var(--color-danger);
+  color: var(--color-quit);
 }
 
 .content {
   margin-top: var(--space-lg);
   line-height: 1.6;
-  /* color: var(--color-text); */
   color: #2d3436;
 }
 

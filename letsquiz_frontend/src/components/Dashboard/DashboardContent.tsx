@@ -147,7 +147,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
         />
       </div>
 
-      <Modal open={showModal} onClose={closeDetail}>
+      <Modal open={showModal} onClose={closeDetail} title="Activity Details">
         {loadingSelectedDetailedSession ? (
           <Loading />
         ) : errorSelectedDetailedSession ? (

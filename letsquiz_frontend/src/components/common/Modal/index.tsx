@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import styles from './Modal.module.css';
 import { ModalProps } from './types';
+import { Icon } from '../Icon';
 
 const Modal: React.FC<ModalProps> = ({ open, onClose, title, children, className, ...props }) => {
   const modalRef = useRef<HTMLDivElement>(null);
@@ -42,7 +43,7 @@ const Modal: React.FC<ModalProps> = ({ open, onClose, title, children, className
           <div className={styles.header}>
             <h2 className={styles.title}>{title}</h2>
             <button className={styles.closeButton} onClick={onClose} aria-label="Close">
-              ×
+              <Icon name="close" size="medium" />
             </button>
           </div>
         )}

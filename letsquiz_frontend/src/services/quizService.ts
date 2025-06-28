@@ -38,7 +38,7 @@ interface CacheEntry {
 
 /* In-memory cache for optimizing API calls */
 const questionCache: Record<string, CacheEntry> = {};
-const categoriesCache: { data: Category[]; timestamp: number } | null = null;
+let categoriesCache: { data: Category[]; timestamp: number } | null = null;
 
 const GUEST_QUIZ_PROGRESS = 'guestQuizProgress';
 const GUEST_QUIZ_COUNT = 'guestQuizCount';
@@ -94,7 +94,6 @@ class QuizService {
       }
     }
 
-    // const cacheKey = `${params?.category !== undefined && params.category !== null ? params.category : 'all'}-${params?.difficulty || 'all'}`;
     const cacheKey = `${params?.category ?? 'all'}-${params?.difficulty || 'all'}-${params?.count ?? 10}`;
 
     try {
@@ -142,10 +141,10 @@ class QuizService {
         name: String(category.name),
       }));
 
-      Object.assign(categoriesCache || {}, {
+      categoriesCache = {
         data: fetchedCategories,
         timestamp: Date.now(),
-      });
+      };
 
       return fetchedCategories;
     } catch (error: any) {
@@ -222,8 +221,6 @@ class QuizService {
         `/sessions/${data.quiz_session_id}/submit-answer/`,
         payload
       );
-
-      // const response = await apiClient.post<SubmitAnswerResponse>('/score/', data);
       return response.data;
     } catch (error: any) {
       throw new Error(
@@ -370,15 +367,11 @@ class QuizService {
         await AuthService.refreshSession();
       }
 
-      console.log('[DEBUG] saveQuizSession input:', {
-        hasCorrectness: !!quizSessionData.correctnessData,
-        correctnessCount: quizSessionData.correctnessData?.length || 0,
-        isGroupSession: quizSessionData.is_group_session,
-        playersCount: quizSessionData.players?.length || 0,
-      });
-
-      // Validate required fields
-      if (!quizSessionData.questions || !quizSessionData.players) {
+      // Only require players for group sessions
+      if (
+        !quizSessionData.questions ||
+        (quizSessionData.is_group_session && !quizSessionData.players)
+      ) {
         throw new Error('Invalid quiz session payload');
       }
 
@@ -396,11 +389,9 @@ class QuizService {
         has_correctness: correctnessPayload.length > 0,
       };
 
-      console.log('[DEBUG] Final payload:', payload);
       return apiClient.post('/quiz-sessions/', payload);
     } catch (error: any) {
       if (error.response?.status === 401) {
-        console.error('Authentication failed, redirecting to login');
         AuthService.logout();
       }
       throw error;
@@ -446,4 +437,5 @@ class QuizService {
   };
 }
 
-export default new QuizService();
+const quizService = new QuizService();
+export default quizService;

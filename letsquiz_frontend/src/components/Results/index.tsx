@@ -273,7 +273,7 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({
         </>
       )}
 
-      <Modal open={showModal} onClose={handleCloseModal}>
+      <Modal open={showModal} onClose={handleCloseModal} title="Quiz Results">
         {selectedSession && <ActivityDetailContent sessionDetail={selectedSession} />}
       </Modal>
     </motion.div>

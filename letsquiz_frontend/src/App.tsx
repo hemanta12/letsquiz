@@ -6,6 +6,7 @@ import { RouteTransition } from './components/layouts/RouteTransition';
 import ProtectedRoute from './utils/ProtectedRoute';
 import styles from './App.module.css';
 import { QuizStateHandler } from './components/Quiz/QuizStateHandler';
+import SessionManager from './components/common/SessionManager';
 
 const Home = lazy(() => import('./pages/Home'));
 const Profile = lazy(() => import('./pages/Profile'));
@@ -53,6 +54,7 @@ const App: React.FC = () => {
     <div className={styles.appContainer}>
       <MainLayout>
         <QuizStateHandler />
+        <SessionManager />
         <AnimatePresence mode="wait">
           <Suspense fallback={<LoadingFallback />}>
             <Routes>

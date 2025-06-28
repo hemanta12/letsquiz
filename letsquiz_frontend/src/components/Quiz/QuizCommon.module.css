@@ -179,6 +179,6 @@
   .option {
     width: 90%;
     font-size: var(--font-size-h3);
-    padding: var(--space-lg) var(--space-md);
+    padding: var(--space-md);
   }
 }

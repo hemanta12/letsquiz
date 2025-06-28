@@ -59,7 +59,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  border-bottom: 2px solid var(--color-border);
+  border-bottom: 2px solid var(--color-skeleton-start);
   padding: var(--space-sm);
 }
 
