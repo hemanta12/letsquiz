@@ -1,19 +1,29 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useActivityTracker } from '../../../hooks/useActivityTracker';
 import { useAppDispatch, useAppSelector } from '../../../hooks/reduxHooks';
-import { logout } from '../../../store/slices/authSlice';
+import { logout, refreshToken } from '../../../store/slices/authSlice';
 import SessionWarningModal from '../../auth/SessionWarningModal';
 
 const SessionManager: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { isAuthenticated, isGuest } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, isGuest, tokenExpiresAt } = useAppSelector((state) => state.auth);
   const [showWarning, setShowWarning] = useState(false);
 
-  const handleInactivityWarning = useCallback(() => {
+  const handleInactivityWarning = useCallback(async () => {
     if (isAuthenticated && !isGuest) {
       setShowWarning(true);
+
+      // Also check if token needs refreshing when warning appears
+      if (tokenExpiresAt && tokenExpiresAt - Date.now() < 5 * 60 * 1000) {
+        try {
+          await dispatch(refreshToken()).unwrap();
+        } catch (error) {
+          // If refresh fails, the warning will still show but user will likely be logged out
+          console.warn('Token refresh failed during inactivity warning:', error);
+        }
+      }
     }
-  }, [isAuthenticated, isGuest]);
+  }, [isAuthenticated, isGuest, tokenExpiresAt, dispatch]);
 
   const handleSessionExpired = useCallback(() => {
     setShowWarning(false);
@@ -38,10 +48,33 @@ const SessionManager: React.FC = () => {
   });
 
   // Handle the continue session click
-  const handleContinue = useCallback(() => {
+  const handleContinue = useCallback(async () => {
     handleContinueSession();
     resetActivity();
-  }, [handleContinueSession, resetActivity]);
+
+    // If token is expiring in less than 5 minutes, refresh it
+    if (tokenExpiresAt && tokenExpiresAt - Date.now() < 5 * 60 * 1000) {
+      try {
+        await dispatch(refreshToken()).unwrap();
+      } catch (error) {
+        // If token refresh fails, the user will be logged out automatically
+        // by the auth service, so we just close the modal
+        setShowWarning(false);
+      }
+    }
+  }, [handleContinueSession, resetActivity, tokenExpiresAt, dispatch]);
+
+  // Listen for session expired events from AuthService
+  useEffect(() => {
+    const handleSessionExpiredEvent = () => {
+      setShowWarning(false);
+    };
+
+    window.addEventListener('sessionExpired', handleSessionExpiredEvent);
+    return () => {
+      window.removeEventListener('sessionExpired', handleSessionExpiredEvent);
+    };
+  }, []);
 
   // Only render for authenticated non-guest users
   if (!isAuthenticated || isGuest) {

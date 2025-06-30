@@ -1,33 +1,41 @@
+.categoryTimeline {
+  display: flex;
+  flex-direction: column;
+}
+
 .categoryGroup {
   margin-bottom: var(--space-md);
   position: relative;
-  border: 2px solid var(--color-border);
-  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
   padding: var(--space-sm);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   background-color: var(--color-skeleton-end);
+
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  overflow: hidden;
 }
 
 .categoryTitle {
   display: flex;
   flex-direction: column;
-  padding: var(--space-xs) var(--space-sm);
-  background: none;
-  border-radius: 4px;
-  box-shadow: none;
+  padding: var(--space-sm) var(--space-md) 0;
+  background-color: var(--color-background);
   cursor: pointer;
   user-select: none;
-  transition: all 0.2s ease;
-  font-size: 16px;
-  font-weight: bold;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  font-weight: 700;
   text-transform: uppercase;
   color: var(--color-primary);
-
   position: sticky;
   top: 0;
-  z-index: 1;
-  border-bottom: 1px solid var(--color-border);
-  background-color: var(--color-skeleton-end);
+  z-index: 2;
+  backdrop-filter: blur(10px);
+  letter-spacing: 0.5px;
+  margin-bottom: var(--space-sm);
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
 }
 
 .categoryTitle:hover {
@@ -47,6 +55,13 @@
   width: 100%;
 }
 
+.statsRow {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .statsRow > * {
   margin-top: var(--space-xs);
   padding-left: calc(var(--space-md) + 40px);
@@ -62,13 +77,30 @@
   justify-content: center;
   background: var(--color-primary);
   color: white;
-  border-radius: 50%;
-  font-size: 20px;
+  border-radius: 8px;
+  font-size: 18px;
+  box-shadow: 0 2px 8px rgba(108, 92, 231, 0.15);
+  transition: all 0.3s ease;
+}
+
+/* Grid layout for quiz cards */
+.quizGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-md);
+  padding: var(--space-md);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .categoryGroup:hover .categoryIcon {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.25);
+  }
 }
 
 .expandIcon {
   margin-left: auto;
-  padding: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm) 0;
   transition: transform 0.2s ease-in-out;
   color: var(--color-text-secondary);
 }
@@ -93,52 +125,61 @@
   max-height: 2000px;
 }
 
-.historyContainer {
-  margin-top: 0;
-}
-
-.historyFilters {
-  display: flex;
-  gap: var(--space-md);
-  margin-bottom: var(--space-md);
-  padding: var(--space-md);
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.quizCard {
-  position: relative;
-  margin-bottom: var(--space-md);
-  padding: var(--space-sm);
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
-  cursor: pointer;
-  border-bottom: 2px solid var(--color-border);
-}
-
 @media (max-width: 768px) {
   .categoryTimeline {
-    padding-left: var(--space-md);
+    padding-left: 0;
   }
 
-  .categoryTitle {
+  .categoryGroup {
+    margin-bottom: var(--space-md);
     padding: var(--space-sm);
   }
 
+  .categoryTitle {
+    padding: var(--space-sm) var(--space-md);
+    margin: calc(-1 * var(--space-sm)) calc(-1 * var(--space-sm)) var(--space-sm);
+    font-size: 14px;
+  }
+
   .categoryIcon {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .categoryGroup {
+    padding: var(--space-xs);
+    border-radius: 8px;
+  }
+
+  .categoryTitle {
+    padding: var(--space-xs) var(--space-sm);
+    margin: calc(-1 * var(--space-xs)) calc(-1 * var(--space-xs)) var(--space-xs);
+    font-size: 13px;
+  }
+
+  .categoryIcon {
+    width: 36px;
+    height: 36px;
     font-size: 16px;
+    border-radius: 8px;
   }
 
-  .historyFilters {
-    flex-wrap: wrap;
+  .headerRow {
+    gap: var(--space-sm);
   }
 
-  .quizCard {
-    margin-left: 0;
+  .statsRow > * {
+    padding-left: calc(var(--space-sm) + 36px);
+    font-size: var(--font-size-small);
+  }
+}
+
+@media (max-width: 480px) {
+  .quizGrid {
+    grid-template-columns: 1fr;
   }
 }

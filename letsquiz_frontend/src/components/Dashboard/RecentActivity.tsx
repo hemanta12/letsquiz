@@ -154,7 +154,7 @@ const RecentActivity: React.FC<RecentActivityProps> = ({
                           aria-label="Delete session"
                           className={styles.deleteButton}
                         >
-                          <Icon name="delete" size="medium" />
+                          <Icon name="delete" size="small" />
                         </Button>
                       ))}
                   </div>

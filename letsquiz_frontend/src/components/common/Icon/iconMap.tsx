@@ -26,7 +26,14 @@ import {
   FiMoon,
 } from 'react-icons/fi';
 import { RiShuffleLine } from 'react-icons/ri';
-import { MdExpandMore, MdQuiz, MdTimer, MdLeaderboard, MdPlayArrow } from 'react-icons/md';
+import {
+  MdExpandMore,
+  MdQuiz,
+  MdTimer,
+  MdLeaderboard,
+  MdPlayArrow,
+  MdDashboard,
+} from 'react-icons/md';
 import {
   BsQuestionCircle,
   BsCheckCircle,
@@ -48,6 +55,7 @@ export const icons: Record<IconName, IconType> = {
   bookmarkFilled: BsBookmarkFill,
 
   home: FiHome,
+  dashboard: MdDashboard,
   settings: FiSettings,
   login: FiLogIn,
   logout: FiLogOut,

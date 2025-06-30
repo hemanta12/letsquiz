@@ -110,22 +110,29 @@ const CategoryList: React.FC<CategoryListProps> = ({
                 expandedCategories.has(categoryName) ? styles.expanded : styles.collapsed
               }`}
             >
-              {sessions
-                .filter(
-                  (session) => session.category === categoryName && session.completed_at !== null
-                )
-                .sort(
-                  (a, b) =>
-                    new Date(b.completed_at as string).getTime() -
-                    new Date(a.completed_at as string).getTime()
-                )
-                .map((session: QuizSessionHistory) => (
-                  <QuizCard
-                    key={session.id}
-                    session={session}
-                    onClick={() => onQuizCardClick(session)}
-                  />
-                ))}
+              <div className={styles.quizGrid}>
+                {sessions
+                  .filter(
+                    (session) =>
+                      session.category === categoryName &&
+                      session.completed_at !== null &&
+                      !session.is_group_session
+                  )
+                  .sort((a, b) => {
+                    // Sort by newest first (date descending)
+                    return (
+                      new Date(b.completed_at as string).getTime() -
+                      new Date(a.completed_at as string).getTime()
+                    );
+                  })
+                  .map((session: QuizSessionHistory) => (
+                    <QuizCard
+                      key={session.id}
+                      session={session}
+                      onClick={() => onQuizCardClick(session)}
+                    />
+                  ))}
+              </div>
             </div>
           </div>
         );

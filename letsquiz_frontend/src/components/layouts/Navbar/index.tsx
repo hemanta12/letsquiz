@@ -69,18 +69,22 @@ export const Navbar: React.FC = () => {
             <Link
               to="/"
               className={`${styles.navLink} ${location.pathname === '/' ? styles.navLinkActive : ''}`}
+              aria-label="Play Quiz"
             >
-              Play Quiz
+              <span className={styles.navLinkText}>Play Quiz</span>
             </Link>
           )}
           {isAuthenticated && (
             <Link
               to="/dashboard"
-              className={`${styles.navLink} ${
+              className={`${styles.navLink} ${styles.dashboardLink} ${
                 location.pathname === '/dashboard' ? styles.navLinkActive : ''
               }`}
+              aria-label="Dashboard"
+              title="Dashboard"
             >
-              Dashboard
+              <Icon name="dashboard" size="small" className={styles.dashboardIcon} />
+              <span className={styles.desktopText}>Dashboard</span>
             </Link>
           )}
         </div>
@@ -102,7 +106,7 @@ export const Navbar: React.FC = () => {
                 onClick={(e) => {
                   if (onQuizPage || onResultPage) e.preventDefault();
                 }}
-                className={`${styles.loginButton} ${styles.hideOnMobile}`}
+                className={`${styles.loginButton} `}
                 title="Login"
                 aria-label="Login"
               >
@@ -114,7 +118,7 @@ export const Navbar: React.FC = () => {
                 onClick={(e) => {
                   if (onQuizPage || onResultPage) e.preventDefault();
                 }}
-                className={styles.signupButton}
+                className={`${styles.signupButton} ${styles.hideOnMobile}`}
                 title="SignUp"
                 aria-label="SignUp"
               >

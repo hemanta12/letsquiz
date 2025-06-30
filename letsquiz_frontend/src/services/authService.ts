@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { AES, enc } from 'crypto-js';
 
 const SESSION_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
-const REFRESH_TOKEN_LIFETIME = 24 * 60 * 60 * 1000; // 1 day in milliseconds
+const REFRESH_TOKEN_LIFETIME = 24 * 60 * 60 * 1000 * 7; // 7 days in milliseconds
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'default-key';
 const TOKEN_REFRESH_THRESHOLD = 5 * 60 * 1000; // 5 minutes before expiration
 

@@ -52,6 +52,8 @@
   border-radius: 0.5rem;
   border: 2px solid transparent;
   transition: background-color 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
 }
 
 .navLink:hover,
@@ -59,13 +61,21 @@
   background-color: var(--color-background);
   color: var(--color-primary);
   cursor: pointer;
-  transition: 0.3s ease-in-out;
   border-bottom: 2px solid var(--color-primary);
   border-radius: 0;
 }
 
 .navLink:hover {
   transform: translateY(-2px);
+}
+
+.navLinkText {
+  display: inline;
+}
+
+.dashboardIcon {
+  display: none;
+  color: inherit;
 }
 
 /* ---------- Right Zone: Guest Buttons ---------- */
@@ -81,14 +91,12 @@
   font-size: var(--icon-size-large);
 }
 
-/* Login Button (secondary) */
 .loginButton {
   background-color: transparent;
   color: var(--color-text);
   font-size: var(--font-size-body);
   font-weight: 600;
   padding: var(--space-sm) var(--space-md);
-  border-radius: var(--border-radius);
   border: 2px solid transparent;
   border-radius: 0.5rem;
   text-decoration: none;
@@ -96,19 +104,17 @@
   align-items: center;
   justify-content: center;
   transition:
-    background-color 0.2s ease-in-out,
-    color 0.2s ease-in-out,
-    box-shadow 0.2s ease-in-out;
+    background-color 0.2s,
+    color 0.2s,
+    box-shadow 0.2s;
 }
 
 .loginButton:hover {
   color: var(--color-primary);
   border: 2px solid var(--color-primary);
   cursor: pointer;
-  transition: 0.2s ease-in-out;
 }
 
-/* Sign Up Button (primary) */
 .signupButton {
   background-color: var(--color-primary);
   color: var(--color-background);
@@ -122,8 +128,8 @@
   align-items: center;
   justify-content: center;
   transition:
-    background-color 0.2s ease-in-out,
-    box-shadow 0.2s ease-in-out;
+    background-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .signupButton:hover {
@@ -131,7 +137,6 @@
   color: var(--color-primary);
   border: 2px solid var(--color-primary);
   cursor: pointer;
-  transition: 0.2s ease-in-out;
 }
 
 /* ---------- Right Zone: Authenticated Section ---------- */
@@ -157,7 +162,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease-in-out;
+  transition: background-color 0.2s;
   border-radius: var(--border-radius);
 }
 
@@ -200,7 +205,7 @@
   text-decoration: none;
   width: 100%;
   padding: var(--space-sm) var(--space-md);
-  transition: background-color 0.2s ease-in-out;
+  transition: background-color 0.2s;
   border-bottom: 2px solid var(--color-border);
 }
 
@@ -214,7 +219,6 @@
   font-size: var(--icon-size-small);
 }
 
-/* Logout (Danger) */
 .dropdownItemDanger {
   display: flex;
   align-items: center;
@@ -227,13 +231,13 @@
   padding: var(--space-sm) var(--space-md);
   text-align: left;
   width: 100%;
-  transition: background-color 0.2s ease-in-out;
+  transition: background-color 0.2s;
   cursor: pointer;
 }
 
 .dropdownItemDanger:hover,
 .dropdownItemDanger:focus {
-  background-color: var(--color-error-light); /* rgba(239, 68, 68, 0.2) */
+  background-color: var(--color-error-light);
   outline: none;
 }
 
@@ -245,7 +249,7 @@
   padding: var(--space-sm);
   cursor: pointer;
   border-radius: 50%;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s;
   margin-right: var(--space-md);
 }
 
@@ -254,63 +258,23 @@
 }
 
 /* ---------- Responsive Adjustments ---------- */
-@media (max-width: var(--tablet)) {
-  /* 768px */
+@media (max-width: 768px) {
+  .greeting {
+    display: none;
+  }
   .navbar {
     padding: var(--space-md) 0;
   }
-
   .container {
-    flex-wrap: wrap;
     padding: 0 var(--space-sm);
   }
-
   .logo {
     padding-left: var(--space-sm);
     font-size: var(--font-size-h3);
     margin-right: var(--space-md);
   }
 
-  .centerLinks {
-    display: none;
-  }
-
-  .rightSection {
-    gap: var(--space-sm);
-    padding-right: var(--space-sm);
-  }
-}
-
-@media (max-width: 480px) {
-  .navbar {
-    padding: var(--space-md) 0;
-  }
-
-  .container {
-    padding: 0 var(--space-xs);
-  }
-
-  .logo {
-    font-size: var(--font-size-body);
-    padding-left: 0;
-    margin-right: var(--space-sm);
-  }
-
-  .logoIcon {
-    margin-right: var(--space-xs);
-  }
-
-  .rightSection {
-    gap: var(--space-xs);
-    padding-right: var(--space-xs);
-  }
-  .themeToggle {
-    margin-right: 0;
-  }
-
-  .navLink,
-  .loginButton,
-  .signupButton {
+  .navLink {
     padding: var(--space-sm);
     font-size: var(--font-size-small);
     min-width: 48px;
@@ -319,8 +283,32 @@
     align-items: center;
     justify-content: center;
   }
-}
-@media (max-width: 640px) {
+
+  /* Show only "Play Quiz" text, hide dashboard text and show icon */
+  .dashboardIcon {
+    display: block;
+    font-size: var(--icon-size-medium);
+  }
+
+  .dashboardLink .desktopText {
+    display: none;
+  }
+
+  .navLinkText {
+    font-size: var(--font-size-small);
+  }
+
+  /* Right section adjustments */
+  .rightSection {
+    gap: var(--space-xs);
+    padding-right: var(--space-sm);
+  }
+
+  .themeToggle {
+    margin-right: var(--space-xs);
+    padding: var(--space-sm);
+  }
+
   .desktopText {
     display: none;
   }
@@ -328,15 +316,76 @@
     display: block !important;
   }
   .hideOnMobile {
-    display: none;
+    display: none !important;
   }
-  .desktopText {
-    display: none;
+
+  .loginButton {
+    background-color: var(--color-primary);
+    color: var(--color-background);
+    font-size: var(--font-size-body);
+    font-weight: 600;
+    padding: var(--space-sm) var(--space-md);
+    text-decoration: none;
+    border-radius: 0.5rem;
+    border: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-  .rightSection {
-    gap: var(--space-sm);
+  .loginButton:hover {
+    background-color: var(--color-background);
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    cursor: pointer;
   }
   .signupButton {
     padding: var(--space-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 var(--space-xs);
+  }
+  .logo {
+    font-size: var(--font-size-body);
+    padding-left: 0;
+    margin-right: var(--space-sm);
+  }
+  .logoIcon {
+    margin-right: var(--space-xs);
+  }
+
+  .centerLinks {
+    gap: var(--space-xs);
+  }
+
+  .rightSection {
+    gap: 2px;
+    padding-right: var(--space-xs);
+  }
+
+  .themeToggle {
+    margin-right: 2px;
+    padding: var(--space-xs);
+  }
+  .hideOnMobile {
+    display: none;
+  }
+
+  .navLink,
+  .loginButton,
+  .signupButton {
+    padding: var(--space-xs);
+    font-size: var(--font-size-small);
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .navLinkText {
+    font-size: var(--font-size-small);
   }
 }

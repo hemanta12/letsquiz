@@ -35,42 +35,39 @@ const QuizCard: React.FC<QuizCardProps> = ({ session, onClick }) => {
       onKeyDown={handleKeyDown}
       role="button"
       tabIndex={0}
-      // Optionally, add aria-pressed or other ARIA props if needed
     >
-      <div className={styles.quizHeader}>
-        <div>
-          <Typography variant="h3">Quiz #{session.id}</Typography>
-          {/* Use started_at for the date, formatted consistently */}
-          <time className={styles.quizTime}>
-            {session.started_at ? formatDate(session.started_at) : 'Date N/A'}
-          </time>
-        </div>
-        <div className={styles.quizHeaderRight}>
+      {/* First row: Date and Difficulty/Category */}
+      <div className={styles.topRow}>
+        <time className={styles.quizTime}>
+          {session.started_at ? formatDate(session.started_at) : 'Date N/A'}
+        </time>
+        {isGroupSession ? (
+          <div className={styles.badgeGroup}>
+            <span className={styles.quizTypeLabel + ' ' + styles.group}>{session.category}</span>
+            <span
+              className={styles.difficultyBadge + ' ' + styles[session.difficulty.toLowerCase()]}
+            >
+              {session.difficulty}
+            </span>
+          </div>
+        ) : (
           <span className={styles.difficultyBadge + ' ' + styles[session.difficulty.toLowerCase()]}>
-            {' '}
             {session.difficulty}
           </span>
-          <span
-            className={styles.quizTypeLabel + ' ' + (isGroupSession ? styles.group : styles.solo)}
-            style={{ marginLeft: 8 }}
-          >
-            {isGroupSession ? 'Group' : 'Solo'}
-          </span>
-        </div>
+        )}
       </div>
 
-      <div className={styles.scoreIndicator}>
+      {/* Second row: Score/Winner */}
+      <div className={styles.scoreSection}>
         <Typography
-          variant="body1"
-          className={displayText.isWinner ? styles.winnerText : ''}
-          style={{ color: 'var(--color-primary)' }}
+          variant="h3"
+          className={displayText.isWinner ? styles.winnerText : styles.scoreText}
         >
-          {/* Show percentage for solo mode */}
+          {/* Show percentage for solo mode, winner status for group */}
           {!isGroupSession && totalQuestions > 0 && session.score !== null
             ? `${score} / ${totalQuestions} (${Math.round(scorePercentage)}%)`
             : displayText.text}
         </Typography>
-        {/* Progress bar removed as per new requirement */}
       </div>
     </div>
   );

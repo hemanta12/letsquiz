@@ -1,6 +1,5 @@
 .container {
   position: relative;
-  padding: var(--space-lg);
   font-family: var(--font-family-primary);
   color: var(--color-text-primary);
   background-color: var(--color-background-secondary);
@@ -102,6 +101,6 @@
 
 @media screen and (max-width: 479px) {
   .container {
-    padding: var(--space-sm);
+    padding: 0 !important;
   }
 }

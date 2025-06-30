@@ -13,6 +13,7 @@ import ActivityDetailContent from './ActivityDetailContent';
 import CategoryList from './CategoryList';
 import RecentActivity from './RecentActivity';
 import StatsPanel from './StatsPanel';
+import GroupQuizzes from './GroupQuizzes';
 import { UserProfile } from '../../types/api.types';
 import { calculateCategoryStats } from '../../utils/dashboardUtils';
 import { fetchQuizHistoryThunk } from '../../store/slices/quizSlice';
@@ -123,7 +124,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
       <div className={styles.contentRow}>
         <div className={styles.historyContainer}>
           <div className={styles.historyHeader}>
-            <Typography variant="h3">Quiz History</Typography>
+            <Typography variant="h3">Quiz History (Solo Mode)</Typography>
           </div>
           {reduxSessions.length === 0 ? (
             <div className={styles.emptyState}>
@@ -146,6 +147,11 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
           onDeleteSuccess={() => dispatch(fetchQuizHistoryThunk())}
         />
       </div>
+
+      <GroupQuizzes
+        sessions={reduxSessions || []}
+        onQuizCardClick={(session) => openDetail(session.id)}
+      />
 
       <Modal open={showModal} onClose={closeDetail} title="Activity Details">
         {loadingSelectedDetailedSession ? (

@@ -37,20 +37,26 @@ const StatsPanel: React.FC<StatsPanelProps> = ({ profile, sessions, categoryStat
     <div className={styles.statsContainer}>
       <Card className={styles.statCard}>
         <Typography variant="h3" className={styles.statTitle}>
-          Overall Stats
+          Your Quiz Performance
         </Typography>
         <div className={styles.statsRow}>
           <div className={styles.statItem}>
             <Typography variant="body2">Total Quizzes</Typography>
-            <div className={styles.statValue}>{totalQuizzes}</div>
+            <div className={styles.statValue} data-icon="🎯">
+              {totalQuizzes}
+            </div>
           </div>
           <div className={styles.statItem}>
             <Typography variant="body2">Average Score</Typography>
-            <div className={styles.statValue}>{averageScore.toFixed(0)}%</div>
+            <div className={styles.statValue} data-icon="📈">
+              {averageScore.toFixed(0)}%
+            </div>
           </div>
           <div className={styles.statItem}>
             <Typography variant="body2">Best Category</Typography>
-            <div className={styles.statValue}>{bestCategoryDisplay}</div>
+            <div className={styles.statValue} data-icon="🏆">
+              {bestCategoryDisplay}
+            </div>
           </div>
         </div>
       </Card>

@@ -35,7 +35,8 @@ export type IconName =
   | 'quiz'
   | 'countdown'
   | 'sun'
-  | 'moon';
+  | 'moon'
+  | 'dashboard';
 
 export interface IconProps {
   name: IconName;

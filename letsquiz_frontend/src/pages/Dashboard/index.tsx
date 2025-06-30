@@ -63,10 +63,18 @@ const Dashboard: React.FC = () => {
       quiz_history: profile.quiz_history || [],
     };
 
+    // Get display name for the dashboard heading
+    const displayName =
+      (auth.user && !auth.user.isGuest && 'username' in auth.user && auth.user.username) ||
+      profile.email?.split('@')[0] ||
+      'User';
+
+    const capitalizedDisplayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+
     return (
       <div className={styles.dashboard}>
         <Typography variant="h2" className={styles.heading}>
-          Your Quiz Journey
+          {capitalizedDisplayName}'s Dashboard
         </Typography>
         <DashboardContent profile={safeProfile} />
       </div>
