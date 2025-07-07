@@ -1,12 +1,5 @@
 import apiClient, { setAuthToken } from './apiClient';
-import {
-  LoginRequest,
-  LoginResponse,
-  SignupRequest,
-  SignupResponse,
-  PasswordResetResponse,
-  SetNewPasswordResponse,
-} from '../types/api.types';
+import { LoginRequest, LoginResponse, SignupRequest, SignupResponse } from '../types/api.types';
 import { v4 as uuidv4 } from 'uuid';
 import { AES, enc } from 'crypto-js';
 
@@ -314,71 +307,6 @@ class AuthService {
       return response.data;
     } catch (error: any) {
       throw this.handleAuthError(error);
-    }
-  }
-
-  async resetPassword(email: string): Promise<PasswordResetResponse> {
-    try {
-      const response = await apiClient.post<PasswordResetResponse>('/auth/password-reset/', {
-        email,
-      });
-
-      if (!response.data) {
-        throw new Error('No response data received from server');
-      }
-
-      return response.data;
-    } catch (error: any) {
-      const errorResponse = {
-        message: 'An unexpected error occurred',
-        code: 'system_error',
-        status: error.response?.status || 500,
-      };
-
-      if (error.response?.data?.error && error.response?.data?.code) {
-        errorResponse.message = error.response.data.error;
-        errorResponse.code = error.response.data.code;
-        errorResponse.status = error.response.status;
-      } else if (error.message) {
-        errorResponse.message = error.message;
-        errorResponse.code = 'api_response_error';
-        errorResponse.status = 500;
-      }
-
-      throw errorResponse;
-    }
-  }
-
-  async setNewPassword(token: string, password: string): Promise<SetNewPasswordResponse> {
-    try {
-      const response = await apiClient.post<SetNewPasswordResponse>('/auth/set-new-password/', {
-        token,
-        password,
-      });
-
-      if (!response.data) {
-        throw new Error('No response data received from server');
-      }
-
-      return response.data;
-    } catch (error: any) {
-      const errorResponse = {
-        message: 'An unexpected error occurred',
-        code: 'system_error',
-        status: error.response?.status || 500,
-      };
-
-      if (error.response?.data?.error && error.response?.data?.code) {
-        errorResponse.message = error.response.data.error;
-        errorResponse.code = error.response.data.code;
-        errorResponse.status = error.response.status;
-      } else if (error.message) {
-        errorResponse.message = error.message;
-        errorResponse.code = 'api_response_error';
-        errorResponse.status = 500;
-      }
-
-      throw errorResponse;
     }
   }
 

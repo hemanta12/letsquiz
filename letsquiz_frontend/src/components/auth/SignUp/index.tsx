@@ -1,17 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Card, Input, Button, Typography, Loading, Modal } from '../../common';
-import userService from '../../../services/userService';
+import { Card, Input, Button, Typography, Loading } from '../../common';
 import styles from './SignUp.module.css';
 import { useAppDispatch, useAppSelector } from '../../../hooks/reduxHooks';
 import { signupUser, clearGuestSession } from '../../../store/slices/authSlice';
-
-interface MigrationState {
-  inProgress: boolean;
-  progress: number;
-  currentStep: string;
-  error: string | null;
-}
 
 export const SignUp: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -129,50 +121,9 @@ export const SignUp: React.FC = () => {
     setFormData(newData);
   };
   const [loading, setLoading] = useState(false);
-  const [migrationState, setMigrationState] = useState<MigrationState>({
-    inProgress: false,
-    progress: 0,
-    currentStep: '',
-    error: null,
-  });
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { isGuest, guestProgress, user } = useAppSelector((state) => state.auth);
-
-  // Monitor migration progress
-  useEffect(() => {
-    let migrationMonitor: NodeJS.Timeout;
-    if (migrationState.inProgress && user && !isGuest) {
-      migrationMonitor = setInterval(() => {
-        const progress = userService.getMigrationProgress();
-        setMigrationState((prev) => ({
-          ...prev,
-          progress: (progress.completedSteps / progress.totalSteps) * 100,
-          currentStep: progress.currentStep,
-          error: progress.error || null,
-        }));
-
-        if (progress.status === 'completed' || progress.status === 'failed') {
-          clearInterval(migrationMonitor);
-          setMigrationState((prev) => ({
-            ...prev,
-            inProgress: false,
-            error: progress.error || null,
-          }));
-
-          if (progress.status === 'completed') {
-            navigate('/dashboard');
-          }
-        }
-      }, 500);
-    }
-    return () => {
-      if (migrationMonitor) {
-        clearInterval(migrationMonitor);
-      }
-    };
-  }, [migrationState.inProgress, user, isGuest, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -263,19 +214,9 @@ export const SignUp: React.FC = () => {
     <>
       <Card className={styles.signupCard}>
         <Typography variant="h2" className={styles.title}>
-          Create Free Account
+          Create a Free Account
         </Typography>
-        <Typography variant="body1" className={styles.subtitle}>
-          Sign up to save your progress, access all quiz modes, and track your history.
-        </Typography>
-        {isGuest && guestProgress.quizzes > 0 && (
-          <div className={styles.guestInfo}>
-            <Typography variant="body1">
-              Your guest progress will be saved: • {guestProgress.quizzes} quizzes completed •{' '}
-              {guestProgress.totalScore} points earned
-            </Typography>
-          </div>
-        )}
+
         <form onSubmit={handleSubmit} className={styles.form}>
           <Input
             type="email"
@@ -306,41 +247,20 @@ export const SignUp: React.FC = () => {
           />
 
           {error && <Typography className={styles.error}>{error}</Typography>}
-          <Button
-            type="submit"
-            variant="primary"
-            disabled={loading || migrationState.inProgress || !isFormValid}
-          >
+          <Button type="submit" variant="primary" disabled={loading || !isFormValid}>
             {loading ? 'Signing Up...' : 'Sign Up'}
           </Button>
         </form>
         <div className={styles.links}>
-          <Link to="/login">Already have an account? Login</Link>
+          <Link to="/login">
+            Already have an account? <u>Login</u> instead
+          </Link>
         </div>
         <Typography variant="body2" className={styles.note}>
-          Registration is completely free. No credit card required.
+          Users with an account can access their quiz history and see their performance dashboard.
         </Typography>
         {loading && <Loading />}
       </Card>
-
-      {/* Migration Progress Modal */}
-      <Modal open={migrationState.inProgress} onClose={() => {}} title="Migrating Your Progress">
-        <div className={styles.migrationDialog}>
-          <Typography variant="h3">Please wait while we migrate your progress</Typography>
-          <Typography variant="body1">{migrationState.currentStep}</Typography>
-          <div className={styles.migrationProgress}>
-            <div
-              className={styles.migrationProgressBar}
-              style={{ width: `${migrationState.progress}%` }}
-            />
-          </div>
-          {migrationState.error && (
-            <Typography variant="body1" className={styles.error}>
-              {migrationState.error}
-            </Typography>
-          )}
-        </div>
-      </Modal>
     </>
   );
 };

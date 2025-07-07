@@ -1,9 +1,4 @@
 import logging
-from django.core.mail import send_mail
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils.encoding import force_bytes, force_str
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 import uuid
@@ -18,8 +13,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import (
     UserSerializer,
-    PasswordResetRequestSerializer,
-    SetNewPasswordSerializer,
     AccountVerificationSerializer,
     LoginSerializer,
   
@@ -185,100 +178,7 @@ def account_verification_view(request):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def password_reset_request_view(request):
-    """API endpoint for requesting a password reset."""
-   
 
-    serializer = PasswordResetRequestSerializer(data=request.data)
-    if serializer.is_valid():
-        email = serializer.validated_data['email']
-        try:
-            user = User.objects.get(email=email)
-            token_generator = PasswordResetTokenGenerator()
-            token = token_generator.make_token(user)
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-
-            reset_url = f"{settings.FRONTEND_URL}/reset-password/{uid}/{token}"
-
-            send_mail(
-                'Password Reset Request',
-                f'Click here to reset your password: {reset_url}',
-                settings.DEFAULT_FROM_EMAIL,
-                [email],
-                fail_silently=False,
-            )
-
-            return Response({
-                'detail': 'Password reset email has been sent.'
-            }, status=status.HTTP_200_OK)
-
-        except User.DoesNotExist:
-            # Return success even if user doesn't exist to prevent email enumeration
-            return Response({
-                'detail': 'Password reset email has been sent.'
-            }, status=status.HTTP_200_OK)
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def set_new_password_view(request):
-    """API endpoint for setting a new password after reset."""
-  
-
-    serializer = SetNewPasswordSerializer(data=request.data)
-    if serializer.is_valid():
-        try:
-            uid = force_str(urlsafe_base64_decode(serializer.validated_data['uid']))
-            user = User.objects.get(pk=uid)
-            token = serializer.validated_data['token']
-
-            if not PasswordResetTokenGenerator().check_token(user, token):
-                return Response({
-                    'detail': 'Invalid or expired reset token.'
-                }, status=status.HTTP_400_BAD_REQUEST)
-
-            user.set_password(serializer.validated_data['new_password'])
-            user.save()
-
-            return Response({
-                'detail': 'Password has been reset successfully.'
-            }, status=status.HTTP_200_OK)
-
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            return Response({
-                'detail': 'Invalid reset link.'
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def password_reset_confirm_view(request, uidb64, token):
-    """API endpoint for confirming password reset token validity."""
-   
-
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-
-        if PasswordResetTokenGenerator().check_token(user, token):
-            return Response({
-                'detail': 'Token is valid.',
-                'uidb64': uidb64,
-                'token': token
-            }, status=status.HTTP_200_OK)
-        else:
-            return Response({
-                'detail': 'Invalid or expired reset token.'
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        return Response({
-            'detail': 'Invalid reset link.'
-        }, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -327,36 +227,6 @@ def get_guest_session(request, session_id):
         }, status=status.HTTP_404_NOT_FOUND)
     
     return Response(session_data, status=status.HTTP_200_OK)
-
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def convert_guest_to_user(request, session_id):
-    """
-    Convert a guest session to a user account.
-    
-    Args:
-    - session_id: The unique identifier for the guest session
-    
-    Returns:
-    - Success or error message
-    """
-    cache_key = f'guest_session:{session_id}'
-    session_data = cache.get(cache_key)
-    
-    if session_data is None:
-        return Response({
-            'detail': 'Guest session not found.'
-        }, status=status.HTTP_404_NOT_FOUND)
-    
-    # TODO: Implement actual conversion logic
-    # This might involve creating a new user, transferring session data, etc.
-    
-    # Clear the guest session after conversion
-    cache.delete(cache_key)
-    
-    return Response({
-        'detail': 'Guest session converted successfully.'
-    }, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def logout_view(request):

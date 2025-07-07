@@ -1,14 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import AuthService from '../../services/authService';
 import { AppDispatch, RootState } from '../store';
-import {
-  LoginRequest,
-  PasswordResetRequest,
-  LoginResponse,
-  PasswordResetResponse,
-  SignupResponse,
-  SignupRequest,
-} from '../../types/api.types';
+import { LoginRequest, LoginResponse, SignupResponse, SignupRequest } from '../../types/api.types';
 import { AES, enc } from 'crypto-js';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -68,11 +61,6 @@ const securelyRetrieveData = (key: string): any => {
     return null;
   }
 };
-
-// const getUserId = (): number | null => {
-//   const user = securelyRetrieveData('user');
-//   return user?.id || null;
-// };
 
 const securelyStoreData = (key: string, data: any): void => {
   const encrypted = AES.encrypt(JSON.stringify(data), ENCRYPTION_KEY).toString();
@@ -174,26 +162,6 @@ export const signupUser = createAsyncThunk<
 >('auth/signupUser', async (credentials, { rejectWithValue }) => {
   try {
     const response = await AuthService.signup(credentials);
-    return response;
-  } catch (error: any) {
-    if (error.code && error.message && error.status) {
-      return rejectWithValue(error);
-    }
-    return rejectWithValue({
-      message: error.message || 'An unexpected error occurred',
-      code: 'system_error',
-      status: 500,
-    });
-  }
-});
-
-export const resetPassword = createAsyncThunk<
-  PasswordResetResponse,
-  PasswordResetRequest,
-  { rejectValue: AuthError }
->('auth/resetPassword', async (data, { rejectWithValue }) => {
-  try {
-    const response = await AuthService.resetPassword(data.email);
     return response;
   } catch (error: any) {
     if (error.code && error.message && error.status) {
@@ -368,18 +336,6 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(signupUser.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as { message: string; code: string; status: number };
-      })
-      .addCase(resetPassword.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(resetPassword.fulfilled, (state) => {
-        state.loading = false;
-        state.error = null;
-      })
-      .addCase(resetPassword.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as { message: string; code: string; status: number };
       })

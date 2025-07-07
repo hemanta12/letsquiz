@@ -10,8 +10,6 @@ import {
   LoginResponse,
   SignupRequest,
   SignupResponse,
-  PasswordResetRequest,
-  PasswordResetResponse,
   FetchQuestionsRequest,
   FetchQuestionsResponse,
   SubmitAnswerRequest,
@@ -228,8 +226,6 @@ const apiClientService = new ApiClientService();
 export const login = (d: LoginRequest) => apiClientService.post<LoginResponse>('/auth/login/', d);
 export const signup = (d: SignupRequest) =>
   apiClientService.post<SignupResponse>('/auth/signup/', d);
-export const passwordReset = (d: PasswordResetRequest) =>
-  apiClientService.post<PasswordResetResponse>('/auth/password-reset/', d);
 export const fetchQuestions = (p?: FetchQuestionsRequest) =>
   apiClientService.get<FetchQuestionsResponse>('/questions/', { params: p });
 export const submitAnswer = (d: SubmitAnswerRequest) =>

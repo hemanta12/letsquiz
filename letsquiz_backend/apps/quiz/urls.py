@@ -4,8 +4,7 @@ from . import quiz_views
 from . import user_stats_views
 from .auth_views import (
     create_guest_session,
-    get_guest_session,
-    convert_guest_to_user
+    get_guest_session
 )
 
 urlpatterns = [
@@ -17,12 +16,6 @@ urlpatterns = [
     # Guest session URLs
     path('guest/session/', create_guest_session, name='create_guest_session'),
     path('guest/session/<str:session_id>/', get_guest_session, name='get_guest_session'),
-    path('guest/convert/<str:session_id>/', convert_guest_to_user, name='convert_guest_to_user'),
-    
-    # Password reset URLs
-    path('auth/password-reset/', auth_views.password_reset_request_view, name='password_reset_request'),
-    path('set-new-password/', auth_views.set_new_password_view, name='set_new_password'),
-    path('password-reset-confirm/<uidb64>/<token>/', auth_views.password_reset_confirm_view, name='password_reset_confirm'),
     
     # Account verification
     path('auth/verify-account/', auth_views.account_verification_view, name='account_verification'),

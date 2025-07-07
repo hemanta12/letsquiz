@@ -65,17 +65,6 @@ const Profile: React.FC = () => {
             : 'Not available'}
         </Typography>
       </div>
-      <div className={styles.changePasswordRow}>
-        {/* Placeholder for change password button */}
-        <Typography
-          variant="body2"
-          color="secondary"
-          tabIndex={0}
-          aria-label="Change Password (coming soon)"
-        >
-          Change Password (coming soon)
-        </Typography>
-      </div>
     </Card>
   );
 };

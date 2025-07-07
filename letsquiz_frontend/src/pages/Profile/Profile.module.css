@@ -18,12 +18,6 @@
   font-size: 1.1rem;
 }
 
-.changePasswordRow {
-  margin-top: 32px;
-  text-align: center;
-  color: var(--color-secondary);
-}
-
 .error {
   color: var(--color-danger);
   text-align: center;

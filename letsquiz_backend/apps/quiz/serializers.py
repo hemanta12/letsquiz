@@ -78,36 +78,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'email', 'is_premium')
         read_only_fields = ('id', 'username', 'email', 'is_premium')
 
-class PasswordResetRequestSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-
-    def validate_email(self, value):
-        if not User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("User with this email does not exist.")
-        return value
-
-class SetNewPasswordSerializer(serializers.Serializer):
-    uidb64 = serializers.CharField()
-    token = serializers.CharField()
-    new_password = serializers.CharField()
-
-    def validate(self, data):
-        try:
-            uid = force_str(urlsafe_base64_decode(data['uidb64']))
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            raise ValidationError('Invalid token or user ID.')
-
-        token_generator = PasswordResetTokenGenerator()
-        if not token_generator.check_token(user, data['token']):
-            raise ValidationError('Invalid token or user ID.')
-
-        if user.is_active:
-            raise ValidationError('Account is already active.')
-
-        data['user'] = user 
-        return data
-
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category

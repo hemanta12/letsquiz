@@ -36,6 +36,9 @@ export const QuizCore: React.FC<QuizCoreProps> = ({
   if (isLoading) {
     return (
       <div className={commonStyles.quiz}>
+        <div className={commonStyles.header}>
+          <Typography variant="body1">Loading Quiz...</Typography>
+        </div>
         <Loading />
       </div>
     );

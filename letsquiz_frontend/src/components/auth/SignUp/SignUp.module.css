@@ -5,27 +5,7 @@
 
 .title {
   text-align: center;
-  margin-bottom: var(--space-sm);
-}
-
-.subtitle {
-  text-align: center;
-  color: var(--color-text-secondary);
   margin-bottom: var(--space-lg);
-}
-
-.guestInfo {
-  background-color: var(--color-gray-100);
-  border-radius: 8px;
-  padding: var(--space-md);
-  margin: var(--space-md) 0;
-  text-align: left;
-}
-
-.guestInfo ul {
-  list-style: none;
-  padding: 0;
-  margin: var(--space-xs) 0;
 }
 
 .form {
@@ -50,10 +30,6 @@
 .links a {
   color: var(--color-primary);
   text-decoration: none;
-}
-
-.links a:hover {
-  text-decoration: underline;
 }
 
 .note {

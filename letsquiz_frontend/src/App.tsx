@@ -43,10 +43,7 @@ const NotFound = () => (
 
 const Login = lazy(() => import('./components/auth/Login'));
 const SignUp = lazy(() => import('./components/auth/SignUp'));
-const PasswordReset = lazy(() => import('./components/auth/PasswordReset'));
-const SetNewPassword = lazy(() => import('./components/auth/SetNewPassword'));
 const PlayerSetup = lazy(() => import('./pages/PlayerSetup'));
-const ChangePassword = lazy(() => import('./components/auth/ChangePassword'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 
 const App: React.FC = () => {
@@ -62,13 +59,10 @@ const App: React.FC = () => {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
-              <Route path="/reset-password" element={<PasswordReset />} />
-              <Route path="/set-new-password" element={<SetNewPassword />} />
 
               {/* Auth Required Routes - Only logged in users */}
               <Route element={<ProtectedRoute requireAuth={true} />}>
                 <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/change-password" element={<ChangePassword />} />
                 <Route path="/profile" element={<Profile />} />
               </Route>
 

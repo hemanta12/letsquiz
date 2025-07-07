@@ -58,8 +58,17 @@ export const QuizComponent: React.FC = () => {
       : 0;
   const currentQuestionData = questions[currentQuestionIndex];
 
+  const isInitialLoading = !questions.length && (quizLoading || !difficulty);
+  const shouldShowLoading = isInitialLoading || isLoading || quizLoading;
+
   useEffect(() => {
-    if (!questions.length && !quizLoading && !quizError && difficulty) {
+    if (
+      !questions.length &&
+      !quizLoading &&
+      !quizError &&
+      difficulty &&
+      settings.numberOfQuestions > 0
+    ) {
       // Fetch questions from all categories with the selected difficulty
       const requestParams = {
         difficulty,
@@ -241,16 +250,18 @@ export const QuizComponent: React.FC = () => {
         currentQuestionIndex={currentQuestionIndex}
         totalQuestions={settings.numberOfQuestions}
         progress={progress}
-        isLoading={isLoading || quizLoading}
+        isLoading={shouldShowLoading}
         error={errorMessage}
         onQuit={() => dispatch(setModal({ type: 'quitQuiz', isOpen: true }))}
         onNext={handleNext}
-        isNextDisabled={!hasSelectedAnswer || isLoading || quizLoading}
+        isNextDisabled={!hasSelectedAnswer || shouldShowLoading}
         nextButtonLabel={
           currentQuestionIndex === settings.numberOfQuestions - 1 ? 'Finish Quiz' : 'Next Question'
         }
       >
-        {mode === 'Group' ? (
+        {isInitialLoading ? (
+          <Loading variant="skeleton" />
+        ) : mode === 'Group' ? (
           <>
             {currentQuestionData ? (
               <GroupQuestionView
@@ -272,7 +283,7 @@ export const QuizComponent: React.FC = () => {
                 error={errorMessage}
                 onQuit={() => dispatch(setModal({ type: 'quitQuiz', isOpen: true }))}
                 onNext={handleNext}
-                isNextDisabled={!hasSelectedAnswer || isLoading || quizLoading}
+                isNextDisabled={!hasSelectedAnswer || shouldShowLoading}
                 noWrapper={true}
               />
             ) : (
@@ -289,7 +300,7 @@ export const QuizComponent: React.FC = () => {
                 showFeedback={feedback.show}
                 correctAnswer={currentQuestionData.correct_answer}
                 onAnswerSelect={handleAnswerSelect}
-                disabled={hasSelectedAnswer || isLoading || quizLoading}
+                disabled={hasSelectedAnswer || shouldShowLoading}
               />
             ) : (
               <Loading variant="skeleton" />

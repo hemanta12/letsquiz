@@ -17,15 +17,6 @@ interface LocalProgress {
   timestamp: string;
 }
 
-interface MigrationState {
-  status: 'idle' | 'in_progress' | 'completed' | 'failed';
-  error: string | null;
-  backup: {
-    guestProgress: Record<string, LocalProgress>;
-    guestQuizCount: number;
-  } | null;
-}
-
 interface QuizState {
   settings: QuizSettings;
   mode: string;
@@ -47,7 +38,6 @@ interface QuizState {
   isGuestSession: boolean;
   guestQuizLimit: number;
   guestQuizCount: number;
-  migration: MigrationState;
   sessions: QuizSession[];
   historyLoading: boolean;
   historyError: string | null;
@@ -84,11 +74,6 @@ const initialState: QuizState = {
   isGuestSession: false,
   guestQuizLimit: 3,
   guestQuizCount: savedGuestCount ? parseInt(savedGuestCount) : 0,
-  migration: {
-    status: 'idle',
-    error: null,
-    backup: null,
-  },
   sessions: [],
   historyLoading: false,
   historyError: null,
@@ -289,45 +274,6 @@ export const quizSlice = createSlice({
       }
     },
 
-    startMigration: (state) => {
-      state.migration = {
-        status: 'in_progress',
-        error: null,
-        backup: {
-          guestProgress: { ...state.guestProgress },
-          guestQuizCount: state.guestQuizCount,
-        },
-      };
-    },
-
-    completeMigration: (state) => {
-      state.migration.status = 'completed';
-      state.migration.error = null;
-      state.guestProgress = {};
-      state.guestQuizCount = 0;
-      localStorage.removeItem('guestQuizProgress');
-      localStorage.removeItem('guestQuizCount');
-    },
-
-    failMigration: (state, action: PayloadAction<string>) => {
-      state.migration.status = 'failed';
-      state.migration.error = action.payload;
-    },
-
-    rollbackMigration: (state) => {
-      if (state.migration.backup) {
-        state.guestProgress = state.migration.backup.guestProgress;
-        state.guestQuizCount = state.migration.backup.guestQuizCount;
-        localStorage.setItem('guestQuizProgress', JSON.stringify(state.guestProgress));
-        localStorage.setItem('guestQuizCount', state.guestQuizCount.toString());
-      }
-      state.migration = {
-        status: 'idle',
-        error: null,
-        backup: null,
-      };
-    },
-
     setGuestSession: (state, action: PayloadAction<boolean>) => {
       state.isGuestSession = action.payload;
       if (action.payload) {
@@ -372,14 +318,12 @@ export const quizSlice = createSlice({
       const wasGuestSession = state.isGuestSession;
       const guestProgress = state.guestProgress;
       const guestQuizCount = state.guestQuizCount;
-      const migration = state.migration;
 
       const newState = { ...initialState };
       if (wasGuestSession) {
         newState.isGuestSession = true;
         newState.guestProgress = guestProgress;
         newState.guestQuizCount = guestQuizCount;
-        newState.migration = migration;
       }
       return newState;
     },
@@ -405,14 +349,14 @@ export const quizSlice = createSlice({
         fetchQuizQuestions.fulfilled,
         (state, action: PayloadAction<FetchQuestionsResponse>) => {
           state.loading = false;
-          state.questions = action.payload.questions;
-          state.currentQuestionIndex = 0;
-          state.selectedAnswers = {};
-          state.score = 0;
-          if (state.questions.length === 0) {
-            state.error = 'No questions found for the selected criteria.';
-          } else {
+          if (action.payload.questions && action.payload.questions.length > 0) {
+            state.questions = action.payload.questions;
+            state.currentQuestionIndex = 0;
+            state.selectedAnswers = {};
+            state.score = 0;
             state.error = null;
+          } else {
+            state.error = 'No questions found for the selected criteria.';
           }
         }
       )
@@ -430,11 +374,15 @@ export const quizSlice = createSlice({
       })
       .addCase(startGroupQuiz.fulfilled, (state, action) => {
         state.loading = false;
-        state.questions = action.payload.questions;
-        state.currentQuestionIndex = 0;
-        state.selectedAnswers = {};
-        state.score = 0;
-        state.error = null;
+        if (action.payload.questions && action.payload.questions.length > 0) {
+          state.questions = action.payload.questions;
+          state.currentQuestionIndex = 0;
+          state.selectedAnswers = {};
+          state.score = 0;
+          state.error = null;
+        } else {
+          state.error = 'No questions available for group quiz.';
+        }
       })
       .addCase(startGroupQuiz.rejected, (state, action) => {
         state.loading = false;
@@ -492,10 +440,6 @@ export const {
   clearGuestProgress,
   incrementQuestionIndex,
   resetQuiz,
-  startMigration,
-  completeMigration,
-  failMigration,
-  rollbackMigration,
   setGuestSession,
   setSavedSessionId,
 } = quizSlice.actions;

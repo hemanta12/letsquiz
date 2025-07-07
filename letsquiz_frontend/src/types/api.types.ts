@@ -42,20 +42,6 @@ export interface SignupResponse {
   message?: string;
 }
 
-export interface PasswordResetRequest {
-  email: string;
-}
-
-export interface PasswordResetResponse {
-  success: boolean;
-  message: string;
-}
-
-export interface SetNewPasswordResponse {
-  success: boolean;
-  message: string;
-}
-
 /* User statistics types */
 export interface UserStatsResponse {
   overall_stats: {

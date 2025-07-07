@@ -1,9 +1,10 @@
 .error {
-  color: #dc3545;
   margin: 10px 0;
   padding: 10px;
   border-radius: 4px;
   font-size: 0.9rem;
+  color: var(--color-error);
+  text-align: center;
 }
 
 .error.authentication {
@@ -34,29 +35,10 @@
   margin-bottom: var(--space-lg);
 }
 
-.guestInfo {
-  background-color: var(--color-gray-100);
-  border-radius: 8px;
-  padding: var(--space-md);
-  margin: var(--space-md) 0;
-  text-align: left;
-}
-
-.guestInfo ul {
-  list-style: none;
-  padding: 0;
-  margin: var(--space-xs) 0;
-}
-
 .form {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-}
-
-.error {
-  color: var(--color-error);
-  text-align: center;
 }
 
 .submitButton {
@@ -74,10 +56,6 @@
 .links a {
   color: var(--color-primary);
   text-decoration: none;
-}
-
-.links a:hover {
-  text-decoration: underline;
 }
 
 .note {
