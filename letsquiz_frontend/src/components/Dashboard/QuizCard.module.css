@@ -1,9 +1,8 @@
 .quizCard {
   position: relative;
-  padding: var(--space-md) var(--space-sm);
+  padding: var(--space-md) var(--space-sm) 0 var(--space-sm);
   background: var(--color-background);
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   cursor: pointer;
   outline: none;
@@ -32,10 +31,8 @@
 /* Desktop-only hover effects */
 @media (hover: hover) and (pointer: fine) {
   .quizCard:hover {
-    background: var(--color-primary-light);
     border-color: var(--color-primary);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.15);
   }
 
   .quizCard:hover::before {
@@ -47,7 +44,6 @@
 .quizCard:focus-visible {
   background: var(--color-primary-light);
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
 }
 
 .quizCard:focus {
@@ -58,7 +54,7 @@
 .difficultyBadge {
   padding: var(--space-sm);
   height: fit-content;
-  font-size: var(--font-size-xsmall);
+  font-size: var(--font-size-small);
   background: inherit;
   color: var(--color-text-secondary);
   border-left: 1px solid var(--color-border);
@@ -76,19 +72,8 @@
   border-left: 1px solid var(--color-hard);
 }
 
-.scoreIndicator {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  margin-left: var(--space-md);
-  padding: var(--space-xs) var(--space-sm);
-  background: var(--color-skeleton-start);
-  border-radius: 6px;
-  border: 1px solid var(--color-border);
-}
-
 .quizTime {
-  font-size: var(--font-size-small) !important;
+  font-size: var(--font-size-small);
   color: var(--color-text-secondary);
 }
 
@@ -121,54 +106,10 @@
   opacity: 1;
 }
 
-/* Enhanced responsive design */
-@media (max-width: 768px) {
-  .quizHeader {
-    flex-wrap: wrap;
-    gap: var(--space-sm);
-  }
-
-  .difficultyBadge {
-    font-size: 12px;
-    padding: var(--space-xs);
-  }
-
-  .answer {
-    flex-direction: column;
-    gap: var(--space-xs);
-    align-items: flex-start;
-  }
-
-  .scoreIndicator {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-xs);
-  }
-
-  .scoreBar {
-    width: 100%;
-  }
-
-  .quizTypeLabel {
-    font-size: 12px;
-    padding: 2px 8px;
-  }
-}
-
-@media (max-width: 480px) {
-  .quizCard::before {
-    width: 3px;
-  }
-
-  .quizHeader {
-    margin-bottom: var(--space-xs);
-  }
-}
-
 /* New layout styles */
 .topRow {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   margin-bottom: var(--space-sm);
   width: 100%;
@@ -180,12 +121,8 @@
   align-items: center;
 }
 
-.quizDate {
-  margin-bottom: var(--space-xs);
-}
-
 .quizTime {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-small);
   color: var(--color-text-secondary);
 }
 
@@ -194,19 +131,106 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: var(--space-sm) 0;
+  margin-bottom: var(--space-sm);
 }
 
 .scoreText {
   color: var(--color-primary);
   font-weight: 600;
-  font-size: var(--font-size-body) !important;
+  font-size: var(--font-size-h3) !important;
 }
 
-.badgesSection {
+/* Radial gauge (donut chart) styles */
+.radialGauge {
+  position: relative;
+  width: 100px;
+  height: 100px;
   display: flex;
-  width: 100%;
-  gap: var(--space-xs);
-  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
+}
+
+.radialGaugeSvg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.gaugeBackground {
+  fill: none;
+  stroke: var(--color-border);
+  stroke-width: 3;
+}
+
+.gaugeForeground {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.3s ease;
+}
+
+.gaugeContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.gaugeScore {
+  font-size: var(--font-size-h2);
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.gaugePercentage {
+  font-size: var(--font-size-small);
+  color: var(--color-text-secondary);
+  line-height: 1;
+}
+
+/* Enhanced responsive design */
+@media (max-width: 768px) {
+  .difficultyBadge {
+    font-size: var(--font-size-small);
+    padding: var(--space-xs);
+  }
+
+  .quizTypeLabel {
+    font-size: var(--font-size-small);
+    padding: 2px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .quizCard::before {
+    width: 3px;
+  }
+  .quizTime {
+    font-size: var(--font-size-xsmall);
+  }
+
+  .difficultyBadge {
+    font-size: var(--font-size-xsmall);
+    padding: var(--space-xs);
+  }
+
+  .radialGauge {
+    width: 80px;
+    height: 80px;
+  }
+
+  .gaugeScore {
+    font-size: var(--font-size-h3);
+  }
+
+  .gaugePercentage {
+    font-size: var(--font-size-xsmall);
+  }
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Typography, Button, Icon } from '../../components/common';
 import ModeSelector from '../../components/Home/ModeSelector';
@@ -8,7 +8,7 @@ import DifficultySelector from '../../components/Home/DifficultySelector';
 import useHomeSettings from '../../hooks/useHomeSettings';
 import AuthService from '../../services/authService';
 import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
-import { setQuizSettings, resetQuiz } from '../../store/slices/quizSlice';
+import { setQuizSettings } from '../../store/slices/quizSlice';
 import styles from './Home.module.css';
 
 const Home: React.FC = () => {
@@ -34,44 +34,44 @@ const Home: React.FC = () => {
     validate,
   } = useHomeSettings();
 
-  useEffect(() => {
-    dispatch(resetQuiz());
-  }, [dispatch]);
-
-  const handleContinue = async () => {
-    resetErrors();
-    setFetchError('');
-
-    if (!validate()) return;
-
-    if (selectedMode === 'Group') {
-      dispatch(
-        setQuizSettings({
-          mode: selectedMode,
-          category: selectedCategory?.name || '',
-          categoryId: isMixUpMode ? null : (selectedCategory?.id ?? null),
-          difficulty: selectedDifficulty,
-          numberOfQuestions: selectedQuestionCount,
-        })
-      );
-      navigate('/player-setup');
-      return;
-    }
-
+  const handleContinue = async (e?: React.MouseEvent) => {
     try {
+      e?.preventDefault?.();
+      resetErrors();
+      setFetchError('');
+
+      if (!validate()) {
+        return;
+      }
+
+      if (selectedMode === 'Group') {
+        await AuthService.createGuestSession();
+        dispatch(
+          setQuizSettings({
+            mode: selectedMode,
+            category: isMixUpMode ? 'Mix Up' : selectedCategory?.name || '',
+            categoryId: isMixUpMode ? null : (selectedCategory?.id ?? null),
+            difficulty: selectedDifficulty,
+            numberOfQuestions: selectedQuestionCount,
+          })
+        );
+        navigate('/player-setup');
+        return;
+      }
+
       await AuthService.createGuestSession();
       dispatch(
         setQuizSettings({
           mode: selectedMode,
-          category: selectedCategory?.name || '',
+          category: isMixUpMode ? 'Mix Up' : selectedCategory?.name || '',
           categoryId: isMixUpMode ? null : (selectedCategory?.id ?? null),
           difficulty: selectedDifficulty,
           numberOfQuestions: selectedQuestionCount,
         })
       );
       navigate('/quiz');
-    } catch (e: any) {
-      setFetchError(e.message);
+    } catch (error: any) {
+      setFetchError(error.message || 'An unexpected error occurred');
     }
   };
 

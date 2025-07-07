@@ -84,6 +84,7 @@ export const Navbar: React.FC = () => {
               title="Dashboard"
             >
               <Icon name="dashboard" size="small" className={styles.dashboardIcon} />
+              <span className={styles.mobileText}>Dash</span>
               <span className={styles.desktopText}>Dashboard</span>
             </Link>
           )}
@@ -110,8 +111,7 @@ export const Navbar: React.FC = () => {
                 title="Login"
                 aria-label="Login"
               >
-                <span className={styles.desktopText}>Login</span>
-                <Icon name="login" size="small" className={styles.mobileIcon} />
+                <span className={styles.loginButtonText}>Login</span>
               </Link>
               <Link
                 to="/signup"
@@ -122,7 +122,6 @@ export const Navbar: React.FC = () => {
                 title="SignUp"
                 aria-label="SignUp"
               >
-                <Icon name="login" size="small" className={styles.mobileIcon} />
                 <span className={styles.desktopText}>Sign Up</span>
               </Link>
             </>

@@ -1,5 +1,5 @@
 import React, { KeyboardEvent } from 'react';
-import { Button, Typography } from '../common';
+import { Button, Typography, Icon } from '../common';
 import commonStyles from './QuizCommon.module.css';
 import { BaseQuestionProps } from '../../types/quiz.types';
 
@@ -29,20 +29,6 @@ export const QuestionContent: React.FC<BaseQuestionProps> = ({
         <Typography variant="h2">{question}</Typography>
       </div>
 
-      <div className={commonStyles.feedback}>
-        {showFeedback && (
-          <Typography
-            variant="h3"
-            style={{
-              color:
-                selectedAnswer === correctAnswer ? 'var(--color-success)' : 'var(--color-quit)',
-            }}
-          >
-            {selectedAnswer === correctAnswer ? 'Correct!' : 'Incorrect!'}
-          </Typography>
-        )}
-      </div>
-
       <div className={commonStyles.options}>
         {options.map((option) => {
           const isSelected = selectedAnswer === option;
@@ -62,6 +48,30 @@ export const QuestionContent: React.FC<BaseQuestionProps> = ({
             }
           }
 
+          // Determine which icon to show
+          let iconElement = null;
+          if (showFeedback) {
+            if (isSelected && isCorrectAnswer) {
+              iconElement = (
+                <div className={`${commonStyles.optionIcon} ${commonStyles.optionIconSuccess}`}>
+                  <Icon name="check" size="xs" color="white" />
+                </div>
+              );
+            } else if (isSelected && !isCorrectAnswer) {
+              iconElement = (
+                <div className={`${commonStyles.optionIcon} ${commonStyles.optionIconError}`}>
+                  <Icon name="close" size="xs" color="white" />
+                </div>
+              );
+            } else if (!isSelected && isCorrectAnswer) {
+              iconElement = (
+                <div className={`${commonStyles.optionIcon} ${commonStyles.optionIconSuccess}`}>
+                  <Icon name="check" size="xs" color="white" />
+                </div>
+              );
+            }
+          }
+
           return (
             <Button
               key={option}
@@ -72,8 +82,10 @@ export const QuestionContent: React.FC<BaseQuestionProps> = ({
               onKeyPress={(e) => handleKeyPress(e, option, onAnswerSelect)}
               tabIndex={0}
               aria-selected={isSelected}
+              style={{ position: 'relative' }}
             >
               {option}
+              {iconElement}
             </Button>
           );
         })}

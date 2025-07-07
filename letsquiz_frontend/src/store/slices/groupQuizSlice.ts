@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { GroupQuizSession, GroupPlayer } from '../../types/quiz.types';
 
 interface GroupQuizState {
@@ -8,7 +8,7 @@ interface GroupQuizState {
   loading: boolean;
   error: string | null;
   sessionTimeoutId?: NodeJS.Timeout;
-  playerCorrectness: Record<number, number>; // questionIndex: playerId
+  playerCorrectness: Record<number, number[]>;
 }
 
 const initialState: GroupQuizState = {
@@ -45,7 +45,6 @@ export const groupQuizSlice = createSlice({
 
         if (timeoutDuration > 0) {
           state.sessionTimeoutId = setTimeout(() => {
-            // Handle session timeout
             state.groupSession = null;
             state.isGroupMode = false;
             state.error = 'Group session has timed out';
@@ -67,7 +66,6 @@ export const groupQuizSlice = createSlice({
           );
         }
 
-        // Update session activity timestamps
         state.groupSession.lastActive = new Date().toISOString();
         state.groupSession.timeoutAt = new Date(Date.now() + 30 * 60 * 1000).toISOString();
       }
@@ -113,7 +111,6 @@ export const groupQuizSlice = createSlice({
         state.groupSession.currentPlayer = state.groupSession.players[nextIndex].id;
       }
     },
-    // Add loading and error reducers for potential thunks in this slice
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
@@ -134,30 +131,34 @@ export const groupQuizSlice = createSlice({
       if (state.groupSession) {
         const player = state.groupSession.players.find((p) => p.id === action.payload.playerId);
         if (player) {
-          // Ensure answers array exists
           if (!player.answers) player.answers = [];
 
-          // Resize array if needed
           while (player.answers.length <= action.payload.questionIndex) {
             player.answers.push('');
           }
 
-          // Record answer
           player.answers[action.payload.questionIndex] = action.payload.answer;
         }
       }
     },
-    // Record which player got each question correct
     recordPlayerCorrectness: (
       state,
       action: PayloadAction<{ questionIndex: number; playerId: number }>
     ) => {
-      state.playerCorrectness[action.payload.questionIndex] = action.payload.playerId;
+      const { questionIndex, playerId } = action.payload;
+      if (!state.playerCorrectness[questionIndex]) {
+        state.playerCorrectness[questionIndex] = [];
+      }
+      const currentPlayers = state.playerCorrectness[questionIndex];
+      const playerIndex = currentPlayers.indexOf(playerId);
+      if (playerIndex > -1) {
+        state.playerCorrectness[questionIndex] = currentPlayers.filter((id) => id !== playerId);
+      } else {
+        state.playerCorrectness[questionIndex] = [...currentPlayers, playerId];
+      }
     },
   },
-  extraReducers: (builder) => {
-    // Add extraReducers for any async thunks defined in this slice later
-  },
+  extraReducers: (builder) => {},
 });
 
 export const {

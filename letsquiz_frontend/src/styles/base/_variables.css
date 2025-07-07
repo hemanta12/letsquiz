@@ -42,16 +42,19 @@
   /* Typography */
   --font-family: 'Inter', sans-serif;
   --font-size-title: 40px;
+  --font-size-h0: 36px;
   --font-size-h1: 32px;
   --font-size-h2: 24px;
   --font-size-h3: 20px;
   --font-size-body: 16px;
   --font-size-small: 14px;
-  --font-size-xsmall: 11px;
+  --font-size-xsmall: 12px;
+  --font-size-xxsmall: 10px;
 
   /* Spacing */
   --space-xs: 4px;
   --space-sm: 8px;
+  --space-smd: 12px;
   --space-md: 16px;
   --space-xm: 20px;
   --space-lg: 24px;

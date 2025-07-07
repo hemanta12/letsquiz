@@ -15,6 +15,7 @@ export const Icon: React.FC<IconProps> = ({
   if (!IconComponent) return null;
 
   const sizeMap = {
+    xs: '16px',
     small: '20px',
     medium: '24px',
     large: '32px',

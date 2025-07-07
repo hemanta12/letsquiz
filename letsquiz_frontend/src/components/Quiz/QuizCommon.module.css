@@ -13,21 +13,6 @@
   margin: var(--space-md) 0 0 0;
 }
 
-.feedback {
-  text-align: center;
-  font-weight: 500;
-  width: fit-content;
-  margin: 0 auto;
-  min-height: 1.8rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: fadeIn 0.3s ease;
-}
-.feedback:empty {
-  visibility: hidden;
-}
-
 .options {
   display: flex;
   flex-direction: column;
@@ -65,49 +50,24 @@
   background-color: var(--color-danger-light) !important;
 }
 
-/* Feedback markers for selected/correct/incorrect options */
-.option.incorrect::before {
-  content: '';
+/* Icon container for feedback icons */
+.optionIcon {
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 6px;
-  height: 100%;
-  background-color: var(--color-quit);
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
-}
-.option.correct.selected::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 6px;
-  height: 100%;
-  background-color: var(--color-success);
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
+  right: var(--space-sm);
+  top: var(--space-sm);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-smd);
 }
 
-.option.incorrect::after,
-.option.correct.selected::after {
-  content: 'Your answer';
-  position: absolute;
-  right: var(--space-md);
-  top: 50%;
-  transform: translateY(-50%);
-  background: var(--color-quit);
-  color: white;
-  font-size: 0.75rem;
-  padding: 0 var(--space-sm);
-  border-radius: 999px;
-  white-space: nowrap;
-}
-
-.option.correct.selected::after {
+.optionIconSuccess {
   background-color: var(--color-success);
 }
-.option.incorrect::after {
+.optionIconError {
   background-color: var(--color-quit);
 }
 
@@ -180,5 +140,6 @@
     width: 90%;
     font-size: var(--font-size-h3);
     padding: var(--space-md);
+    padding-right: var(--space-xl);
   }
 }

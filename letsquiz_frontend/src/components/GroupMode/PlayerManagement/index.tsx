@@ -7,10 +7,15 @@ import { RootState } from '../../../store/store';
 
 interface PlayerManagementProps {
   onPlayersConfirmed: (players: Player[]) => void;
+  isLoading?: boolean;
 }
 
-export const PlayerManagement: React.FC<PlayerManagementProps> = ({ onPlayersConfirmed }) => {
-  const { loading } = useSelector((state: RootState) => state.quiz);
+export const PlayerManagement: React.FC<PlayerManagementProps> = ({
+  onPlayersConfirmed,
+  isLoading = false,
+}) => {
+  const { loading: globalLoading } = useSelector((state: RootState) => state.quiz);
+  const loading = isLoading || globalLoading;
 
   const [players, setPlayers] = useState<Player[]>([
     { id: '1', name: '', score: 0, isCurrentTurn: false, errors: [] },

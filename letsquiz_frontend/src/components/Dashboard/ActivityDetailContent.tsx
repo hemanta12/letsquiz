@@ -110,8 +110,11 @@ const ActivityDetailContent: React.FC<ActivityDetailContentProps> = ({ sessionDe
                 <div className={styles.answersContainer}>
                   <Typography variant="body2">
                     <strong>Correct answer by:</strong>{' '}
-                    {detail.correctPlayer ||
-                      (correctPlayers.length > 0 ? correctPlayers.join(', ') : 'None')}
+                    {detail.correctPlayers && detail.correctPlayers.length > 0
+                      ? detail.correctPlayers.join(', ')
+                      : detail.correctPlayer && detail.correctPlayer !== 'None'
+                        ? detail.correctPlayer
+                        : 'None'}
                   </Typography>
                   <Typography variant="body2">
                     <strong>Correct Answer:</strong> {detail.correctAnswer}

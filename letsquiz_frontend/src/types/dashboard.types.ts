@@ -38,6 +38,7 @@ export interface QuestionDetail {
   userAnswer: string;
   correctAnswer: string;
   correctPlayer: string | undefined;
+  correctPlayers?: string[];
 }
 
 export interface SessionDetail {

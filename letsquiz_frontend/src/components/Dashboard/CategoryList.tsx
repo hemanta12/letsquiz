@@ -44,6 +44,14 @@ const CategoryList: React.FC<CategoryListProps> = ({
       {categoryStats.map((category) => {
         const categoryName = category.category;
         const iconName = categoryIconMap[categoryName] || 'shuffle';
+        // Only show category if it has at least one solo session
+        const soloSessions = sessions.filter(
+          (session) =>
+            session.category === categoryName &&
+            session.completed_at !== null &&
+            session.is_group_session === false
+        );
+        if (soloSessions.length === 0) return null;
 
         return (
           <div
@@ -66,19 +74,13 @@ const CategoryList: React.FC<CategoryListProps> = ({
               </div>
               <div className={styles.statsRow}>
                 <Typography variant="body2">
-                  {category.totalQuizzes} quizzes | Avg:
+                  {soloSessions.length} quizzes | Avg:
                   {(() => {
-                    const sessionsInCategory = sessions.filter(
-                      (session) =>
-                        session.category === categoryName &&
-                        session.completed_at !== null &&
-                        session.is_group_session === false
-                    );
-                    const totalQuestionsForCategory = sessionsInCategory.reduce(
+                    const totalQuestionsForCategory = soloSessions.reduce(
                       (sum, session) => sum + (session.total_questions ?? 0),
                       0
                     );
-                    const totalScoreForCategory = sessionsInCategory.reduce(
+                    const totalScoreForCategory = soloSessions.reduce(
                       (sum, session) => sum + (session.score ?? 0),
                       0
                     );
@@ -111,13 +113,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
               }`}
             >
               <div className={styles.quizGrid}>
-                {sessions
-                  .filter(
-                    (session) =>
-                      session.category === categoryName &&
-                      session.completed_at !== null &&
-                      !session.is_group_session
-                  )
+                {soloSessions
                   .sort((a, b) => {
                     // Sort by newest first (date descending)
                     return (

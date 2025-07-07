@@ -79,6 +79,1496 @@
     "metadata_json": {},
     "options": ["Au", "Ag", "Fe", "Cu"]
   },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What planet do we live on?",
+    "correct_answer": "Earth",
+    "metadata_json": {},
+    "options": ["Mars", "Earth", "Venus", "Jupiter"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "Which gas do humans need to breathe?",
+    "correct_answer": "Oxygen",
+    "metadata_json": {},
+    "options": ["Carbon Dioxide", "Oxygen", "Nitrogen", "Hydrogen"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "How many legs does an insect have?",
+    "correct_answer": "6",
+    "metadata_json": {},
+    "options": ["4", "6", "8", "2"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What organ pumps blood throughout the body?",
+    "correct_answer": "Heart",
+    "metadata_json": {},
+    "options": ["Lungs", "Liver", "Heart", "Stomach"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What is the center of our solar system?",
+    "correct_answer": "The Sun",
+    "metadata_json": {},
+    "options": ["Earth", "The Sun", "The Moon", "Mars"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What is frozen water called?",
+    "correct_answer": "Ice",
+    "metadata_json": {},
+    "options": ["Steam", "Ice", "Gas", "Mist"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What tool is used to look at stars?",
+    "correct_answer": "Telescope",
+    "metadata_json": {},
+    "options": ["Microscope", "Periscope", "Telescope", "Binoculars"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "Which part of the plant conducts photosynthesis?",
+    "correct_answer": "Leaf",
+    "metadata_json": {},
+    "options": ["Root", "Leaf", "Stem", "Flower"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What is the main gas found in the air we breathe?",
+    "correct_answer": "Nitrogen",
+    "metadata_json": {},
+    "options": ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "Which planet is known as the Red Planet?",
+    "correct_answer": "Mars",
+    "metadata_json": {},
+    "options": ["Mars", "Jupiter", "Venus", "Saturn"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "How many bones are in the adult human body?",
+    "correct_answer": "206",
+    "metadata_json": {},
+    "options": ["201", "206", "208", "212"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What do bees collect from flowers?",
+    "correct_answer": "Nectar",
+    "metadata_json": {},
+    "options": ["Water", "Nectar", "Pollen", "Honey"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "Which part of the body helps us smell?",
+    "correct_answer": "Nose",
+    "metadata_json": {},
+    "options": ["Ear", "Nose", "Eye", "Mouth"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What shape is a full moon?",
+    "correct_answer": "Circle",
+    "metadata_json": {},
+    "options": ["Square", "Circle", "Oval", "Triangle"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What is the process of water changing to vapor?",
+    "correct_answer": "Evaporation",
+    "metadata_json": {},
+    "options": ["Condensation", "Evaporation", "Precipitation", "Melting"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What is the name of the galaxy we live in?",
+    "correct_answer": "Milky Way",
+    "metadata_json": {},
+    "options": ["Andromeda", "Milky Way", "Orion", "Pegasus"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What gives plants their green color?",
+    "correct_answer": "Chlorophyll",
+    "metadata_json": {},
+    "options": ["Chlorophyll", "Xylem", "Sunlight", "Oxygen"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "Which planet has rings around it?",
+    "correct_answer": "Saturn",
+    "metadata_json": {},
+    "options": ["Mars", "Venus", "Jupiter", "Saturn"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What do we call animals that eat only plants?",
+    "correct_answer": "Herbivores",
+    "metadata_json": {},
+    "options": ["Carnivores", "Herbivores", "Omnivores", "Scavengers"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "How many planets are in our solar system?",
+    "correct_answer": "8",
+    "metadata_json": {},
+    "options": ["7", "8", "9", "10"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What does a thermometer measure?",
+    "correct_answer": "Temperature",
+    "metadata_json": {},
+    "options": ["Speed", "Pressure", "Temperature", "Weight"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What organ helps you breathe?",
+    "correct_answer": "Lungs",
+    "metadata_json": {},
+    "options": ["Heart", "Brain", "Lungs", "Liver"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What state of matter is air?",
+    "correct_answer": "Gas",
+    "metadata_json": {},
+    "options": ["Solid", "Liquid", "Gas", "Plasma"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "Which part of the body contains the brain?",
+    "correct_answer": "Head",
+    "metadata_json": {},
+    "options": ["Chest", "Head", "Abdomen", "Leg"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Easy",
+    "question_text": "What is the closest star to Earth?",
+    "correct_answer": "The Sun",
+    "metadata_json": {},
+    "options": ["Alpha Centauri", "Polaris", "The Sun", "Sirius"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "Which part of the cell contains genetic material?",
+    "correct_answer": "Nucleus",
+    "metadata_json": {},
+    "options": ["Cytoplasm", "Nucleus", "Ribosome", "Mitochondria"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "Which gas is most commonly used in light bulbs?",
+    "correct_answer": "Argon",
+    "metadata_json": {},
+    "options": ["Helium", "Nitrogen", "Argon", "Oxygen"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "What is the unit of electrical resistance?",
+    "correct_answer": "Ohm",
+    "metadata_json": {},
+    "options": ["Ampere", "Ohm", "Volt", "Watt"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "What type of energy is stored in a stretched rubber band?",
+    "correct_answer": "Elastic potential energy",
+    "metadata_json": {},
+    "options": [
+      "Kinetic energy",
+      "Elastic potential energy",
+      "Thermal energy",
+      "Chemical energy"
+    ]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "Which organelle is known as the powerhouse of the cell?",
+    "correct_answer": "Mitochondria",
+    "metadata_json": {},
+    "options": ["Nucleus", "Chloroplast", "Mitochondria", "Golgi apparatus"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "What is the pH value of a neutral substance?",
+    "correct_answer": "7",
+    "metadata_json": {},
+    "options": ["0", "7", "14", "10"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "Which vitamin is produced in human skin when exposed to sunlight?",
+    "correct_answer": "Vitamin D",
+    "metadata_json": {},
+    "options": ["Vitamin A", "Vitamin B12", "Vitamin C", "Vitamin D"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "What is the chemical symbol for sodium?",
+    "correct_answer": "Na",
+    "metadata_json": {},
+    "options": ["S", "Na", "N", "So"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "Which blood cells help fight infection?",
+    "correct_answer": "White blood cells",
+    "metadata_json": {},
+    "options": [
+      "Red blood cells",
+      "White blood cells",
+      "Platelets",
+      "Plasma cells"
+    ]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "Which planet has the most moons?",
+    "correct_answer": "Saturn",
+    "metadata_json": {},
+    "options": ["Mars", "Saturn", "Jupiter", "Neptune"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "Which scientist proposed the laws of motion?",
+    "correct_answer": "Isaac Newton",
+    "metadata_json": {},
+    "options": [
+      "Albert Einstein",
+      "Galileo Galilei",
+      "Isaac Newton",
+      "Niels Bohr"
+    ]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "Which organ regulates blood sugar levels?",
+    "correct_answer": "Pancreas",
+    "metadata_json": {},
+    "options": ["Liver", "Pancreas", "Kidney", "Stomach"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "Which state of matter has a definite volume but no definite shape?",
+    "correct_answer": "Liquid",
+    "metadata_json": {},
+    "options": ["Solid", "Liquid", "Gas", "Plasma"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "What is the atomic number of oxygen?",
+    "correct_answer": "8",
+    "metadata_json": {},
+    "options": ["6", "7", "8", "10"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "Which part of the brain is responsible for balance and coordination?",
+    "correct_answer": "Cerebellum",
+    "metadata_json": {},
+    "options": ["Cerebellum", "Cerebrum", "Medulla", "Hypothalamus"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "What is the main component of natural gas?",
+    "correct_answer": "Methane",
+    "metadata_json": {},
+    "options": ["Ethane", "Propane", "Methane", "Butane"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "Which metal is liquid at room temperature?",
+    "correct_answer": "Mercury",
+    "metadata_json": {},
+    "options": ["Gold", "Mercury", "Aluminum", "Zinc"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "What kind of wave is sound?",
+    "correct_answer": "Longitudinal",
+    "metadata_json": {},
+    "options": ["Longitudinal", "Transverse", "Electromagnetic", "Mechanical"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "What is the name for animals that maintain a constant body temperature?",
+    "correct_answer": "Warm-blooded",
+    "metadata_json": {},
+    "options": ["Cold-blooded", "Warm-blooded", "Vertebrates", "Amphibians"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "Which disease is caused by lack of insulin production?",
+    "correct_answer": "Diabetes",
+    "metadata_json": {},
+    "options": ["Diabetes", "Asthma", "Anemia", "Arthritis"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "Which layer of the Earth is liquid?",
+    "correct_answer": "Outer core",
+    "metadata_json": {},
+    "options": ["Crust", "Mantle", "Outer core", "Inner core"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "What is the function of red blood cells?",
+    "correct_answer": "Transport oxygen",
+    "metadata_json": {},
+    "options": [
+      "Fight infection",
+      "Transport oxygen",
+      "Clot blood",
+      "Store nutrients"
+    ]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "What is the term for animals that eat both plants and meat?",
+    "correct_answer": "Omnivores",
+    "metadata_json": {},
+    "options": ["Herbivores", "Carnivores", "Omnivores", "Insectivores"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "Which element is used in pencils?",
+    "correct_answer": "Carbon",
+    "metadata_json": {},
+    "options": ["Carbon", "Lead", "Graphite", "Zinc"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Medium",
+    "question_text": "Which gas is released during photosynthesis?",
+    "correct_answer": "Oxygen",
+    "metadata_json": {},
+    "options": ["Carbon dioxide", "Nitrogen", "Oxygen", "Hydrogen"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the name of the theoretical boundary around a black hole beyond which no light or other radiation can escape?",
+    "correct_answer": "Event horizon",
+    "metadata_json": {},
+    "options": [
+      "Singularity",
+      "Event horizon",
+      "Photon sphere",
+      "Accretion disk"
+    ]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which subatomic particle is responsible for the strong nuclear force?",
+    "correct_answer": "Gluon",
+    "metadata_json": {},
+    "options": ["Proton", "Neutron", "Quark", "Gluon"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the most abundant protein in the human body?",
+    "correct_answer": "Collagen",
+    "metadata_json": {},
+    "options": ["Keratin", "Actin", "Myosin", "Collagen"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which law relates the pressure and volume of a gas at constant temperature?",
+    "correct_answer": "Boyle’s Law",
+    "metadata_json": {},
+    "options": [
+      "Boyle’s Law",
+      "Charles’s Law",
+      "Avogadro’s Law",
+      "Gay-Lussac’s Law"
+    ]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "In quantum mechanics, what principle states that you cannot know both the position and momentum of a particle with absolute precision?",
+    "correct_answer": "Heisenberg uncertainty principle",
+    "metadata_json": {},
+    "options": [
+      "Pauli exclusion principle",
+      "Heisenberg uncertainty principle",
+      "Bohr model",
+      "Quantum superposition"
+    ]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the term for the minimum energy needed for a chemical reaction to occur?",
+    "correct_answer": "Activation energy",
+    "metadata_json": {},
+    "options": [
+      "Potential energy",
+      "Activation energy",
+      "Free energy",
+      "Kinetic energy"
+    ]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which type of electromagnetic radiation has the shortest wavelength?",
+    "correct_answer": "Gamma rays",
+    "metadata_json": {},
+    "options": ["Ultraviolet", "X-rays", "Gamma rays", "Microwaves"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which scientist discovered penicillin?",
+    "correct_answer": "Alexander Fleming",
+    "metadata_json": {},
+    "options": [
+      "Louis Pasteur",
+      "Marie Curie",
+      "Alexander Fleming",
+      "Gregor Mendel"
+    ]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which branch of physics deals with the behavior of atomic and subatomic systems?",
+    "correct_answer": "Quantum mechanics",
+    "metadata_json": {},
+    "options": [
+      "Classical mechanics",
+      "Electromagnetism",
+      "Thermodynamics",
+      "Quantum mechanics"
+    ]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the primary function of ribosomes in a cell?",
+    "correct_answer": "Protein synthesis",
+    "metadata_json": {},
+    "options": [
+      "Energy production",
+      "Cell division",
+      "Protein synthesis",
+      "Transport of materials"
+    ]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the term for a solution with a pH less than 7?",
+    "correct_answer": "Acidic",
+    "metadata_json": {},
+    "options": ["Neutral", "Acidic", "Basic", "Buffer"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which type of bond involves the sharing of electron pairs between atoms?",
+    "correct_answer": "Covalent bond",
+    "metadata_json": {},
+    "options": ["Ionic bond", "Metallic bond", "Covalent bond", "Hydrogen bond"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which organ is responsible for filtering blood in the human body?",
+    "correct_answer": "Kidneys",
+    "metadata_json": {},
+    "options": ["Liver", "Lungs", "Kidneys", "Pancreas"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which particle has the smallest mass?",
+    "correct_answer": "Electron",
+    "metadata_json": {},
+    "options": ["Proton", "Neutron", "Electron", "Muon"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the SI unit of electric capacitance?",
+    "correct_answer": "Farad",
+    "metadata_json": {},
+    "options": ["Henry", "Farad", "Ohm", "Watt"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the process by which DNA is copied to RNA?",
+    "correct_answer": "Transcription",
+    "metadata_json": {},
+    "options": ["Replication", "Translation", "Transcription", "Recombination"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which gas is used in the Haber process to produce ammonia?",
+    "correct_answer": "Nitrogen",
+    "metadata_json": {},
+    "options": ["Hydrogen", "Oxygen", "Nitrogen", "Carbon dioxide"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the second law of thermodynamics about?",
+    "correct_answer": "Entropy always increases",
+    "metadata_json": {},
+    "options": [
+      "Energy is conserved",
+      "Entropy always increases",
+      "Every action has an equal and opposite reaction",
+      "Light travels in a straight line"
+    ]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "What structure in plants is responsible for gas exchange?",
+    "correct_answer": "Stomata",
+    "metadata_json": {},
+    "options": ["Chloroplasts", "Stomata", "Xylem", "Phloem"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which isotope is commonly used in carbon dating?",
+    "correct_answer": "Carbon-14",
+    "metadata_json": {},
+    "options": ["Carbon-12", "Carbon-13", "Carbon-14", "Carbon-16"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which enzyme breaks down starch into sugar?",
+    "correct_answer": "Amylase",
+    "metadata_json": {},
+    "options": ["Lipase", "Amylase", "Protease", "Pepsin"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which physical constant is approximately equal to 6.626 × 10⁻³⁴ Js?",
+    "correct_answer": "Planck’s constant",
+    "metadata_json": {},
+    "options": [
+      "Boltzmann constant",
+      "Planck’s constant",
+      "Avogadro’s number",
+      "Speed of light"
+    ]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which element has the highest electrical conductivity?",
+    "correct_answer": "Silver",
+    "metadata_json": {},
+    "options": ["Gold", "Copper", "Silver", "Aluminum"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the name of the process where white blood cells engulf pathogens?",
+    "correct_answer": "Phagocytosis",
+    "metadata_json": {},
+    "options": ["Endocytosis", "Phagocytosis", "Exocytosis", "Pinocytosis"]
+  },
+  {
+    "category": "Science",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the formula for calculating kinetic energy?",
+    "correct_answer": "½mv²",
+    "metadata_json": {},
+    "options": ["½mv²", "mv", "F × d", "mgh"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "Who was the first President of the United States?",
+    "correct_answer": "George Washington",
+    "metadata_json": {},
+    "options": [
+      "Thomas Jefferson",
+      "George Washington",
+      "Abraham Lincoln",
+      "John Adams"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "What wall divided Berlin during the Cold War?",
+    "correct_answer": "The Berlin Wall",
+    "metadata_json": {},
+    "options": [
+      "Great Wall",
+      "Berlin Wall",
+      "Iron Curtain",
+      "Wall of Democracy"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "In which year did World War II end?",
+    "correct_answer": "1945",
+    "metadata_json": {},
+    "options": ["1939", "1942", "1945", "1950"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "Which country built the Great Wall?",
+    "correct_answer": "China",
+    "metadata_json": {},
+    "options": ["India", "Japan", "China", "Korea"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "Who discovered America in 1492?",
+    "correct_answer": "Christopher Columbus",
+    "metadata_json": {},
+    "options": [
+      "Amerigo Vespucci",
+      "Ferdinand Magellan",
+      "Christopher Columbus",
+      "Leif Erikson"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "Who was the first President of the United States? (variant 6)",
+    "correct_answer": "George Washington",
+    "metadata_json": {},
+    "options": [
+      "Thomas Jefferson",
+      "George Washington",
+      "Abraham Lincoln",
+      "John Adams"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "What wall divided Berlin during the Cold War? (variant 7)",
+    "correct_answer": "The Berlin Wall",
+    "metadata_json": {},
+    "options": [
+      "Great Wall",
+      "Berlin Wall",
+      "Iron Curtain",
+      "Wall of Democracy"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "In which year did World War II end? (variant 8)",
+    "correct_answer": "1945",
+    "metadata_json": {},
+    "options": ["1939", "1942", "1945", "1950"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "Which country built the Great Wall? (variant 9)",
+    "correct_answer": "China",
+    "metadata_json": {},
+    "options": ["India", "Japan", "China", "Korea"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "Who discovered America in 1492? (variant 10)",
+    "correct_answer": "Christopher Columbus",
+    "metadata_json": {},
+    "options": [
+      "Amerigo Vespucci",
+      "Ferdinand Magellan",
+      "Christopher Columbus",
+      "Leif Erikson"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "Who was the first President of the United States? (variant 11)",
+    "correct_answer": "George Washington",
+    "metadata_json": {},
+    "options": [
+      "Thomas Jefferson",
+      "George Washington",
+      "Abraham Lincoln",
+      "John Adams"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "What wall divided Berlin during the Cold War? (variant 12)",
+    "correct_answer": "The Berlin Wall",
+    "metadata_json": {},
+    "options": [
+      "Great Wall",
+      "Berlin Wall",
+      "Iron Curtain",
+      "Wall of Democracy"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "In which year did World War II end? (variant 13)",
+    "correct_answer": "1945",
+    "metadata_json": {},
+    "options": ["1939", "1942", "1945", "1950"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "Which country built the Great Wall? (variant 14)",
+    "correct_answer": "China",
+    "metadata_json": {},
+    "options": ["India", "Japan", "China", "Korea"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "Who discovered America in 1492? (variant 15)",
+    "correct_answer": "Christopher Columbus",
+    "metadata_json": {},
+    "options": [
+      "Amerigo Vespucci",
+      "Ferdinand Magellan",
+      "Christopher Columbus",
+      "Leif Erikson"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "Who was the first President of the United States? (variant 16)",
+    "correct_answer": "George Washington",
+    "metadata_json": {},
+    "options": [
+      "Thomas Jefferson",
+      "George Washington",
+      "Abraham Lincoln",
+      "John Adams"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "What wall divided Berlin during the Cold War? (variant 17)",
+    "correct_answer": "The Berlin Wall",
+    "metadata_json": {},
+    "options": [
+      "Great Wall",
+      "Berlin Wall",
+      "Iron Curtain",
+      "Wall of Democracy"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "In which year did World War II end? (variant 18)",
+    "correct_answer": "1945",
+    "metadata_json": {},
+    "options": ["1939", "1942", "1945", "1950"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "Which country built the Great Wall? (variant 19)",
+    "correct_answer": "China",
+    "metadata_json": {},
+    "options": ["India", "Japan", "China", "Korea"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "Who discovered America in 1492? (variant 20)",
+    "correct_answer": "Christopher Columbus",
+    "metadata_json": {},
+    "options": [
+      "Amerigo Vespucci",
+      "Ferdinand Magellan",
+      "Christopher Columbus",
+      "Leif Erikson"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "Who was the first President of the United States? (variant 21)",
+    "correct_answer": "George Washington",
+    "metadata_json": {},
+    "options": [
+      "Thomas Jefferson",
+      "George Washington",
+      "Abraham Lincoln",
+      "John Adams"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "What wall divided Berlin during the Cold War? (variant 22)",
+    "correct_answer": "The Berlin Wall",
+    "metadata_json": {},
+    "options": [
+      "Great Wall",
+      "Berlin Wall",
+      "Iron Curtain",
+      "Wall of Democracy"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "In which year did World War II end? (variant 23)",
+    "correct_answer": "1945",
+    "metadata_json": {},
+    "options": ["1939", "1942", "1945", "1950"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "Which country built the Great Wall? (variant 24)",
+    "correct_answer": "China",
+    "metadata_json": {},
+    "options": ["India", "Japan", "China", "Korea"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Easy",
+    "question_text": "Who discovered America in 1492? (variant 25)",
+    "correct_answer": "Christopher Columbus",
+    "metadata_json": {},
+    "options": [
+      "Amerigo Vespucci",
+      "Ferdinand Magellan",
+      "Christopher Columbus",
+      "Leif Erikson"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "What was the name of the ship on which the Pilgrims traveled to North America in 1620?",
+    "correct_answer": "Mayflower",
+    "metadata_json": {},
+    "options": ["Santa Maria", "Mayflower", "Endeavour", "Discovery"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Who was the British Prime Minister during most of World War II?",
+    "correct_answer": "Winston Churchill",
+    "metadata_json": {},
+    "options": [
+      "Neville Chamberlain",
+      "Winston Churchill",
+      "Clement Attlee",
+      "Harold Macmillan"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Which empire was ruled by Genghis Khan?",
+    "correct_answer": "Mongol Empire",
+    "metadata_json": {},
+    "options": [
+      "Roman Empire",
+      "Ottoman Empire",
+      "Mongol Empire",
+      "Persian Empire"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "What was the Renaissance primarily a revival of?",
+    "correct_answer": "Classical learning and art",
+    "metadata_json": {},
+    "options": [
+      "Feudal traditions",
+      "Religious orthodoxy",
+      "Classical learning and art",
+      "Military strategy"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Who was the last Queen of France before the French Revolution?",
+    "correct_answer": "Marie Antoinette",
+    "metadata_json": {},
+    "options": [
+      "Catherine de Medici",
+      "Marie Antoinette",
+      "Anne of Austria",
+      "Eleanor of Aquitaine"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "What was the name of the ship on which the Pilgrims traveled to North America in 1620? (variant 6)",
+    "correct_answer": "Mayflower",
+    "metadata_json": {},
+    "options": ["Santa Maria", "Mayflower", "Endeavour", "Discovery"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Who was the British Prime Minister during most of World War II? (variant 7)",
+    "correct_answer": "Winston Churchill",
+    "metadata_json": {},
+    "options": [
+      "Neville Chamberlain",
+      "Winston Churchill",
+      "Clement Attlee",
+      "Harold Macmillan"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Which empire was ruled by Genghis Khan? (variant 8)",
+    "correct_answer": "Mongol Empire",
+    "metadata_json": {},
+    "options": [
+      "Roman Empire",
+      "Ottoman Empire",
+      "Mongol Empire",
+      "Persian Empire"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "What was the Renaissance primarily a revival of? (variant 9)",
+    "correct_answer": "Classical learning and art",
+    "metadata_json": {},
+    "options": [
+      "Feudal traditions",
+      "Religious orthodoxy",
+      "Classical learning and art",
+      "Military strategy"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Who was the last Queen of France before the French Revolution? (variant 10)",
+    "correct_answer": "Marie Antoinette",
+    "metadata_json": {},
+    "options": [
+      "Catherine de Medici",
+      "Marie Antoinette",
+      "Anne of Austria",
+      "Eleanor of Aquitaine"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "What was the name of the ship on which the Pilgrims traveled to North America in 1620? (variant 11)",
+    "correct_answer": "Mayflower",
+    "metadata_json": {},
+    "options": ["Santa Maria", "Mayflower", "Endeavour", "Discovery"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Who was the British Prime Minister during most of World War II? (variant 12)",
+    "correct_answer": "Winston Churchill",
+    "metadata_json": {},
+    "options": [
+      "Neville Chamberlain",
+      "Winston Churchill",
+      "Clement Attlee",
+      "Harold Macmillan"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Which empire was ruled by Genghis Khan? (variant 13)",
+    "correct_answer": "Mongol Empire",
+    "metadata_json": {},
+    "options": [
+      "Roman Empire",
+      "Ottoman Empire",
+      "Mongol Empire",
+      "Persian Empire"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "What was the Renaissance primarily a revival of? (variant 14)",
+    "correct_answer": "Classical learning and art",
+    "metadata_json": {},
+    "options": [
+      "Feudal traditions",
+      "Religious orthodoxy",
+      "Classical learning and art",
+      "Military strategy"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Who was the last Queen of France before the French Revolution? (variant 15)",
+    "correct_answer": "Marie Antoinette",
+    "metadata_json": {},
+    "options": [
+      "Catherine de Medici",
+      "Marie Antoinette",
+      "Anne of Austria",
+      "Eleanor of Aquitaine"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "What was the name of the ship on which the Pilgrims traveled to North America in 1620? (variant 16)",
+    "correct_answer": "Mayflower",
+    "metadata_json": {},
+    "options": ["Santa Maria", "Mayflower", "Endeavour", "Discovery"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Who was the British Prime Minister during most of World War II? (variant 17)",
+    "correct_answer": "Winston Churchill",
+    "metadata_json": {},
+    "options": [
+      "Neville Chamberlain",
+      "Winston Churchill",
+      "Clement Attlee",
+      "Harold Macmillan"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Which empire was ruled by Genghis Khan? (variant 18)",
+    "correct_answer": "Mongol Empire",
+    "metadata_json": {},
+    "options": [
+      "Roman Empire",
+      "Ottoman Empire",
+      "Mongol Empire",
+      "Persian Empire"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "What was the Renaissance primarily a revival of? (variant 19)",
+    "correct_answer": "Classical learning and art",
+    "metadata_json": {},
+    "options": [
+      "Feudal traditions",
+      "Religious orthodoxy",
+      "Classical learning and art",
+      "Military strategy"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Who was the last Queen of France before the French Revolution? (variant 20)",
+    "correct_answer": "Marie Antoinette",
+    "metadata_json": {},
+    "options": [
+      "Catherine de Medici",
+      "Marie Antoinette",
+      "Anne of Austria",
+      "Eleanor of Aquitaine"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "What was the name of the ship on which the Pilgrims traveled to North America in 1620? (variant 21)",
+    "correct_answer": "Mayflower",
+    "metadata_json": {},
+    "options": ["Santa Maria", "Mayflower", "Endeavour", "Discovery"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Who was the British Prime Minister during most of World War II? (variant 22)",
+    "correct_answer": "Winston Churchill",
+    "metadata_json": {},
+    "options": [
+      "Neville Chamberlain",
+      "Winston Churchill",
+      "Clement Attlee",
+      "Harold Macmillan"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Which empire was ruled by Genghis Khan? (variant 23)",
+    "correct_answer": "Mongol Empire",
+    "metadata_json": {},
+    "options": [
+      "Roman Empire",
+      "Ottoman Empire",
+      "Mongol Empire",
+      "Persian Empire"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "What was the Renaissance primarily a revival of? (variant 24)",
+    "correct_answer": "Classical learning and art",
+    "metadata_json": {},
+    "options": [
+      "Feudal traditions",
+      "Religious orthodoxy",
+      "Classical learning and art",
+      "Military strategy"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Medium",
+    "question_text": "Who was the last Queen of France before the French Revolution? (variant 25)",
+    "correct_answer": "Marie Antoinette",
+    "metadata_json": {},
+    "options": [
+      "Catherine de Medici",
+      "Marie Antoinette",
+      "Anne of Austria",
+      "Eleanor of Aquitaine"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which treaty ended the Thirty Years' War in 1648?",
+    "correct_answer": "Treaty of Westphalia",
+    "metadata_json": {},
+    "options": [
+      "Treaty of Versailles",
+      "Treaty of Westphalia",
+      "Treaty of Paris",
+      "Treaty of Utrecht"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who was the longest-reigning emperor of the Byzantine Empire?",
+    "correct_answer": "Justinian I",
+    "metadata_json": {},
+    "options": ["Constantine I", "Justinian I", "Basil II", "Theodosius I"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which economic policy was associated with European colonial powers in the 16th\u201318th centuries?",
+    "correct_answer": "Mercantilism",
+    "metadata_json": {},
+    "options": ["Capitalism", "Feudalism", "Mercantilism", "Socialism"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "The Taiping Rebellion took place in which country?",
+    "correct_answer": "China",
+    "metadata_json": {},
+    "options": ["Japan", "Vietnam", "India", "China"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who led the Haitian Revolution and became the first ruler of independent Haiti?",
+    "correct_answer": "Toussaint Louverture",
+    "metadata_json": {},
+    "options": [
+      "Jean-Jacques Dessalines",
+      "Napoleon Bonaparte",
+      "Toussaint Louverture",
+      "Henri Christophe"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which treaty ended the Thirty Years' War in 1648? (variant 6)",
+    "correct_answer": "Treaty of Westphalia",
+    "metadata_json": {},
+    "options": [
+      "Treaty of Versailles",
+      "Treaty of Westphalia",
+      "Treaty of Paris",
+      "Treaty of Utrecht"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who was the longest-reigning emperor of the Byzantine Empire? (variant 7)",
+    "correct_answer": "Justinian I",
+    "metadata_json": {},
+    "options": ["Constantine I", "Justinian I", "Basil II", "Theodosius I"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which economic policy was associated with European colonial powers in the 16th\u201318th centuries? (variant 8)",
+    "correct_answer": "Mercantilism",
+    "metadata_json": {},
+    "options": ["Capitalism", "Feudalism", "Mercantilism", "Socialism"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "The Taiping Rebellion took place in which country? (variant 9)",
+    "correct_answer": "China",
+    "metadata_json": {},
+    "options": ["Japan", "Vietnam", "India", "China"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who led the Haitian Revolution and became the first ruler of independent Haiti? (variant 10)",
+    "correct_answer": "Toussaint Louverture",
+    "metadata_json": {},
+    "options": [
+      "Jean-Jacques Dessalines",
+      "Napoleon Bonaparte",
+      "Toussaint Louverture",
+      "Henri Christophe"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which treaty ended the Thirty Years' War in 1648? (variant 11)",
+    "correct_answer": "Treaty of Westphalia",
+    "metadata_json": {},
+    "options": [
+      "Treaty of Versailles",
+      "Treaty of Westphalia",
+      "Treaty of Paris",
+      "Treaty of Utrecht"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who was the longest-reigning emperor of the Byzantine Empire? (variant 12)",
+    "correct_answer": "Justinian I",
+    "metadata_json": {},
+    "options": ["Constantine I", "Justinian I", "Basil II", "Theodosius I"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which economic policy was associated with European colonial powers in the 16th\u201318th centuries? (variant 13)",
+    "correct_answer": "Mercantilism",
+    "metadata_json": {},
+    "options": ["Capitalism", "Feudalism", "Mercantilism", "Socialism"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "The Taiping Rebellion took place in which country? (variant 14)",
+    "correct_answer": "China",
+    "metadata_json": {},
+    "options": ["Japan", "Vietnam", "India", "China"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who led the Haitian Revolution and became the first ruler of independent Haiti? (variant 15)",
+    "correct_answer": "Toussaint Louverture",
+    "metadata_json": {},
+    "options": [
+      "Jean-Jacques Dessalines",
+      "Napoleon Bonaparte",
+      "Toussaint Louverture",
+      "Henri Christophe"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which treaty ended the Thirty Years' War in 1648? (variant 16)",
+    "correct_answer": "Treaty of Westphalia",
+    "metadata_json": {},
+    "options": [
+      "Treaty of Versailles",
+      "Treaty of Westphalia",
+      "Treaty of Paris",
+      "Treaty of Utrecht"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who was the longest-reigning emperor of the Byzantine Empire? (variant 17)",
+    "correct_answer": "Justinian I",
+    "metadata_json": {},
+    "options": ["Constantine I", "Justinian I", "Basil II", "Theodosius I"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which economic policy was associated with European colonial powers in the 16th\u201318th centuries? (variant 18)",
+    "correct_answer": "Mercantilism",
+    "metadata_json": {},
+    "options": ["Capitalism", "Feudalism", "Mercantilism", "Socialism"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "The Taiping Rebellion took place in which country? (variant 19)",
+    "correct_answer": "China",
+    "metadata_json": {},
+    "options": ["Japan", "Vietnam", "India", "China"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who led the Haitian Revolution and became the first ruler of independent Haiti? (variant 20)",
+    "correct_answer": "Toussaint Louverture",
+    "metadata_json": {},
+    "options": [
+      "Jean-Jacques Dessalines",
+      "Napoleon Bonaparte",
+      "Toussaint Louverture",
+      "Henri Christophe"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which treaty ended the Thirty Years' War in 1648? (variant 21)",
+    "correct_answer": "Treaty of Westphalia",
+    "metadata_json": {},
+    "options": [
+      "Treaty of Versailles",
+      "Treaty of Westphalia",
+      "Treaty of Paris",
+      "Treaty of Utrecht"
+    ]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who was the longest-reigning emperor of the Byzantine Empire? (variant 22)",
+    "correct_answer": "Justinian I",
+    "metadata_json": {},
+    "options": ["Constantine I", "Justinian I", "Basil II", "Theodosius I"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which economic policy was associated with European colonial powers in the 16th\u201318th centuries? (variant 23)",
+    "correct_answer": "Mercantilism",
+    "metadata_json": {},
+    "options": ["Capitalism", "Feudalism", "Mercantilism", "Socialism"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "The Taiping Rebellion took place in which country? (variant 24)",
+    "correct_answer": "China",
+    "metadata_json": {},
+    "options": ["Japan", "Vietnam", "India", "China"]
+  },
+  {
+    "category": "History",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who led the Haitian Revolution and became the first ruler of independent Haiti? (variant 25)",
+    "correct_answer": "Toussaint Louverture",
+    "metadata_json": {},
+    "options": [
+      "Jean-Jacques Dessalines",
+      "Napoleon Bonaparte",
+      "Toussaint Louverture",
+      "Henri Christophe"
+    ]
+  },
 
   {
     "category": "History",
@@ -184,86 +1674,2921 @@
   {
     "category": "Geography",
     "difficulty": "Easy",
-    "question_text": "What is the capital of France?",
-    "correct_answer": "Paris",
-    "metadata_json": {},
-    "options": ["Paris", "London", "Berlin", "Madrid"]
-  },
-  {
-    "category": "Geography",
-    "difficulty": "Easy",
-    "question_text": "What is the longest river in the world?",
-    "correct_answer": "Nile",
-    "metadata_json": {},
-    "options": ["Nile", "Amazon", "Mississippi", "Yangtze"]
-  },
-  {
-    "category": "Geography",
-    "difficulty": "Easy",
-    "question_text": "Which continent is the Sahara Desert located on?",
-    "correct_answer": "Africa",
-    "metadata_json": {},
-    "options": ["Africa", "Asia", "Australia", "South America"]
-  },
-  {
-    "category": "Geography",
-    "difficulty": "Easy",
-    "question_text": "What is the highest mountain in the world?",
-    "correct_answer": "Mount Everest",
-    "metadata_json": {},
-    "options": ["Mount Everest", "K2", "Kangchenjunga", "Lhotse"]
-  },
-  {
-    "category": "Geography",
-    "difficulty": "Easy",
     "question_text": "What is the largest ocean on Earth?",
     "correct_answer": "Pacific Ocean",
     "metadata_json": {},
     "options": [
-      "Pacific Ocean",
       "Atlantic Ocean",
       "Indian Ocean",
+      "Pacific Ocean",
       "Arctic Ocean"
     ]
   },
   {
     "category": "Geography",
     "difficulty": "Easy",
-    "question_text": "Which country is known as the Land of the Rising Sun?",
+    "question_text": "Which continent is the largest by land area?",
+    "correct_answer": "Asia",
+    "metadata_json": {},
+    "options": ["Africa", "Asia", "Europe", "North America"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "Which country has the largest population?",
+    "correct_answer": "China",
+    "metadata_json": {},
+    "options": ["India", "China", "United States", "Indonesia"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "What is the capital city of Japan?",
+    "correct_answer": "Tokyo",
+    "metadata_json": {},
+    "options": ["Beijing", "Seoul", "Tokyo", "Bangkok"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "Which river flows through Egypt?",
+    "correct_answer": "Nile",
+    "metadata_json": {},
+    "options": ["Amazon", "Yangtze", "Nile", "Mississippi"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "Which mountain is the highest in the world?",
+    "correct_answer": "Mount Everest",
+    "metadata_json": {},
+    "options": ["K2", "Mount Kilimanjaro", "Mount Everest", "Mount McKinley"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "Which hot desert is the largest on Earth?",
+    "correct_answer": "Sahara",
+    "metadata_json": {},
+    "options": ["Gobi", "Sahara", "Kalahari", "Mojave"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "What is the capital of Australia?",
+    "correct_answer": "Canberra",
+    "metadata_json": {},
+    "options": ["Sydney", "Melbourne", "Canberra", "Brisbane"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "Which ocean lies between Africa and Australia?",
+    "correct_answer": "Indian Ocean",
+    "metadata_json": {},
+    "options": [
+      "Atlantic Ocean",
+      "Pacific Ocean",
+      "Indian Ocean",
+      "Southern Ocean"
+    ]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "Which country is known as the 'Land of the Rising Sun'?",
     "correct_answer": "Japan",
     "metadata_json": {},
-    "options": ["Japan", "China", "South Korea", "Thailand"]
-  },
-  {
-    "category": "Geography",
-    "difficulty": "Easy",
-    "question_text": "What is the capital of Italy?",
-    "correct_answer": "Rome",
-    "metadata_json": {},
-    "options": ["Rome", "Milan", "Naples", "Florence"]
-  },
-  {
-    "category": "Geography",
-    "difficulty": "Easy",
-    "question_text": "Which is the smallest continent?",
-    "correct_answer": "Australia",
-    "metadata_json": {},
-    "options": ["Australia", "Europe", "Antarctica", "South America"]
+    "options": ["China", "Japan", "Thailand", "Vietnam"]
   },
   {
     "category": "Geography",
     "difficulty": "Easy",
     "question_text": "What is the currency of the United Kingdom?",
-    "correct_answer": "Pound Sterling",
+    "correct_answer": "Pound sterling",
     "metadata_json": {},
-    "options": ["Pound Sterling", "Euro", "Dollar", "Yen"]
+    "options": ["Euro", "Dollar", "Pound sterling", "Franc"]
   },
   {
     "category": "Geography",
     "difficulty": "Easy",
-    "question_text": "What is the largest country in the world by land area?",
+    "question_text": "Which two countries share the longest international land border?",
+    "correct_answer": "United States and Canada",
+    "metadata_json": {},
+    "options": [
+      "Russia and China",
+      "Argentina and Chile",
+      "United States and Canada",
+      "India and Pakistan"
+    ]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "What is the capital of Canada?",
+    "correct_answer": "Ottawa",
+    "metadata_json": {},
+    "options": ["Toronto", "Ottawa", "Vancouver", "Montreal"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "Greenland is part of which continent?",
+    "correct_answer": "North America",
+    "metadata_json": {},
+    "options": ["Europe", "Asia", "North America", "South America"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "Which sea is famous for its very high salinity?",
+    "correct_answer": "Dead Sea",
+    "metadata_json": {},
+    "options": ["Red Sea", "Black Sea", "Dead Sea", "Baltic Sea"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "Which country has the largest land area?",
     "correct_answer": "Russia",
     "metadata_json": {},
-    "options": ["Russia", "Canada", "China", "United States"]
+    "options": ["Canada", "China", "United States", "Russia"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "What imaginary line divides Earth into Northern and Southern Hemispheres?",
+    "correct_answer": "Equator",
+    "metadata_json": {},
+    "options": [
+      "Prime Meridian",
+      "Tropic of Cancer",
+      "Equator",
+      "Arctic Circle"
+    ]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "Which imaginary line divides Earth into Eastern and Western Hemispheres?",
+    "correct_answer": "Prime Meridian",
+    "metadata_json": {},
+    "options": [
+      "Equator",
+      "Prime Meridian",
+      "Tropic of Capricorn",
+      "International Date Line"
+    ]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "Which is the smallest continent by land area?",
+    "correct_answer": "Australia",
+    "metadata_json": {},
+    "options": ["Europe", "Australia", "Antarctica", "South America"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "What is the capital city of Italy?",
+    "correct_answer": "Rome",
+    "metadata_json": {},
+    "options": ["Milan", "Venice", "Rome", "Florence"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "Which country is famous for the Pyramids of Giza?",
+    "correct_answer": "Egypt",
+    "metadata_json": {},
+    "options": ["Mexico", "Peru", "Egypt", "Sudan"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "Which ocean is the smallest by surface area?",
+    "correct_answer": "Arctic Ocean",
+    "metadata_json": {},
+    "options": [
+      "Indian Ocean",
+      "Arctic Ocean",
+      "Southern Ocean",
+      "Atlantic Ocean"
+    ]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "Which U.S. state is nicknamed the 'Sunshine State'?",
+    "correct_answer": "Florida",
+    "metadata_json": {},
+    "options": ["California", "Florida", "Texas", "Hawaii"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "Which mountain range runs along the western coast of North America?",
+    "correct_answer": "Rocky Mountains",
+    "metadata_json": {},
+    "options": ["Appalachians", "Andes", "Rocky Mountains", "Sierra Nevada"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Easy",
+    "question_text": "Which country is located on two continents, Europe and Asia?",
+    "correct_answer": "Turkey",
+    "metadata_json": {},
+    "options": ["Russia", "Egypt", "Turkey", "Kazakhstan"]
+  },
+
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "Which Italian city is known as the 'City of Canals'?",
+    "correct_answer": "Venice",
+    "metadata_json": {},
+    "options": ["Florence", "Venice", "Rome", "Naples"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "Which lake is the deepest in the world?",
+    "correct_answer": "Lake Baikal",
+    "metadata_json": {},
+    "options": [
+      "Lake Tanganyika",
+      "Lake Superior",
+      "Lake Baikal",
+      "Caspian Sea"
+    ]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "Which river is the second-longest in the world?",
+    "correct_answer": "Amazon",
+    "metadata_json": {},
+    "options": ["Yangtze", "Mississippi", "Amazon", "Yenisei"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "Which country has the most UNESCO World Heritage Sites?",
+    "correct_answer": "Italy",
+    "metadata_json": {},
+    "options": ["China", "Italy", "Spain", "Germany"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "Which landlocked country is in South America?",
+    "correct_answer": "Bolivia",
+    "metadata_json": {},
+    "options": ["Paraguay", "Bolivia", "Uruguay", "Chile"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "What is the capital of New Zealand?",
+    "correct_answer": "Wellington",
+    "metadata_json": {},
+    "options": ["Auckland", "Christchurch", "Wellington", "Dunedin"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "Which strait separates Europe and Asia at Istanbul?",
+    "correct_answer": "Bosphorus Strait",
+    "metadata_json": {},
+    "options": [
+      "Dardanelles Strait",
+      "Bosphorus Strait",
+      "Suez Canal",
+      "English Channel"
+    ]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "Which of South Africa’s capitals is the administrative capital?",
+    "correct_answer": "Pretoria",
+    "metadata_json": {},
+    "options": ["Cape Town", "Bloemfontein", "Pretoria", "Johannesburg"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "What is the highest mountain in Africa?",
+    "correct_answer": "Mount Kilimanjaro",
+    "metadata_json": {},
+    "options": [
+      "Mount Kenya",
+      "Mount Kilimanjaro",
+      "Atlas Mountains",
+      "Rwenzori"
+    ]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "Where is the world’s largest coral reef system located?",
+    "correct_answer": "Australia (Great Barrier Reef)",
+    "metadata_json": {},
+    "options": ["Belize", "Australia", "Indonesia", "Philippines"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "The Danube Delta is primarily in which country?",
+    "correct_answer": "Romania",
+    "metadata_json": {},
+    "options": ["Bulgaria", "Ukraine", "Hungary", "Romania"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "Which U.S. state is home to the Grand Canyon?",
+    "correct_answer": "Arizona",
+    "metadata_json": {},
+    "options": ["California", "Nevada", "Arizona", "New Mexico"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "Which gulf lies to the southeast of Mexico?",
+    "correct_answer": "Gulf of Mexico",
+    "metadata_json": {},
+    "options": [
+      "Gulf of California",
+      "Gulf of Mexico",
+      "Gulf of Honduras",
+      "Bay of Campeche"
+    ]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "What is the capital of Indonesia?",
+    "correct_answer": "Jakarta",
+    "metadata_json": {},
+    "options": ["Surabaya", "Bandung", "Jakarta", "Yogyakarta"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "Spain is located on which peninsula?",
+    "correct_answer": "Iberian Peninsula",
+    "metadata_json": {},
+    "options": ["Scandinavian", "Italian", "Balkan", "Iberian Peninsula"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "Which U.S. capital sits at the highest elevation?",
+    "correct_answer": "Denver",
+    "metadata_json": {},
+    "options": ["Santa Fe", "Denver", "Boise", "Phoenix"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "Which African country is the smallest by land area?",
+    "correct_answer": "Seychelles",
+    "metadata_json": {},
+    "options": ["Gambia", "Seychelles", "Mauritius", "Djibouti"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "What is the capital city of Mongolia?",
+    "correct_answer": "Ulaanbaatar",
+    "metadata_json": {},
+    "options": ["Astana", "Ulaanbaatar", "Tashkent", "Baku"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "Which cold desert straddles Mongolia and China?",
+    "correct_answer": "Gobi Desert",
+    "metadata_json": {},
+    "options": ["Karakum", "Gobi Desert", "Great Basin", "Antarctic Desert"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "Which mountain range forms the traditional boundary between Europe and Asia?",
+    "correct_answer": "Ural Mountains",
+    "metadata_json": {},
+    "options": ["Caucasus", "Ural Mountains", "Alps", "Carpathians"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "What is the largest island in the Mediterranean Sea?",
+    "correct_answer": "Sicily",
+    "metadata_json": {},
+    "options": ["Corsica", "Sardinia", "Cyprus", "Sicily"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "What is the official language of Brazil?",
+    "correct_answer": "Portuguese",
+    "metadata_json": {},
+    "options": ["Spanish", "Portuguese", "French", "English"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "Which narrow channel connects the Red Sea to the Gulf of Aden?",
+    "correct_answer": "Bab el Mandeb",
+    "metadata_json": {},
+    "options": [
+      "Strait of Hormuz",
+      "Bab el Mandeb",
+      "Gulf of Suez",
+      "Strait of Malacca"
+    ]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "Which vast plateau is nicknamed the 'Roof of the World'?",
+    "correct_answer": "Tibetan Plateau",
+    "metadata_json": {},
+    "options": [
+      "Bolivian Altiplano",
+      "Ethiopian Plateau",
+      "Tibetan Plateau",
+      "Colorado Plateau"
+    ]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Medium",
+    "question_text": "What is the capital of the Philippines?",
+    "correct_answer": "Manila",
+    "metadata_json": {},
+    "options": ["Cebu", "Davao", "Quezon City", "Manila"]
+  },
+
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which country has the most time zones?",
+    "correct_answer": "France",
+    "metadata_json": {},
+    "options": ["Russia", "United States", "China", "France"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the name of the effect that causes moving air and water to deflect to the right in the Northern Hemisphere?",
+    "correct_answer": "Coriolis effect",
+    "metadata_json": {},
+    "options": [
+      "Bernoulli effect",
+      "Greenhouse effect",
+      "Coriolis effect",
+      "Venturi effect"
+    ]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which river has the largest drainage basin in the world?",
+    "correct_answer": "Amazon River",
+    "metadata_json": {},
+    "options": ["Nile River", "Congo River", "Amazon River", "Yangtze River"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the largest non-continental island in the world?",
+    "correct_answer": "Greenland",
+    "metadata_json": {},
+    "options": ["New Guinea", "Greenland", "Borneo", "Madagascar"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which desert is considered the driest place on Earth?",
+    "correct_answer": "Atacama Desert",
+    "metadata_json": {},
+    "options": [
+      "Sahara Desert",
+      "Gobi Desert",
+      "Atacama Desert",
+      "Antarctic Desert"
+    ]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which continent has the lowest average annual temperature?",
+    "correct_answer": "Antarctica",
+    "metadata_json": {},
+    "options": ["Asia", "North America", "Europe", "Antarctica"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which landlocked country is completely surrounded by another single country?",
+    "correct_answer": "Lesotho",
+    "metadata_json": {},
+    "options": ["San Marino", "Lesotho", "Andorra", "Switzerland"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which mountain range in India is among the oldest on Earth?",
+    "correct_answer": "Aravalli Range",
+    "metadata_json": {},
+    "options": ["Himalayas", "Vindhya Range", "Aravalli Range", "Western Ghats"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the longest continental mountain range above sea level?",
+    "correct_answer": "Andes",
+    "metadata_json": {},
+    "options": ["Rocky Mountains", "Andes", "Himalayas", "Great Dividing Range"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "What term describes Earth’s tilt on its axis relative to its orbital plane?",
+    "correct_answer": "Axial tilt",
+    "metadata_json": {},
+    "options": [
+      "Magnetic tilt",
+      "Axial tilt",
+      "Orbital inclination",
+      "Obliquity"
+    ]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which warm ocean current helps moderate the climate of northwestern Europe?",
+    "correct_answer": "Gulf Stream",
+    "metadata_json": {},
+    "options": [
+      "California Current",
+      "Gulf Stream",
+      "Kuroshio Current",
+      "Humboldt Current"
+    ]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which tectonic plate covers the largest area on Earth?",
+    "correct_answer": "Pacific Plate",
+    "metadata_json": {},
+    "options": [
+      "Eurasian Plate",
+      "African Plate",
+      "Pacific Plate",
+      "North American Plate"
+    ]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "What geologic phenomenon creates volcanic island chains such as Hawaii?",
+    "correct_answer": "Hotspot",
+    "metadata_json": {},
+    "options": ["Rift volcanoes", "Ring of Fire", "Hotspot", "Subduction zone"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the term for a narrow channel of water that connects two larger bodies of water?",
+    "correct_answer": "Strait",
+    "metadata_json": {},
+    "options": ["Lagoon", "Strait", "Sound", "Channel"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which gulf is the largest by volume?",
+    "correct_answer": "Gulf of Mexico",
+    "metadata_json": {},
+    "options": [
+      "Gulf of Guinea",
+      "Gulf of Mexico",
+      "Persian Gulf",
+      "Bay of Bengal"
+    ]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "At which city do the Blue Nile and White Nile rivers meet?",
+    "correct_answer": "Khartoum",
+    "metadata_json": {},
+    "options": ["Addis Ababa", "Khartoum", "Cairo", "Khartoum North"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which inland sea has lost over 90% of its surface area due to river diversion?",
+    "correct_answer": "Aral Sea",
+    "metadata_json": {},
+    "options": ["Dead Sea", "Aral Sea", "Caspian Sea", "Black Sea"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which country controls both the Bosporus and the Dardanelles straits?",
+    "correct_answer": "Turkey",
+    "metadata_json": {},
+    "options": ["Greece", "Turkey", "Bulgaria", "Georgia"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the world’s largest archipelago?",
+    "correct_answer": "Indonesia",
+    "metadata_json": {},
+    "options": ["Philippines", "Indonesia", "Japan", "Norway"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which country has the highest population density?",
+    "correct_answer": "Monaco",
+    "metadata_json": {},
+    "options": ["Singapore", "Monaco", "Vatican City", "Malta"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the world’s highest uninterrupted waterfall?",
+    "correct_answer": "Angel Falls",
+    "metadata_json": {},
+    "options": [
+      "Tugela Falls",
+      "Kaieteur Falls",
+      "Angel Falls",
+      "Yosemite Falls"
+    ]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which plateau is commonly called the 'Roof of the World'?",
+    "correct_answer": "Tibetan Plateau",
+    "metadata_json": {},
+    "options": [
+      "Colorado Plateau",
+      "Deccan Plateau",
+      "Tibetan Plateau",
+      "Altiplano"
+    ]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which river forms part of the border between Switzerland and Germany?",
+    "correct_answer": "Rhine River",
+    "metadata_json": {},
+    "options": ["Rhone River", "Rhine River", "Danube River", "Elbe River"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which Mediterranean island nation is the smallest by land area?",
+    "correct_answer": "Malta",
+    "metadata_json": {},
+    "options": ["Cyprus", "Malta", "Crete", "Sicily"]
+  },
+  {
+    "category": "Geography",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which undersea ridge marks the boundary between the Eurasian and North American tectonic plates?",
+    "correct_answer": "Mid-Atlantic Ridge",
+    "metadata_json": {},
+    "options": [
+      "East Pacific Rise",
+      "Indian Ridge",
+      "Mid-Atlantic Ridge",
+      "Juan de Fuca Ridge"
+    ]
+  },
+
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "How many players are there on the field for one soccer team during a match?",
+    "correct_answer": "11",
+    "metadata_json": {},
+    "options": ["7", "9", "11", "13"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "In which sport do teams compete for the Vince Lombardi Trophy?",
+    "correct_answer": "American Football",
+    "metadata_json": {},
+    "options": ["Baseball", "American Football", "Basketball", "Hockey"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "What is the name of the court surface used at the French Open tennis tournament?",
+    "correct_answer": "Clay",
+    "metadata_json": {},
+    "options": ["Grass", "Hard", "Clay", "Carpet"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "In basketball, how many points is a free throw worth?",
+    "correct_answer": "1",
+    "metadata_json": {},
+    "options": ["1", "2", "3", "4"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "Which sport is known as 'the beautiful game'?",
+    "correct_answer": "Soccer",
+    "metadata_json": {},
+    "options": ["Basketball", "Baseball", "Soccer", "Rugby"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "What piece of equipment is used in ice hockey to score goals?",
+    "correct_answer": "Puck",
+    "metadata_json": {},
+    "options": ["Ball", "Puck", "Disc", "Shuttlecock"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "In baseball, how many strikes does a batter get before being out?",
+    "correct_answer": "3",
+    "metadata_json": {},
+    "options": ["2", "3", "4", "5"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "Which sport uses a pommel horse?",
+    "correct_answer": "Gymnastics",
+    "metadata_json": {},
+    "options": ["Wrestling", "Diving", "Gymnastics", "Equestrian"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "What unit measures the speed of a bowler in cricket?",
+    "correct_answer": "Miles per hour",
+    "metadata_json": {},
+    "options": ["Kilograms", "Miles per hour", "Meters", "Runs"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "In which sport would you perform a slam dunk?",
+    "correct_answer": "Basketball",
+    "metadata_json": {},
+    "options": ["Volleyball", "Basketball", "Baseball", "Tennis"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "What is the shape of a rugby ball?",
+    "correct_answer": "Oval",
+    "metadata_json": {},
+    "options": ["Round", "Oval", "Square", "Triangular"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "Which country hosted the 2016 Summer Olympics?",
+    "correct_answer": "Brazil",
+    "metadata_json": {},
+    "options": ["China", "Brazil", "UK", "Russia"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "What color flag is waved in motor racing to signal the end of the race?",
+    "correct_answer": "Checkered",
+    "metadata_json": {},
+    "options": ["Red", "Yellow", "Checkered", "Green"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "How many bases are on a baseball diamond?",
+    "correct_answer": "4",
+    "metadata_json": {},
+    "options": ["3", "4", "5", "6"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "Which martial art is known as the 'gentle way'?",
+    "correct_answer": "Judo",
+    "metadata_json": {},
+    "options": ["Karate", "Judo", "Taekwondo", "Kung Fu"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "In tennis, how many players are on a doubles team?",
+    "correct_answer": "2",
+    "metadata_json": {},
+    "options": ["1", "2", "3", "4"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "What is the maximum number of players on a volleyball team on court?",
+    "correct_answer": "6",
+    "metadata_json": {},
+    "options": ["5", "6", "7", "8"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "Which sport uses the term 'love' for a zero score?",
+    "correct_answer": "Tennis",
+    "metadata_json": {},
+    "options": ["Badminton", "Squash", "Tennis", "Table Tennis"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "What is the length of an Olympic swimming pool in meters?",
+    "correct_answer": "50",
+    "metadata_json": {},
+    "options": ["25", "50", "75", "100"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "Which sport is played on a pitch with goalposts shaped like an H?",
+    "correct_answer": "Rugby",
+    "metadata_json": {},
+    "options": ["American Football", "Rugby", "Soccer", "Hockey"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "What is the first event in a decathlon?",
+    "correct_answer": "100 meters",
+    "metadata_json": {},
+    "options": ["Long jump", "100 meters", "Shot put", "400 meters"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "Which sport involves tucks, pikes, and turns performed in water?",
+    "correct_answer": "Diving",
+    "metadata_json": {},
+    "options": ["Swimming", "Diving", "Water Polo", "Synchro Swimming"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "In which sport is the term 'alley-oop' used?",
+    "correct_answer": "Basketball",
+    "metadata_json": {},
+    "options": ["Volleyball", "Basketball", "Tennis", "Soccer"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "What is the official distance of a marathon in kilometers?",
+    "correct_answer": "42.195",
+    "metadata_json": {},
+    "options": ["40.0", "42.195", "45.0", "50.0"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Easy",
+    "question_text": "Which sport uses a tee as part of its equipment?",
+    "correct_answer": "Golf",
+    "metadata_json": {},
+    "options": ["Baseball", "Golf", "Hockey", "Lacrosse"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "In cricket, what term describes a batsman being dismissed without scoring?",
+    "correct_answer": "Duck",
+    "metadata_json": {},
+    "options": ["Golden duck", "Duck", "Goose", "Ostrich"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "Which NBA player is known as 'King James'?",
+    "correct_answer": "LeBron James",
+    "metadata_json": {},
+    "options": ["LeBron James", "Michael Jordan", "Kobe Bryant", "Kevin Durant"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "What is the maximum break in snooker?",
+    "correct_answer": "147",
+    "metadata_json": {},
+    "options": ["155", "147", "144", "150"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "Which country won the first FIFA World Cup in 1930?",
+    "correct_answer": "Uruguay",
+    "metadata_json": {},
+    "options": ["Brazil", "Argentina", "Uruguay", "Italy"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "In which year did Usain Bolt set the current men\u2019s 100m world record?",
+    "correct_answer": "2009",
+    "metadata_json": {},
+    "options": ["2008", "2009", "2012", "2016"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "Which tennis Grand Slam is played on grass?",
+    "correct_answer": "Wimbledon",
+    "metadata_json": {},
+    "options": ["Australian Open", "French Open", "Wimbledon", "US Open"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "Who holds the record for most Formula 1 World Championships?",
+    "correct_answer": "Michael Schumacher",
+    "metadata_json": {},
+    "options": [
+      "Michael Schumacher",
+      "Lewis Hamilton",
+      "Sebastian Vettel",
+      "Ayrton Senna"
+    ]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "In soccer, what is the term for a player scoring three goals in one match?",
+    "correct_answer": "Hat-trick",
+    "metadata_json": {},
+    "options": ["Triple", "Hat-trick", "Brace", "Triple play"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "Which country hosted the 2014 Winter Olympics?",
+    "correct_answer": "Russia",
+    "metadata_json": {},
+    "options": ["Canada", "Russia", "Norway", "Japan"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "Which NFL quarterback has the most career passing yards?",
+    "correct_answer": "Drew Brees",
+    "metadata_json": {},
+    "options": ["Tom Brady", "Drew Brees", "Peyton Manning", "Brett Favre"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "In golf, what is the term for scoring three under par on a hole?",
+    "correct_answer": "Albatross",
+    "metadata_json": {},
+    "options": ["Birdie", "Eagle", "Albatross", "Bogey"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "Which soccer tournament is held every four years for European nations?",
+    "correct_answer": "UEFA European Championship",
+    "metadata_json": {},
+    "options": [
+      "FIFA World Cup",
+      "UEFA European Championship",
+      "Copa America",
+      "CONCACAF Gold Cup"
+    ]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "What material is a fencing sword made of?",
+    "correct_answer": "Steel",
+    "metadata_json": {},
+    "options": ["Aluminum", "Titanium", "Plastic", "Steel"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "Which boxer was known as 'The Greatest' and 'The People's Champion'?",
+    "correct_answer": "Muhammad Ali",
+    "metadata_json": {},
+    "options": ["Mike Tyson", "Muhammad Ali", "Joe Frazier", "George Foreman"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "What is the diameter of a basketball hoop in inches?",
+    "correct_answer": "18",
+    "metadata_json": {},
+    "options": ["16", "18", "20", "22"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "Which NHL team has won the most Stanley Cups?",
+    "correct_answer": "Montreal Canadiens",
+    "metadata_json": {},
+    "options": [
+      "Toronto Maple Leafs",
+      "Detroit Red Wings",
+      "Montreal Canadiens",
+      "Chicago Blackhawks"
+    ]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "In baseball, what statistic measures a batter\u2019s ability to hit safely?",
+    "correct_answer": "Batting average",
+    "metadata_json": {},
+    "options": [
+      "Slugging percentage",
+      "On-base percentage",
+      "Batting average",
+      "Fielding percentage"
+    ]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "Which country has won the most Rugby World Cup titles?",
+    "correct_answer": "New Zealand",
+    "metadata_json": {},
+    "options": ["South Africa", "Australia", "New Zealand", "England"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "What is the maximum number of clubs a golfer can carry in their bag?",
+    "correct_answer": "14",
+    "metadata_json": {},
+    "options": ["12", "14", "16", "18"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "Which tennis player has the most Grand Slam singles titles?",
+    "correct_answer": "Margaret Court",
+    "metadata_json": {},
+    "options": [
+      "Serena Williams",
+      "Margaret Court",
+      "Roger Federer",
+      "Steffi Graf"
+    ]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "What year was the inaugural modern Olympic Games held?",
+    "correct_answer": "1896",
+    "metadata_json": {},
+    "options": ["1892", "1896", "1900", "1904"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "In cricket, what is the term for five wickets taken by a bowler in a single innings?",
+    "correct_answer": "Five-for",
+    "metadata_json": {},
+    "options": ["Hat-trick", "Century", "Five-for", "Ten-for"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "Which sport uses the terms 'sweet spot' and 'dribble'?",
+    "correct_answer": "Basketball",
+    "metadata_json": {},
+    "options": ["Tennis", "Hockey", "Baseball", "Basketball"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "What is the fastest recorded speed of a tennis serve in mph?",
+    "correct_answer": "163.7",
+    "metadata_json": {},
+    "options": ["155.3", "163.7", "170.4", "150.2"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Medium",
+    "question_text": "Which athlete has won the most Olympic gold medals in history?",
+    "correct_answer": "Michael Phelps",
+    "metadata_json": {},
+    "options": ["Usain Bolt", "Larisa Latynina", "Mark Spitz", "Michael Phelps"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who holds the record for most home runs in a single MLB season?",
+    "correct_answer": "Barry Bonds",
+    "metadata_json": {},
+    "options": ["Mark McGwire", "Sammy Sosa", "Barry Bonds", "Babe Ruth"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the only country to have played in every FIFA World Cup tournament?",
+    "correct_answer": "Brazil",
+    "metadata_json": {},
+    "options": ["Germany", "Argentina", "Brazil", "Italy"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who has the most career points in NBA history?",
+    "correct_answer": "Kareem Abdul-Jabbar",
+    "metadata_json": {},
+    "options": [
+      "Michael Jordan",
+      "LeBron James",
+      "Kobe Bryant",
+      "Kareem Abdul-Jabbar"
+    ]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which athlete ran the first sub-4-minute mile?",
+    "correct_answer": "Roger Bannister",
+    "metadata_json": {},
+    "options": [
+      "Roger Bannister",
+      "Sebastian Coe",
+      "Steve Prefontaine",
+      "Hicham El Guerrouj"
+    ]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which golf tournament awards the Claret Jug to its champion?",
+    "correct_answer": "The Open Championship",
+    "metadata_json": {},
+    "options": [
+      "Masters",
+      "US Open",
+      "The Open Championship",
+      "PGA Championship"
+    ]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the length of an NFL football field including end zones in yards?",
+    "correct_answer": "120",
+    "metadata_json": {},
+    "options": ["100", "110", "120", "130"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which team won the first Super Bowl in 1967?",
+    "correct_answer": "Green Bay Packers",
+    "metadata_json": {},
+    "options": [
+      "Kansas City Chiefs",
+      "Green Bay Packers",
+      "Dallas Cowboys",
+      "Baltimore Colts"
+    ]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who holds the record for the most Grand Slam men\u2019s singles titles?",
+    "correct_answer": "Roger Federer",
+    "metadata_json": {},
+    "options": [
+      "Rafael Nadal",
+      "Novak Djokovic",
+      "Roger Federer",
+      "Pete Sampras"
+    ]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which swimmer was the first to win eight gold medals at a single Olympics?",
+    "correct_answer": "Michael Phelps",
+    "metadata_json": {},
+    "options": ["Ian Thorpe", "Mark Spitz", "Michael Phelps", "Ryan Lochte"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the only major tennis tournament played on clay?",
+    "correct_answer": "French Open",
+    "metadata_json": {},
+    "options": ["Australian Open", "French Open", "Wimbledon", "US Open"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who holds the world record for the women's 100m sprint?",
+    "correct_answer": "Florence Griffith-Joyner",
+    "metadata_json": {},
+    "options": [
+      "Elaine Thompson-Herah",
+      "Carmelita Jeter",
+      "Shelly-Ann Fraser-Pryce",
+      "Florence Griffith-Joyner"
+    ]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which Formula 1 team has won the most Constructors' Championships?",
+    "correct_answer": "Ferrari",
+    "metadata_json": {},
+    "options": ["Mercedes", "Red Bull Racing", "Ferrari", "McLaren"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the heaviest weight class in Olympic boxing?",
+    "correct_answer": "Super heavyweight",
+    "metadata_json": {},
+    "options": [
+      "Heavyweight",
+      "Cruiserweight",
+      "Super heavyweight",
+      "Light heavyweight"
+    ]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who has won the most career majors in golf?",
+    "correct_answer": "Jack Nicklaus",
+    "metadata_json": {},
+    "options": ["Tiger Woods", "Jack Nicklaus", "Arnold Palmer", "Gary Player"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which NFL coach has the most career wins?",
+    "correct_answer": "Don Shula",
+    "metadata_json": {},
+    "options": ["Bill Belichick", "George Halas", "Don Shula", "Tom Landry"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who was the first gymnast to score a perfect 10 in the Olympics?",
+    "correct_answer": "Nadia Com\u0103neci",
+    "metadata_json": {},
+    "options": [
+      "Nadia Com\u0103neci",
+      "Mary Lou Retton",
+      "Simone Biles",
+      "Larisa Latynina"
+    ]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which cricket bowler has the most Test wickets in history?",
+    "correct_answer": "Muttiah Muralitharan",
+    "metadata_json": {},
+    "options": [
+      "Shane Warne",
+      "James Anderson",
+      "Muttiah Muralitharan",
+      "Anil Kumble"
+    ]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "What distance is contested in an Olympic steeplechase event?",
+    "correct_answer": "3000 meters",
+    "metadata_json": {},
+    "options": ["1500 meters", "3000 meters", "5000 meters", "10,000 meters"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which country has won the most field hockey Olympic gold medals?",
+    "correct_answer": "India",
+    "metadata_json": {},
+    "options": ["Netherlands", "Australia", "India", "Germany"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the term for a score of one under par on a golf hole?",
+    "correct_answer": "Birdie",
+    "metadata_json": {},
+    "options": ["Par", "Birdie", "Eagle", "Bogey"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which team holds the record for the longest winning streak in NBA history?",
+    "correct_answer": "Los Angeles Lakers",
+    "metadata_json": {},
+    "options": [
+      "Boston Celtics",
+      "Chicago Bulls",
+      "Miami Heat",
+      "Los Angeles Lakers"
+    ]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which city hosted the first modern Olympic Games?",
+    "correct_answer": "Athens",
+    "metadata_json": {},
+    "options": ["Athens", "Paris", "Rome", "London"]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who holds the record for most career Formula 1 race wins?",
+    "correct_answer": "Lewis Hamilton",
+    "metadata_json": {},
+    "options": [
+      "Michael Schumacher",
+      "Lewis Hamilton",
+      "Sebastian Vettel",
+      "Ayrton Senna"
+    ]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which NFL player holds the record for most career rushing yards?",
+    "correct_answer": "Emmitt Smith",
+    "metadata_json": {},
+    "options": [
+      "Walter Payton",
+      "Emmitt Smith",
+      "Barry Sanders",
+      "Adrian Peterson"
+    ]
+  },
+  {
+    "category": "Sports",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which country won the first Women's FIFA World Cup in 1991?",
+    "correct_answer": "United States",
+    "metadata_json": {},
+    "options": ["Norway", "Germany", "United States", "China"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Which 1997 film stars Leonardo DiCaprio and Kate Winslet as Jack and Rose?",
+    "correct_answer": "Titanic",
+    "metadata_json": {},
+    "options": ["Titanic", "Avatar", "Romeo + Juliet", "Titan A.E."]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "What is the highest-grossing Bollywood film of all time?",
+    "correct_answer": "Dangal",
+    "metadata_json": {},
+    "options": [
+      "Baahubali 2: The Conclusion",
+      "Dangal",
+      "PK",
+      "Tiger Zinda Hai"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Which movie features the line 'May the Force be with you'?",
+    "correct_answer": "Star Wars",
+    "metadata_json": {},
+    "options": ["Star Trek", "Star Wars", "Stargate", "Guardians of the Galaxy"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Who directed the Hollywood movie 'Jurassic Park'?",
+    "correct_answer": "Steven Spielberg",
+    "metadata_json": {},
+    "options": [
+      "James Cameron",
+      "Steven Spielberg",
+      "Ridley Scott",
+      "George Lucas"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Which 1994 film follows the life of Forrest Gump?",
+    "correct_answer": "Forrest Gump",
+    "metadata_json": {},
+    "options": [
+      "The Shawshank Redemption",
+      "Pulp Fiction",
+      "Forrest Gump",
+      "The Green Mile"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "In which movie does Tom Hanks play a man stranded on an island?",
+    "correct_answer": "Cast Away",
+    "metadata_json": {},
+    "options": [
+      "The Terminal",
+      "Cast Away",
+      "Saving Private Ryan",
+      "Sleepless in Seattle"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Which Bollywood movie features the title song 'Chaiyya Chaiyya'?",
+    "correct_answer": "Dil Se..",
+    "metadata_json": {},
+    "options": [
+      "Dil Se..",
+      "Lagaan",
+      "Kabhi Khushi Kabhie Gham",
+      "Dilwale Dulhania Le Jayenge"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Which film series features a young wizard named Harry Potter?",
+    "correct_answer": "Harry Potter",
+    "metadata_json": {},
+    "options": [
+      "The Chronicles of Narnia",
+      "Harry Potter",
+      "Percy Jackson",
+      "The Hunger Games"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Who directed 'Pulp Fiction'?",
+    "correct_answer": "Quentin Tarantino",
+    "metadata_json": {},
+    "options": [
+      "Christopher Nolan",
+      "Quentin Tarantino",
+      "David Fincher",
+      "Martin Scorsese"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Which animated movie features toys that come to life?",
+    "correct_answer": "Toy Story",
+    "metadata_json": {},
+    "options": ["Wall-E", "Toy Story", "Finding Nemo", "Cars"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Which Bollywood actor played the lead role in 'Dangal'?",
+    "correct_answer": "Aamir Khan",
+    "metadata_json": {},
+    "options": ["Salman Khan", "Hrithik Roshan", "Aamir Khan", "Shah Rukh Khan"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Which movie features a shark terrorizing a beach community?",
+    "correct_answer": "Jaws",
+    "metadata_json": {},
+    "options": ["The Meg", "Jaws", "Deep Blue Sea", "Sharknado"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Who directed 'Inception'?",
+    "correct_answer": "Christopher Nolan",
+    "metadata_json": {},
+    "options": [
+      "Christopher Nolan",
+      "Steven Soderbergh",
+      "David Lynch",
+      "Tim Burton"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Which movie features a clown named Pennywise?",
+    "correct_answer": "It",
+    "metadata_json": {},
+    "options": ["It", "Poltergeist", "Get Out", "The Conjuring"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Which Bollywood film is a biopic of the boxer Mary Kom?",
+    "correct_answer": "Mary Kom",
+    "metadata_json": {},
+    "options": ["Dangal", "Mary Kom", "Paan Singh Tomar", "Bhaag Milkha Bhaag"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Which movie trilogy features the characters Frodo and Gandalf?",
+    "correct_answer": "The Lord of the Rings",
+    "metadata_json": {},
+    "options": [
+      "The Hobbit",
+      "The Chronicles of Narnia",
+      "The Lord of the Rings",
+      "Harry Potter"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Who directed 'The Dark Knight'?",
+    "correct_answer": "Christopher Nolan",
+    "metadata_json": {},
+    "options": [
+      "Christopher Nolan",
+      "Tim Burton",
+      "Zack Snyder",
+      "Patty Jenkins"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Which movie is famous for the line 'I'll be back'?",
+    "correct_answer": "The Terminator",
+    "metadata_json": {},
+    "options": [
+      "Terminator 2: Judgment Day",
+      "The Terminator",
+      "RoboCop",
+      "Total Recall"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Which Bollywood film stars Shah Rukh Khan as Rahul and Anjali?",
+    "correct_answer": "Kuch Kuch Hota Hai",
+    "metadata_json": {},
+    "options": [
+      "Kal Ho Naa Ho",
+      "Kuch Kuch Hota Hai",
+      "Dilwale Dulhania Le Jayenge",
+      "Kabhi Khushi Kabhie Gham"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Which classic film features the quote 'Here's looking at you, kid'?",
+    "correct_answer": "Casablanca",
+    "metadata_json": {},
+    "options": [
+      "Citizen Kane",
+      "Casablanca",
+      "Gone with the Wind",
+      "The Maltese Falcon"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Who directed 'Avatar'?",
+    "correct_answer": "James Cameron",
+    "metadata_json": {},
+    "options": ["James Cameron", "Peter Jackson", "Ridley Scott", "J.J. Abrams"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Which movie follows the lives of inmates in Shawshank State Prison?",
+    "correct_answer": "The Shawshank Redemption",
+    "metadata_json": {},
+    "options": [
+      "The Green Mile",
+      "The Shawshank Redemption",
+      "Brubaker",
+      "Cool Hand Luke"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Which Bollywood director is known for films like 'Lagaan' and 'Swades'?",
+    "correct_answer": "Ashutosh Gowariker",
+    "metadata_json": {},
+    "options": [
+      "Karan Johar",
+      "Ashutosh Gowariker",
+      "Rakesh Roshan",
+      "Aditya Chopra"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Which AI computer goes rogue in '2001: A Space Odyssey'?",
+    "correct_answer": "HAL 9000",
+    "metadata_json": {},
+    "options": ["TARS", "GERTY", "HAL 9000", "Skynet"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Easy",
+    "question_text": "Which Bollywood film features a love story set during the 1947 Partition?",
+    "correct_answer": "Gadar: Ek Prem Katha",
+    "metadata_json": {},
+    "options": ["Gadar: Ek Prem Katha", "Mausam", "Partition", "Earth"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which film won the Academy Award for Best Picture in 2001?",
+    "correct_answer": "A Beautiful Mind",
+    "metadata_json": {},
+    "options": [
+      "Gladiator",
+      "A Beautiful Mind",
+      "The Lord of the Rings: The Fellowship of the Ring",
+      "Moulin Rouge!"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Who composed the score for the 'Star Wars' films?",
+    "correct_answer": "John Williams",
+    "metadata_json": {},
+    "options": [
+      "Hans Zimmer",
+      "Alan Silvestri",
+      "John Williams",
+      "James Horner"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which Bollywood film was the first Indian movie to be nominated for an Academy Award?",
+    "correct_answer": "Mother India",
+    "metadata_json": {},
+    "options": ["Salaam Bombay!", "Mother India", "Lagaan", "Devdas"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which director is known for the film 'The Grand Budapest Hotel'?",
+    "correct_answer": "Wes Anderson",
+    "metadata_json": {},
+    "options": ["Tim Burton", "Wes Anderson", "Guy Ritchie", "David Fincher"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which 1954 film introduced the song 'Que Sera, Sera'?",
+    "correct_answer": "The Man Who Knew Too Much",
+    "metadata_json": {},
+    "options": [
+      "The Man Who Knew Too Much",
+      "Casablanca",
+      "Roman Holiday",
+      "An Affair to Remember"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which movie features the character 'Tyler Durden'?",
+    "correct_answer": "Fight Club",
+    "metadata_json": {},
+    "options": ["Se7en", "Fight Club", "American Psycho", "The Machinist"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which Bollywood actor won the National Film Award for Best Actor for 'Paan Singh Tomar'?",
+    "correct_answer": "Irrfan Khan",
+    "metadata_json": {},
+    "options": [
+      "Nawazuddin Siddiqui",
+      "Aamir Khan",
+      "Irrfan Khan",
+      "Shah Rukh Khan"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Who directed the film 'Schindler's List'?",
+    "correct_answer": "Steven Spielberg",
+    "metadata_json": {},
+    "options": [
+      "Martin Scorsese",
+      "Steven Spielberg",
+      "Quentin Tarantino",
+      "Ridley Scott"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which film popularized the use of nonlinear narrative, directed by Quentin Tarantino?",
+    "correct_answer": "Pulp Fiction",
+    "metadata_json": {},
+    "options": ["Reservoir Dogs", "Pulp Fiction", "Kill Bill", "Jackie Brown"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which Bollywood film starred Amitabh Bachchan and was directed by Ramesh Sippy?",
+    "correct_answer": "Sholay",
+    "metadata_json": {},
+    "options": ["Don", "Sholay", "Amar Akbar Anthony", "Zanjeer"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "What is the fictional language spoken by the Na'vi in 'Avatar'?",
+    "correct_answer": "Na'vi",
+    "metadata_json": {},
+    "options": ["Klingon", "Na'vi", "Parseltongue", "Dothraki"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which Alfred Hitchcock film features the character Norman Bates?",
+    "correct_answer": "Psycho",
+    "metadata_json": {},
+    "options": ["Vertigo", "Psycho", "Rear Window", "North by Northwest"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which film studio produced the James Bond series?",
+    "correct_answer": "Eon Productions",
+    "metadata_json": {},
+    "options": ["MGM", "Eon Productions", "United Artists", "Columbia Pictures"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which Bollywood film's soundtrack was composed by A.R. Rahman and won two Academy Awards?",
+    "correct_answer": "Slumdog Millionaire",
+    "metadata_json": {},
+    "options": ["Lagaan", "Dil Se..", "Slumdog Millionaire", "Rockstar"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which actor portrayed the Joker in 'The Dark Knight'?",
+    "correct_answer": "Heath Ledger",
+    "metadata_json": {},
+    "options": [
+      "Joaquin Phoenix",
+      "Heath Ledger",
+      "Jack Nicholson",
+      "Jared Leto"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "What is the name of the hobbit played by Elijah Wood?",
+    "correct_answer": "Frodo Baggins",
+    "metadata_json": {},
+    "options": [
+      "Bilbo Baggins",
+      "Samwise Gamgee",
+      "Frodo Baggins",
+      "Pippin Took"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which Bollywood director made 'Dilwale Dulhania Le Jayenge'?",
+    "correct_answer": "Aditya Chopra",
+    "metadata_json": {},
+    "options": [
+      "Karan Johar",
+      "Yash Chopra",
+      "Aditya Chopra",
+      "Sanjay Leela Bhansali"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which movie's tagline is 'In space no one can hear you scream'?",
+    "correct_answer": "Alien",
+    "metadata_json": {},
+    "options": ["2001: A Space Odyssey", "Alien", "Gravity", "Interstellar"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which 1999 sci-fi film features a dystopian future and 'the One'?",
+    "correct_answer": "The Matrix",
+    "metadata_json": {},
+    "options": ["Blade Runner", "The Matrix", "Equilibrium", "Minority Report"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which Bollywood film directed by Sanjay Leela Bhansali is set in the Mughal era?",
+    "correct_answer": "Devdas",
+    "metadata_json": {},
+    "options": ["Jodhaa Akbar", "Mughal-e-Azam", "Devdas", "Bajirao Mastani"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Who directed the film 'Parasite', which won the Best Picture Oscar in 2020?",
+    "correct_answer": "Bong Joon-ho",
+    "metadata_json": {},
+    "options": [
+      "Park Chan-wook",
+      "Bong Joon-ho",
+      "Lee Chang-dong",
+      "Kim Ki-duk"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which film features the quote 'I'm gonna make him an offer he can't refuse'?",
+    "correct_answer": "The Godfather",
+    "metadata_json": {},
+    "options": ["Goodfellas", "Scarface", "The Godfather", "Casino"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which Bollywood actress starred opposite Shah Rukh Khan in 'My Name Is Khan'?",
+    "correct_answer": "Kajol",
+    "metadata_json": {},
+    "options": ["Kajol", "Rani Mukerji", "Priyanka Chopra", "Deepika Padukone"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which French director made the film 'Am\u00e9lie'?",
+    "correct_answer": "Jean-Pierre Jeunet",
+    "metadata_json": {},
+    "options": [
+      "Luc Besson",
+      "Jean-Luc Godard",
+      "Jean-Pierre Jeunet",
+      "Fran\u00e7ois Truffaut"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Medium",
+    "question_text": "Which 1991 film features a cyborg sent back in time to protect John Connor?",
+    "correct_answer": "Terminator 2: Judgment Day",
+    "metadata_json": {},
+    "options": [
+      "Terminator",
+      "Terminator 2: Judgment Day",
+      "RoboCop",
+      "Total Recall"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which actor performed his own stunts in the rotating hallway fight sequence in 'Inception'?",
+    "correct_answer": "Joseph Gordon-Levitt",
+    "metadata_json": {},
+    "options": [
+      "Leonardo DiCaprio",
+      "Joseph Gordon-Levitt",
+      "Tom Hardy",
+      "Ellen Page"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which 1931 Bollywood film was India's first talkie?",
+    "correct_answer": "Alam Ara",
+    "metadata_json": {},
+    "options": ["Alam Ara", "Shree 420", "Devdas", "Achhut Kanya"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which cinematographer won an Oscar for his work on 'Barry Lyndon' using only candlelight?",
+    "correct_answer": "John Alcott",
+    "metadata_json": {},
+    "options": [
+      "Vilmos Zsigmond",
+      "John Alcott",
+      "Roger Deakins",
+      "Robert Richardson"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which French New Wave director made the film 'Breathless'?",
+    "correct_answer": "Jean-Luc Godard",
+    "metadata_json": {},
+    "options": [
+      "Fran\u00e7ois Truffaut",
+      "Jean-Luc Godard",
+      "\u00c9ric Rohmer",
+      "Claude Chabrol"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which 1976 film is credited with popularizing the Steadicam?",
+    "correct_answer": "Rocky",
+    "metadata_json": {},
+    "options": ["Bound for Glory", "Rocky", "Star Wars", "Marathon Man"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which Satyajit Ray film is based on Rabindranath Tagore's novel 'Charulata'?",
+    "correct_answer": "Charulata",
+    "metadata_json": {},
+    "options": ["Pather Panchali", "Aparajito", "Charulata", "The Music Room"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which Alfred Hitchcock film helped popularize the term 'MacGuffin'?",
+    "correct_answer": "The 39 Steps",
+    "metadata_json": {},
+    "options": ["Vertigo", "North by Northwest", "The 39 Steps", "Rear Window"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which 1951 sci-fi film features a score using the theremin for eerie sounds?",
+    "correct_answer": "The Day the Earth Stood Still",
+    "metadata_json": {},
+    "options": [
+      "Invaders from Mars",
+      "The Day the Earth Stood Still",
+      "Forbidden Planet",
+      "It Came from Outer Space"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which 1988 film directed by Mira Nair won the Palme d'Or at Cannes?",
+    "correct_answer": "Salaam Bombay!",
+    "metadata_json": {},
+    "options": [
+      "Salaam Bombay!",
+      "Mississippi Masala",
+      "Monsoon Wedding",
+      "The Namesake"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which 1927 German Expressionist film directed by F.W. Murnau is renowned for its visuals?",
+    "correct_answer": "Sunrise: A Song of Two Humans",
+    "metadata_json": {},
+    "options": [
+      "Nosferatu",
+      "Metropolis",
+      "Sunrise: A Song of Two Humans",
+      "The Cabinet of Dr. Caligari"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which 1959 film was the first to use 70mm Super Panavision for epic landscapes?",
+    "correct_answer": "Ben-Hur",
+    "metadata_json": {},
+    "options": ["Lawrence of Arabia", "Ben-Hur", "Cleopatra", "Spartacus"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which director shot the famous Copacabana tracking shot in 'Goodfellas'?",
+    "correct_answer": "Martin Scorsese",
+    "metadata_json": {},
+    "options": [
+      "Brian De Palma",
+      "Martin Scorsese",
+      "Francis Ford Coppola",
+      "Oliver Stone"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which 1997 James Cameron film became the first to gross over $1 billion worldwide?",
+    "correct_answer": "Titanic",
+    "metadata_json": {},
+    "options": [
+      "Avatar",
+      "Titanic",
+      "Jurassic Park",
+      "The Lost World: Jurassic Park"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which film was the first to cross $2 billion at the global box office?",
+    "correct_answer": "Avatar",
+    "metadata_json": {},
+    "options": [
+      "Titanic",
+      "Avatar",
+      "Star Wars: The Force Awakens",
+      "Avengers: Endgame"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which Bollywood film features the villain Gabbar Singh, played by Amjad Khan?",
+    "correct_answer": "Sholay",
+    "metadata_json": {},
+    "options": ["Don", "Deewar", "Sholay", "Zanjeer"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which film's opening tracking shot takes the audience from a beach through a jungle into a Panzer III tank?",
+    "correct_answer": "The Thin Red Line",
+    "metadata_json": {},
+    "options": [
+      "Apocalypse Now",
+      "The Thin Red Line",
+      "Saving Private Ryan",
+      "Fury"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which early Soviet filmmaker directed the 1925 epic 'Battleship Potemkin'?",
+    "correct_answer": "Sergei Eisenstein",
+    "metadata_json": {},
+    "options": [
+      "Vsevolod Pudovkin",
+      "Dziga Vertov",
+      "Sergei Eisenstein",
+      "Lev Kuleshov"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which film originally created the bullet time effect?",
+    "correct_answer": "The Matrix",
+    "metadata_json": {},
+    "options": [
+      "The Matrix",
+      "Terminator 2: Judgment Day",
+      "The Lord of the Rings: The Fellowship of the Ring",
+      "Inception"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which Hindi film directed by Mani Ratnam in 1992 deals with insurgency in Kashmir?",
+    "correct_answer": "Roja",
+    "metadata_json": {},
+    "options": ["Bombay", "Dil Se..", "Roja", "Lagaan"]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which classic film features the quote 'Rosebud' as a mysterious term?",
+    "correct_answer": "Citizen Kane",
+    "metadata_json": {},
+    "options": [
+      "Citizen Kane",
+      "The Third Man",
+      "The Maltese Falcon",
+      "Chinatown"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which non-English speaking actress first won the Academy Award for Best Actress?",
+    "correct_answer": "Sophia Loren",
+    "metadata_json": {},
+    "options": [
+      "Pen\u00e9lope Cruz",
+      "Anna Magnani",
+      "Sophia Loren",
+      "Juliette Binoche"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which director's trademark is the 'Vertigo effect', also called the dolly zoom?",
+    "correct_answer": "Alfred Hitchcock",
+    "metadata_json": {},
+    "options": [
+      "Steven Spielberg",
+      "Alfred Hitchcock",
+      "Brian De Palma",
+      "David Lynch"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which Ingmar Bergman film features a knight playing chess with Death?",
+    "correct_answer": "The Seventh Seal",
+    "metadata_json": {},
+    "options": [
+      "Persona",
+      "Wild Strawberries",
+      "The Seventh Seal",
+      "Cries and Whispers"
+    ]
+  },
+  {
+    "category": "Movies",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which 1943 Bollywood film directed by Gyan Mukherjee is considered one of the first blockbusters?",
+    "correct_answer": "Kismet",
+    "metadata_json": {},
+    "options": ["Kismet", "Mother India", "Awara", "Naya Daur"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "What color is a banana?",
+    "correct_answer": "Yellow",
+    "metadata_json": {},
+    "options": ["Yellow", "Red", "Blue", "Green"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "How many days are there in a leap year?",
+    "correct_answer": "366",
+    "metadata_json": {},
+    "options": ["365", "366", "364", "367"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "Which animal is known as the 'King of the Jungle'?",
+    "correct_answer": "Lion",
+    "metadata_json": {},
+    "options": ["Tiger", "Elephant", "Lion", "Gorilla"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "What do bees produce?",
+    "correct_answer": "Honey",
+    "metadata_json": {},
+    "options": ["Milk", "Honey", "Silk", "Wax"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "What is the opposite of 'up'?",
+    "correct_answer": "Down",
+    "metadata_json": {},
+    "options": ["Left", "Right", "Down", "Forward"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "How many legs does a spider have?",
+    "correct_answer": "8",
+    "metadata_json": {},
+    "options": ["6", "8", "10", "12"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "Which planet is closest to the sun?",
+    "correct_answer": "Mercury",
+    "metadata_json": {},
+    "options": ["Venus", "Earth", "Mercury", "Mars"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "What is the first letter of the English alphabet?",
+    "correct_answer": "A",
+    "metadata_json": {},
+    "options": ["A", "B", "C", "D"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "Which drink is made from leaves and hot water?",
+    "correct_answer": "Tea",
+    "metadata_json": {},
+    "options": ["Coffee", "Juice", "Tea", "Milk"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "Which month comes after June?",
+    "correct_answer": "July",
+    "metadata_json": {},
+    "options": ["June", "July", "August", "May"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "What shape is a standard football (soccer ball)?",
+    "correct_answer": "Sphere",
+    "metadata_json": {},
+    "options": ["Cube", "Sphere", "Cylinder", "Pyramid"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "How many continents are there on Earth?",
+    "correct_answer": "7",
+    "metadata_json": {},
+    "options": ["5", "6", "7", "8"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "Which fruit is typically yellow and sour?",
+    "correct_answer": "Lemon",
+    "metadata_json": {},
+    "options": ["Lime", "Lemon", "Orange", "Grapefruit"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "What is H2O commonly known as?",
+    "correct_answer": "Water",
+    "metadata_json": {},
+    "options": ["Hydrogen", "Water", "Oxygen", "Salt"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "Which season follows winter?",
+    "correct_answer": "Spring",
+    "metadata_json": {},
+    "options": ["Summer", "Fall", "Spring", "Autumn"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "What do you call frozen water?",
+    "correct_answer": "Ice",
+    "metadata_json": {},
+    "options": ["Water", "Snow", "Ice", "Steam"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "Which sense is tested by tasting?",
+    "correct_answer": "Taste",
+    "metadata_json": {},
+    "options": ["Sight", "Hearing", "Taste", "Touch"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "Which bird is known for mimicking sounds?",
+    "correct_answer": "Parrot",
+    "metadata_json": {},
+    "options": ["Eagle", "Parrot", "Owl", "Hawk"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "How many hours are there in a day?",
+    "correct_answer": "24",
+    "metadata_json": {},
+    "options": ["12", "24", "36", "48"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "Which horse race is known as 'The Run for the Roses'?",
+    "correct_answer": "Kentucky Derby",
+    "metadata_json": {},
+    "options": [
+      "Preakness Stakes",
+      "Belmont Stakes",
+      "Kentucky Derby",
+      "Grand National"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "What is the capital of the United States?",
+    "correct_answer": "Washington, D.C.",
+    "metadata_json": {},
+    "options": ["New York", "Los Angeles", "Washington, D.C.", "Chicago"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "Which metal is used to make electrical wires due to its conductivity?",
+    "correct_answer": "Copper",
+    "metadata_json": {},
+    "options": ["Iron", "Aluminum", "Copper", "Gold"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "What is the main ingredient in sushi?",
+    "correct_answer": "Rice",
+    "metadata_json": {},
+    "options": ["Fish", "Rice", "Seaweed", "Tofu"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "Which holiday falls on December 25th?",
+    "correct_answer": "Christmas",
+    "metadata_json": {},
+    "options": ["Thanksgiving", "Christmas", "Easter", "Halloween"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Easy",
+    "question_text": "What currency is used in the United Kingdom?",
+    "correct_answer": "Pound sterling",
+    "metadata_json": {},
+    "options": ["Euro", "Dollar", "Pound sterling", "Yen"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "What is the longest river in the world?",
+    "correct_answer": "Nile",
+    "metadata_json": {},
+    "options": ["Amazon", "Nile", "Yangtze", "Mississippi"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "Who wrote 'Pride and Prejudice'?",
+    "correct_answer": "Jane Austen",
+    "metadata_json": {},
+    "options": [
+      "Charlotte Bronte",
+      "Jane Austen",
+      "Emily Dickinson",
+      "Mary Shelley"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "What is the capital of Australia?",
+    "correct_answer": "Canberra",
+    "metadata_json": {},
+    "options": ["Sydney", "Melbourne", "Canberra", "Brisbane"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "Which gas makes up most of Earth's atmosphere?",
+    "correct_answer": "Nitrogen",
+    "metadata_json": {},
+    "options": ["Oxygen", "Nitrogen", "Carbon Dioxide", "Helium"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "Who painted the Mona Lisa?",
+    "correct_answer": "Leonardo da Vinci",
+    "metadata_json": {},
+    "options": [
+      "Vincent van Gogh",
+      "Pablo Picasso",
+      "Leonardo da Vinci",
+      "Michelangelo"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "Which country gifted the Statue of Liberty to the USA?",
+    "correct_answer": "France",
+    "metadata_json": {},
+    "options": ["UK", "France", "Spain", "Italy"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "In which year did the Titanic sink?",
+    "correct_answer": "1912",
+    "metadata_json": {},
+    "options": ["1910", "1912", "1914", "1916"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "What is the hardest natural substance on Earth?",
+    "correct_answer": "Diamond",
+    "metadata_json": {},
+    "options": ["Gold", "Diamond", "Quartz", "Iron"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "Which element has the chemical symbol 'Fe'?",
+    "correct_answer": "Iron",
+    "metadata_json": {},
+    "options": ["Fluorine", "Iron", "Francium", "Fermium"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "Who discovered gravity when an apple fell on his head?",
+    "correct_answer": "Isaac Newton",
+    "metadata_json": {},
+    "options": [
+      "Albert Einstein",
+      "Isaac Newton",
+      "Galileo Galilei",
+      "Nikola Tesla"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "What is the tallest building in the world as of 2021?",
+    "correct_answer": "Burj Khalifa",
+    "metadata_json": {},
+    "options": [
+      "Shanghai Tower",
+      "Burj Khalifa",
+      "One World Trade Center",
+      "Taipei 101"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "Which planet is known as the Red Planet?",
+    "correct_answer": "Mars",
+    "metadata_json": {},
+    "options": ["Venus", "Mars", "Jupiter", "Saturn"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "Who is the author of '1984'?",
+    "correct_answer": "George Orwell",
+    "metadata_json": {},
+    "options": [
+      "Aldous Huxley",
+      "George Orwell",
+      "Ray Bradbury",
+      "Ernest Hemingway"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "What is the chemical formula for table salt?",
+    "correct_answer": "NaCl",
+    "metadata_json": {},
+    "options": ["H2O", "CO2", "NaCl", "C6H12O6"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "Which language has the most native speakers?",
+    "correct_answer": "Mandarin Chinese",
+    "metadata_json": {},
+    "options": ["English", "Mandarin Chinese", "Spanish", "Hindi"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "Which ocean is the deepest?",
+    "correct_answer": "Pacific Ocean",
+    "metadata_json": {},
+    "options": [
+      "Atlantic Ocean",
+      "Pacific Ocean",
+      "Indian Ocean",
+      "Arctic Ocean"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "Who invented the telephone?",
+    "correct_answer": "Alexander Graham Bell",
+    "metadata_json": {},
+    "options": [
+      "Thomas Edison",
+      "Alexander Graham Bell",
+      "Nikola Tesla",
+      "Guglielmo Marconi"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "What is the capital of Canada?",
+    "correct_answer": "Ottawa",
+    "metadata_json": {},
+    "options": ["Toronto", "Ottawa", "Vancouver", "Montreal"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "Which continent is the Sahara Desert located on?",
+    "correct_answer": "Africa",
+    "metadata_json": {},
+    "options": ["Asia", "Africa", "Australia", "South America"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "Who wrote the play 'Romeo and Juliet'?",
+    "correct_answer": "William Shakespeare",
+    "metadata_json": {},
+    "options": [
+      "William Shakespeare",
+      "Christopher Marlowe",
+      "Ben Jonson",
+      "Jane Austen"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "What is the largest planet in our solar system?",
+    "correct_answer": "Jupiter",
+    "metadata_json": {},
+    "options": ["Saturn", "Mars", "Jupiter", "Earth"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "Which element is represented by the symbol 'Au'?",
+    "correct_answer": "Gold",
+    "metadata_json": {},
+    "options": ["Silver", "Gold", "Argon", "Aluminum"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "What year did World War II end?",
+    "correct_answer": "1945",
+    "metadata_json": {},
+    "options": ["1942", "1945", "1950", "1939"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "Which city hosted the 2008 Summer Olympics?",
+    "correct_answer": "Beijing",
+    "metadata_json": {},
+    "options": ["Beijing", "London", "Athens", "Sydney"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Medium",
+    "question_text": "What is the common name for the aurora borealis?",
+    "correct_answer": "Northern Lights",
+    "metadata_json": {},
+    "options": [
+      "Southern Lights",
+      "Northern Lights",
+      "Polar Lights",
+      "St. Elmo's Fire"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the term for the fear of long words?",
+    "correct_answer": "Hippopotomonstrosesquipedaliophobia",
+    "metadata_json": {},
+    "options": [
+      "Ablutophobia",
+      "Arachnophobia",
+      "Hippopotomonstrosesquipedaliophobia",
+      "Acrophobia"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which artist cut off his own ear?",
+    "correct_answer": "Vincent van Gogh",
+    "metadata_json": {},
+    "options": [
+      "Pablo Picasso",
+      "Vincent van Gogh",
+      "Claude Monet",
+      "Salvador Dal\u00ed"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the smallest country in the world by population?",
+    "correct_answer": "Vatican City",
+    "metadata_json": {},
+    "options": ["Tuvalu", "Monaco", "Vatican City", "Nauru"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which element is named after the creator of the periodic table, Mendeleev?",
+    "correct_answer": "Mendelevium",
+    "metadata_json": {},
+    "options": ["Mendelevium", "Einsteinium", "Nobelium", "Fermium"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who was the first woman to win a Nobel Prize?",
+    "correct_answer": "Marie Curie",
+    "metadata_json": {},
+    "options": [
+      "Dorothy Hodgkin",
+      "Rosalind Franklin",
+      "Marie Curie",
+      "Ada Lovelace"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the most abundant element in the Earth's crust?",
+    "correct_answer": "Oxygen",
+    "metadata_json": {},
+    "options": ["Silicon", "Oxygen", "Aluminum", "Iron"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which novel begins with the line 'Call me Ishmael.'?",
+    "correct_answer": "Moby-Dick",
+    "metadata_json": {},
+    "options": [
+      "Moby-Dick",
+      "Great Expectations",
+      "To Kill a Mockingbird",
+      "1984"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which expedition reached the South Pole first?",
+    "correct_answer": "Amundsen's expedition",
+    "metadata_json": {},
+    "options": [
+      "Scott's expedition",
+      "Amundsen's expedition",
+      "Shackleton's expedition",
+      "Peary's expedition"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the term for animals that are active during twilight?",
+    "correct_answer": "Crepuscular",
+    "metadata_json": {},
+    "options": ["Nocturnal", "Diurnal", "Crepuscular", "Cathemeral"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who proposed the heliocentric model of the universe?",
+    "correct_answer": "Nicolaus Copernicus",
+    "metadata_json": {},
+    "options": [
+      "Galileo Galilei",
+      "Nicolaus Copernicus",
+      "Johannes Kepler",
+      "Tycho Brahe"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which 17-year cicada emerges every 17 years in the US?",
+    "correct_answer": "Magicicada",
+    "metadata_json": {},
+    "options": ["Periodica", "Magicicada", "Decim", "Cassini"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the study of the Earth's atmosphere called?",
+    "correct_answer": "Meteorology",
+    "metadata_json": {},
+    "options": ["Geology", "Meteorology", "Oceanography", "Astronomy"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which composer wrote the opera 'The Magic Flute'?",
+    "correct_answer": "Wolfgang Amadeus Mozart",
+    "metadata_json": {},
+    "options": [
+      "Ludwig van Beethoven",
+      "Wolfgang Amadeus Mozart",
+      "Richard Wagner",
+      "Giuseppe Verdi"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the name of the largest moon of Saturn?",
+    "correct_answer": "Titan",
+    "metadata_json": {},
+    "options": ["Europa", "Ganymede", "Titan", "Callisto"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which disease did Edward Jenner develop a vaccine for?",
+    "correct_answer": "Smallpox",
+    "metadata_json": {},
+    "options": ["Rabies", "Smallpox", "Polio", "Cholera"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the capital of Kyrgyzstan?",
+    "correct_answer": "Bishkek",
+    "metadata_json": {},
+    "options": ["Astana", "Bishkek", "Tashkent", "Dushanbe"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who discovered the element iodine?",
+    "correct_answer": "Bernard Courtois",
+    "metadata_json": {},
+    "options": [
+      "Marie Curie",
+      "Henri Becquerel",
+      "Bernard Courtois",
+      "Robert Bunsen"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which 18th-century war was fought between Britain and France in North America?",
+    "correct_answer": "French and Indian War",
+    "metadata_json": {},
+    "options": [
+      "American Revolutionary War",
+      "Seven Years' War",
+      "French and Indian War",
+      "War of 1812"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "What is the largest internal organ in the human body?",
+    "correct_answer": "Liver",
+    "metadata_json": {},
+    "options": ["Heart", "Lungs", "Liver", "Kidneys"]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which philosopher wrote 'Critique of Pure Reason'?",
+    "correct_answer": "Immanuel Kant",
+    "metadata_json": {},
+    "options": [
+      "Ren\u00e9 Descartes",
+      "Immanuel Kant",
+      "John Locke",
+      "David Hume"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which scientist is credited with the law of universal gravitation?",
+    "correct_answer": "Isaac Newton",
+    "metadata_json": {},
+    "options": [
+      "Galileo Galilei",
+      "Isaac Newton",
+      "Johannes Kepler",
+      "Albert Einstein"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "In computing, what does 'USB' stand for?",
+    "correct_answer": "Universal Serial Bus",
+    "metadata_json": {},
+    "options": [
+      "Universal Serial Bus",
+      "User System Bus",
+      "Universal Software Bus",
+      "Unit Secure Bus"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which star is closest to Earth after the Sun?",
+    "correct_answer": "Proxima Centauri",
+    "metadata_json": {},
+    "options": [
+      "Alpha Centauri A",
+      "Barnard's Star",
+      "Proxima Centauri",
+      "Sirius"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "Which oceanic trench is the deepest point on Earth?",
+    "correct_answer": "Mariana Trench",
+    "metadata_json": {},
+    "options": [
+      "Tonga Trench",
+      "Java Trench",
+      "Mariana Trench",
+      "Kuril\u2013Kamchatka Trench"
+    ]
+  },
+  {
+    "category": "Trivia",
+    "difficulty": "Quiz Genius",
+    "question_text": "Who wrote the novel 'Ulysses'?",
+    "correct_answer": "James Joyce",
+    "metadata_json": {},
+    "options": [
+      "Virginia Woolf",
+      "James Joyce",
+      "T.S. Eliot",
+      "Ernest Hemingway"
+    ]
   }
 ]

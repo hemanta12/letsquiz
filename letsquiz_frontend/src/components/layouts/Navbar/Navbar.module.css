@@ -41,6 +41,9 @@
   align-items: center;
   gap: var(--space-lg);
 }
+.mobileText {
+  display: none;
+}
 
 .navLink {
   background-color: var(--color-primary);
@@ -293,6 +296,9 @@
   .dashboardLink .desktopText {
     display: none;
   }
+  .dashboardLink .mobileText {
+    display: inline;
+  }
 
   .navLinkText {
     font-size: var(--font-size-small);
@@ -311,6 +317,9 @@
 
   .desktopText {
     display: none;
+  }
+  .mobileText {
+    display: inline;
   }
   .mobileIcon {
     display: block !important;
@@ -367,7 +376,6 @@
 
   .themeToggle {
     margin-right: 2px;
-    padding: var(--space-xs);
   }
   .hideOnMobile {
     display: none;
@@ -376,10 +384,10 @@
   .navLink,
   .loginButton,
   .signupButton {
-    padding: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
     font-size: var(--font-size-small);
-    min-width: 44px;
-    min-height: 44px;
+    min-width: 40px;
+    min-height: 35px;
     display: flex;
     align-items: center;
     justify-content: center;

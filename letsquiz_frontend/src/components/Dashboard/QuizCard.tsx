@@ -27,6 +27,32 @@ const QuizCard: React.FC<QuizCardProps> = ({ session, onClick }) => {
   const displayText = getWinnerDisplay(session);
   const isGroupSession = session.is_group_session;
 
+  // Radial gauge calculations
+  const radius = 24;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDasharray = `${(scorePercentage / 100) * circumference} ${circumference}`;
+
+  const renderRadialGauge = () => (
+    <div className={styles.radialGauge}>
+      <svg className={styles.radialGaugeSvg} viewBox="0 0 60 60">
+        <circle className={styles.gaugeBackground} cx="30" cy="30" r={radius} />
+        <circle
+          className={styles.gaugeForeground}
+          cx="30"
+          cy="30"
+          r={radius}
+          strokeDasharray={strokeDasharray}
+        />
+      </svg>
+      <div className={styles.gaugeContent}>
+        <div className={styles.gaugeScore}>
+          {score}/{totalQuestions}
+        </div>
+        <div className={styles.gaugePercentage}>{Math.round(scorePercentage)}%</div>
+      </div>
+    </div>
+  );
+
   return (
     <div
       id={`quiz-${session.id}`}
@@ -59,15 +85,16 @@ const QuizCard: React.FC<QuizCardProps> = ({ session, onClick }) => {
 
       {/* Second row: Score/Winner */}
       <div className={styles.scoreSection}>
-        <Typography
-          variant="h3"
-          className={displayText.isWinner ? styles.winnerText : styles.scoreText}
-        >
-          {/* Show percentage for solo mode, winner status for group */}
-          {!isGroupSession && totalQuestions > 0 && session.score !== null
-            ? `${score} / ${totalQuestions} (${Math.round(scorePercentage)}%)`
-            : displayText.text}
-        </Typography>
+        {!isGroupSession && totalQuestions > 0 && session.score !== null ? (
+          renderRadialGauge()
+        ) : (
+          <Typography
+            variant="h3"
+            className={displayText.isWinner ? styles.winnerText : styles.scoreText}
+          >
+            {displayText.text}
+          </Typography>
+        )}
       </div>
     </div>
   );

@@ -40,7 +40,7 @@ export type IconName =
 
 export interface IconProps {
   name: IconName;
-  size?: 'small' | 'medium' | 'large';
+  size?: 'small' | 'medium' | 'large' | 'xs';
   color?: string;
   className?: string;
   style?: React.CSSProperties;

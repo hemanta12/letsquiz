@@ -3,11 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { GroupPlayer } from '../../types/quiz.types';
 import { Typography } from '../common';
 import styles from './GroupQuestionView.module.css';
-import {
-  setTempPlayerScore,
-  recordPlayerAnswer,
-  recordPlayerCorrectness,
-} from '../../store/slices/groupQuizSlice';
+import { recordPlayerAnswer, recordPlayerCorrectness } from '../../store/slices/groupQuizSlice';
 import { QuizCore } from '../Quiz/QuizCore';
 import { QuestionContent } from '../Quiz/QuestionContent';
 
@@ -20,8 +16,8 @@ interface GroupQuestionViewProps {
   onAnswerSelect: (answer: string) => void;
   showFeedback: boolean;
   selectedAnswer?: string;
-  onPlayerSelected: (playerId: string | null) => void;
-  currentScoredPlayer: string | null;
+  onPlayerSelected: (playerIds: string[]) => void;
+  currentScoredPlayers: string[];
   difficulty: string;
   category: string;
   isLoading: boolean;
@@ -42,7 +38,7 @@ export const GroupQuestionView: React.FC<GroupQuestionViewProps> = ({
   showFeedback,
   selectedAnswer,
   onPlayerSelected,
-  currentScoredPlayer,
+  currentScoredPlayers,
   difficulty,
   category,
   isLoading,
@@ -57,6 +53,7 @@ export const GroupQuestionView: React.FC<GroupQuestionViewProps> = ({
     (state: any) => state.groupQuiz.groupSession?.players || []
   );
   const currentPlayer = useSelector((state: any) => state.groupQuiz.currentPlayer);
+  const playerCorrectness = useSelector((state: any) => state.groupQuiz.playerCorrectness);
 
   const handleAnswerSelect = (answer: string) => {
     if (currentPlayer) {
@@ -73,16 +70,24 @@ export const GroupQuestionView: React.FC<GroupQuestionViewProps> = ({
 
   const handlePlayerScore = (playerId: number) => {
     if (!showFeedback) return;
-    dispatch(setTempPlayerScore({ playerId, tempScore: 5 }));
 
-    // Record player correctness for this question
+    // Get current correct players for this question
+    const currentCorrectPlayers = playerCorrectness[questionNumber - 1] || [];
+    const isCurrentlySelected = currentCorrectPlayers.includes(playerId);
+
+    // Record player correctness for this question (toggles selection)
     const correctnessPayload = {
       questionIndex: questionNumber - 1,
       playerId,
     };
     dispatch(recordPlayerCorrectness(correctnessPayload));
 
-    onPlayerSelected(playerId.toString());
+    // Update parent component with new list of selected players
+    const updatedCorrectPlayers = isCurrentlySelected
+      ? currentCorrectPlayers.filter((id: number) => id !== playerId)
+      : [...currentCorrectPlayers, playerId];
+
+    onPlayerSelected(updatedCorrectPlayers.map((id: number) => id.toString()));
   };
 
   const progress = (questionNumber / totalQuestions) * 100;
@@ -100,18 +105,30 @@ export const GroupQuestionView: React.FC<GroupQuestionViewProps> = ({
           correctAnswer={correctAnswer}
           onAnswerSelect={handleAnswerSelect}
           disabled={showFeedback}
-          playerId={currentScoredPlayer || undefined}
+          playerId={currentScoredPlayers.length > 0 ? currentScoredPlayers[0] : undefined}
         />
       </div>
 
       {/* Sidebar: interactive scoreboard */}
       <aside className={styles.sidebar}>
-        <Typography variant="h3">Select who got it right</Typography>
+        <Typography variant="h2" className={styles.scoreboard}>
+          Scoreboard
+        </Typography>
+        <Typography variant="body1">Select who got it right</Typography>
+        <Typography variant="body2" className={styles.instruction}>
+          You can select multiple players
+          {currentScoredPlayers.length > 0 && (
+            <span className={styles.selectionCounter}>
+              ({currentScoredPlayers.length} selected)
+            </span>
+          )}
+        </Typography>
 
         {players.length <= 8 ? (
           <div className={styles.playerList}>
             {players.map((player) => {
-              const isActive = currentScoredPlayer === player.id.toString();
+              const isActive = currentScoredPlayers.includes(player.id.toString());
+              const displayScore = isActive ? player.score + 5 : player.score;
               return (
                 <div
                   key={player.id}
@@ -120,27 +137,43 @@ export const GroupQuestionView: React.FC<GroupQuestionViewProps> = ({
                   aria-disabled={!showFeedback}
                 >
                   <span className={styles.playerName}>{player.name}</span>
-                  <span className={styles.score}> {player.uiScore ?? player.score}pt</span>
+                  <span className={styles.score}> {displayScore}</span>
+                  {isActive && <span className={styles.checkmark}>✓</span>}
                 </div>
               );
             })}
           </div>
         ) : (
-          <select
-            className={styles.playerDropdown}
-            disabled={!showFeedback}
-            value={currentScoredPlayer || ''}
-            onChange={(e) => handlePlayerScore(Number(e.target.value))}
-          >
-            <option value="" disabled>
-              Choose Player
-            </option>
-            {players.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
+          <div className={styles.dropdownContainer}>
+            <select
+              className={styles.playerDropdown}
+              disabled={!showFeedback}
+              value=""
+              onChange={(e) => handlePlayerScore(Number(e.target.value))}
+            >
+              <option value="" disabled>
+                Choose Player to Toggle
               </option>
-            ))}
-          </select>
+              {players.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name} {currentScoredPlayers.includes(p.id.toString()) ? '✓' : ''}
+                </option>
+              ))}
+            </select>
+            {currentScoredPlayers.length > 0 && (
+              <div className={styles.selectedPlayersList}>
+                <Typography variant="caption">Selected:</Typography>
+                {currentScoredPlayers.map((playerId) => {
+                  const player = players.find((p) => p.id.toString() === playerId);
+                  return player ? (
+                    <span key={playerId} className={styles.selectedPlayerTag}>
+                      {player.name}
+                    </span>
+                  ) : null;
+                })}
+              </div>
+            )}
+          </div>
         )}
       </aside>
     </div>

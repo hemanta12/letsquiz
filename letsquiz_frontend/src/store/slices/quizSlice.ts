@@ -255,7 +255,18 @@ export const startGroupQuiz = createAsyncThunk<
       dispatch(setGroupMode(false));
       dispatch(setGroupSession(null));
       dispatch(setCurrentPlayer(undefined));
-      return rejectWithValue(error.message || 'Failed to start group quiz');
+
+      if (error.response) {
+        return rejectWithValue(
+          error.response.data?.detail ||
+            error.response.data?.message ||
+            'Server error while starting group quiz'
+        );
+      } else if (error.request) {
+        return rejectWithValue('No response from server. Please check your network connection.');
+      } else {
+        return rejectWithValue(error.message || 'Failed to start group quiz');
+      }
     }
   }
 );
@@ -393,14 +404,8 @@ export const quizSlice = createSlice({
       .addCase(
         fetchQuizQuestions.fulfilled,
         (state, action: PayloadAction<FetchQuestionsResponse>) => {
-          console.log('fetchQuizQuestions.fulfilled - action.payload:', action.payload);
           state.loading = false;
           state.questions = action.payload.questions;
-          console.log('fetchQuizQuestions.fulfilled - state.loading:', state.loading);
-          console.log(
-            'fetchQuizQuestions.fulfilled - questions length:',
-            action.payload.questions.length
-          );
           state.currentQuestionIndex = 0;
           state.selectedAnswers = {};
           state.score = 0;
@@ -418,11 +423,26 @@ export const quizSlice = createSlice({
         state.currentQuestionIndex = 0;
         state.selectedAnswers = {};
         state.score = 0;
-        console.error('Quiz Questions Fetch Error:', state.error);
+      })
+      .addCase(startGroupQuiz.pending, (state) => {
+        state.loading = true;
+        state.error = null;
       })
       .addCase(startGroupQuiz.fulfilled, (state, action) => {
+        state.loading = false;
         state.questions = action.payload.questions;
         state.currentQuestionIndex = 0;
+        state.selectedAnswers = {};
+        state.score = 0;
+        state.error = null;
+      })
+      .addCase(startGroupQuiz.rejected, (state, action) => {
+        state.loading = false;
+        state.questions = [];
+        state.error = (action.payload as string) || 'Failed to start group quiz';
+        state.currentQuestionIndex = 0;
+        state.selectedAnswers = {};
+        state.score = 0;
       })
       .addCase(saveQuizSessionThunk.pending, (state) => {
         state.loading = true;
@@ -469,6 +489,7 @@ export const {
   selectAnswer,
   updateScore,
   nextQuestion,
+  clearGuestProgress,
   incrementQuestionIndex,
   resetQuiz,
   startMigration,

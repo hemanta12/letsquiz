@@ -15,6 +15,7 @@ export const PlayerSetup: React.FC = () => {
   );
 
   const [sessionError, setSessionError] = useState<string | null>(null);
+  const [isStartingQuiz, setIsStartingQuiz] = useState(false);
 
   const handleBack = () => {
     navigate('/');
@@ -23,8 +24,11 @@ export const PlayerSetup: React.FC = () => {
   const handlePlayersConfirmed = useCallback(
     async (players: Player[]) => {
       setSessionError(null);
+      setIsStartingQuiz(true);
+
       const capitalize = (name: string) =>
         name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+
       try {
         const resultAction = await dispatch(
           startGroupQuiz({
@@ -40,11 +44,11 @@ export const PlayerSetup: React.FC = () => {
         } else {
           const errorMessage = resultAction.payload as string;
           setSessionError(errorMessage || 'Failed to start group quiz. Please try again.');
-          console.error('Error starting group session:', errorMessage);
         }
       } catch (error: any) {
-        console.error('Unexpected error starting group session:', error);
         setSessionError(error.message || 'Failed to start group quiz. Please try again.');
+      } finally {
+        setIsStartingQuiz(false);
       }
     },
     [dispatch, categoryId, difficulty, numberOfQuestions, navigate]
@@ -59,7 +63,7 @@ export const PlayerSetup: React.FC = () => {
         </Button>
       </div>
 
-      <PlayerManagement onPlayersConfirmed={handlePlayersConfirmed} />
+      <PlayerManagement onPlayersConfirmed={handlePlayersConfirmed} isLoading={isStartingQuiz} />
       {sessionError && (
         <Typography variant="body2" color="error" className={styles.errorMessage}>
           {sessionError}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Card } from '../common';
+import { Typography, Card, Icon } from '../common';
 import { UserProfile, QuizSessionHistory, CategoryStats } from '../../types/api.types';
 import styles from './StatsPanel.module.css';
 
@@ -11,12 +11,20 @@ interface StatsPanelProps {
 
 const StatsPanel: React.FC<StatsPanelProps> = ({ profile, sessions, categoryStats }) => {
   const soloSessions = sessions.filter((s) => !s.is_group_session);
-  const totalQuizzes = soloSessions.length;
+  const groupSessions = sessions.filter((s) => s.is_group_session);
+  const totalSoloQuizzes = soloSessions.length;
+  const totalGroupQuizzes = groupSessions.length;
+  const totalQuizzes = sessions.length;
+
+  // Calculate average score for SOLO quizzes only
+  const soloQuizzesWithScores = soloSessions.filter(
+    (s) => s.score !== null && s.total_questions !== null
+  );
   const averageScore =
-    soloSessions.length > 0
+    soloQuizzesWithScores.length > 0
       ? Math.round(
-          (soloSessions.reduce((acc, s) => acc + (s.score ?? 0), 0) /
-            soloSessions.reduce((acc, s) => acc + (s.total_questions ?? 0), 0)) *
+          (soloQuizzesWithScores.reduce((acc, s) => acc + (s.score ?? 0), 0) /
+            soloQuizzesWithScores.reduce((acc, s) => acc + (s.total_questions ?? 0), 0)) *
             100
         )
       : 0;
@@ -41,22 +49,41 @@ const StatsPanel: React.FC<StatsPanelProps> = ({ profile, sessions, categoryStat
         </Typography>
         <div className={styles.statsRow}>
           <div className={styles.statItem}>
-            <Typography variant="body2">Total Quizzes</Typography>
-            <div className={styles.statValue} data-icon="🎯">
-              {totalQuizzes}
+            <div className={styles.iconWrapper}>
+              <Icon name="quiz" size="medium" className={styles.statIcon} />
+            </div>
+            <Typography variant="body2" className={styles.statLabel}>
+              Total Quizzes
+            </Typography>
+            <div className={styles.statValue}>{totalQuizzes}</div>
+            <div className={styles.statSubtext}>
+              <span>Solo: {totalSoloQuizzes}</span>
+              <span> Group: {totalGroupQuizzes}</span>
             </div>
           </div>
           <div className={styles.statItem}>
-            <Typography variant="body2">Average Score</Typography>
-            <div className={styles.statValue} data-icon="📈">
-              {averageScore.toFixed(0)}%
+            <div className={styles.iconWrapper}>
+              <Icon name="chart" size="medium" className={styles.statIcon} />
             </div>
+            <Typography variant="body2" className={styles.statLabel}>
+              Average Score
+            </Typography>
+            <div className={styles.statValue}>{averageScore}%</div>
+            {/* <div className={styles.statSubtext}>
+              <span>Across {totalSoloQuizzes} solo quizzes</span>
+            </div> */}
           </div>
           <div className={styles.statItem}>
-            <Typography variant="body2">Best Category</Typography>
-            <div className={styles.statValue} data-icon="🏆">
-              {bestCategoryDisplay}
+            <div className={styles.iconWrapper}>
+              <Icon name="trophy" size="medium" className={styles.statIcon} />
             </div>
+            <Typography variant="body2" className={styles.statLabel}>
+              Best Category
+            </Typography>
+            <div className={styles.statValue}>{bestCategoryDisplay}</div>
+            {/* <div className={styles.statSubtext}>
+              <span>Your strongest subject</span>
+            </div> */}
           </div>
         </div>
       </Card>

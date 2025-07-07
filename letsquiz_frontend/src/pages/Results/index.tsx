@@ -10,7 +10,6 @@ const ResultsPage: React.FC = () => {
   const playerCorrectness = useAppSelector((state) => state.groupQuiz.playerCorrectness);
   const safeMode = mode === 'Solo' || mode === 'Group' ? mode : 'Solo';
 
-  // Map groupSession.players to include 'answers' property if needed
   const mappedGroupSession =
     groupSession && groupSession.players
       ? {
@@ -24,15 +23,14 @@ const ResultsPage: React.FC = () => {
 
   // Prepare correctness data for ResultsComponent
   const correctnessData = questions
-    ?.map((question, index) => {
-      const correctPlayerId = playerCorrectness[index];
-      if (!correctPlayerId || !groupSession?.players?.some((p) => p.id === correctPlayerId)) {
-        return null;
-      }
-      return {
-        questionId: String(question.id),
-        playerId: correctPlayerId,
-      };
+    ?.flatMap((question, index) => {
+      const correctPlayerIds = playerCorrectness[index] || [];
+      return correctPlayerIds
+        .filter((playerId) => groupSession?.players?.some((p) => p.id === playerId))
+        .map((playerId) => ({
+          questionId: String(question.id),
+          playerId: playerId,
+        }));
     })
     .filter(Boolean) as Array<{ questionId: string; playerId: number }>;
 

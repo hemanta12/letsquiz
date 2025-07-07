@@ -31,30 +31,38 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({
   groupSession,
   correctnessData,
 }) => {
-  // Helper to get correct player name for a question with debug logging
-  const getCorrectPlayer = (questionId: string) => {
-    // Debug log the matching process
-    console.log('[DEBUG] Finding correct player for question:', questionId);
+  // Helper to get multiple correct player names for a question
+  const getCorrectPlayers = (questionId: string): string[] => {
+    console.log('[DEBUG] Finding correct players for question:', questionId);
     console.log('[DEBUG] Correctness data:', correctnessData);
 
     if (!correctnessData || !groupSession?.players) {
       console.log('[DEBUG] Missing correctness data or players');
-      return 'None';
+      return [];
     }
 
-    const correctAnswer = correctnessData.find(
+    const correctAnswers = correctnessData.filter(
       (cd) => String(cd.questionId) === String(questionId)
     );
 
-    if (!correctAnswer) {
+    if (correctAnswers.length === 0) {
       console.log('[DEBUG] No correctness data found for question:', questionId);
-      return 'None';
+      return [];
     }
 
-    const player = groupSession.players.find((p) => p.id === correctAnswer.playerId);
-    console.log('[DEBUG] Found player:', player?.name || 'None');
+    const players = correctAnswers
+      .map((cd) => groupSession.players?.find((p) => p.id === cd.playerId))
+      .filter((player) => player !== undefined)
+      .map((player) => player!.name);
 
-    return player?.name || 'None';
+    console.log('[DEBUG] Found players:', players);
+    return players;
+  };
+
+  // Helper to get single correct player name for backward compatibility
+  const getCorrectPlayer = (questionId: string) => {
+    const players = getCorrectPlayers(questionId);
+    return players.length > 0 ? players[0] : 'None';
   };
   console.log('[DEBUG] ResultsComponent received:', {
     mode,
@@ -101,9 +109,12 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({
       group_players: groupSession?.players,
       questions: questions.map<QuestionDetail>((q, idx) => {
         const questionId = String(q.id);
+        const correctPlayers = mode === 'Group' ? getCorrectPlayers(questionId) : [];
+
         console.log('[DEBUG] Passing to QuestionDetail:', {
           questionId: questionId,
           correctPlayer: mode === 'Group' ? getCorrectPlayer(questionId) : undefined,
+          correctPlayers: correctPlayers,
           correctAnswer: q.correct_answer,
           debugInfo: {
             correctnessData: correctnessData,
@@ -117,6 +128,7 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({
           userAnswer: selectedAnswers[idx] || '',
           correctAnswer: q.correct_answer,
           correctPlayer: mode === 'Group' ? getCorrectPlayer(questionId) : undefined,
+          correctPlayers: correctPlayers,
           debugInfo:
             mode === 'Group'
               ? {
@@ -141,8 +153,58 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({
     return "Don't Give Up!";
   };
 
+  // Tie-breaking logic: if players have the same score,
+  // the winner is determined by who reached the high score first (based on question order)
   const sortedPlayers = groupSession?.players
-    ? [...groupSession.players].sort((a, b) => b.score - a.score)
+    ? [...groupSession.players].sort((a, b) => {
+        // Primary sort: by score (descending)
+        if (b.score !== a.score) {
+          return b.score - a.score;
+        }
+
+        if (!correctnessData || correctnessData.length === 0) {
+          return 0;
+        }
+
+        let scoreA = 0;
+        let scoreB = 0;
+        let questionIndexA = -1;
+        let questionIndexB = -1;
+
+        // Go through each question to find when each player reached their final score
+        for (let questionIndex = 0; questionIndex < questions.length; questionIndex++) {
+          const questionId = String(questions[questionIndex].id);
+
+          // Check if player A got this question right
+          const playerACorrect = correctnessData.some(
+            (cd) => String(cd.questionId) === questionId && cd.playerId === a.id
+          );
+          if (playerACorrect) {
+            scoreA += 5;
+            if (scoreA === a.score && questionIndexA === -1) {
+              questionIndexA = questionIndex;
+            }
+          }
+
+          // Check if player B got this question right
+          const playerBCorrect = correctnessData.some(
+            (cd) => String(cd.questionId) === questionId && cd.playerId === b.id
+          );
+          if (playerBCorrect) {
+            scoreB += 5;
+            if (scoreB === b.score && questionIndexB === -1) {
+              questionIndexB = questionIndex;
+            }
+          }
+        }
+
+        // If both players reached their score, the one who reached it first wins
+        if (questionIndexA !== -1 && questionIndexB !== -1) {
+          return questionIndexA - questionIndexB;
+        }
+
+        return 0;
+      })
     : [];
 
   return (
@@ -261,7 +323,7 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({
                 Play Another
               </Button>
               <Button
-                variant="secondary"
+                variant="primary"
                 className={styles.reviewButton}
                 onClick={handleReviewSession}
                 aria-label="Review your recent quiz session"

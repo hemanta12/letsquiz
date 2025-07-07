@@ -5,28 +5,46 @@ export const distributeQuestions = (
   totalQuestions: number
 ): Question[] => {
   const categories = Object.keys(questionsByCategory);
-  const questionsPerCategory = Math.floor(totalQuestions / categories.length);
-  const remainder = totalQuestions % categories.length;
+  const allQuestions: Question[] = [];
 
-  let distributedQuestions: Question[] = [];
-
-  // First, take equal numbers from each category
+  // Collect all questions from all categories
   categories.forEach((category) => {
-    const categoryQuestions = questionsByCategory[category];
-    // Allow repeating questions if not enough in category
-    for (let i = 0; i < questionsPerCategory; i++) {
-      const questionIndex = i % categoryQuestions.length;
-      distributedQuestions.push(categoryQuestions[questionIndex]);
-    }
+    allQuestions.push(...questionsByCategory[category]);
   });
 
-  // Handle remainder by taking random questions
-  for (let i = 0; i < remainder; i++) {
-    const randomCategory = categories[Math.floor(Math.random() * categories.length)];
-    const categoryQuestions = questionsByCategory[randomCategory];
-    const randomIndex = Math.floor(Math.random() * categoryQuestions.length);
-    distributedQuestions.push(categoryQuestions[randomIndex]);
+  // Remove duplicates based on question ID
+  const uniqueQuestions = allQuestions.filter(
+    (question, index, arr) => arr.findIndex((q) => q.id === question.id) === index
+  );
+
+  // If we don't have enough unique questions, return what we have
+  if (uniqueQuestions.length <= totalQuestions) {
+    return shuffleArray(uniqueQuestions);
   }
 
-  return distributedQuestions;
+  // Randomly select the requested number of questions
+  const shuffled = shuffleArray([...uniqueQuestions]);
+  return shuffled.slice(0, totalQuestions);
+};
+
+// Helper function to shuffle an array
+const shuffleArray = <T>(array: T[]): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
+// Helper function to remove duplicate questions by ID
+export const removeDuplicateQuestions = (questions: Question[]): Question[] => {
+  const seen = new Set<number>();
+  return questions.filter((question) => {
+    if (seen.has(question.id)) {
+      return false;
+    }
+    seen.add(question.id);
+    return true;
+  });
 };

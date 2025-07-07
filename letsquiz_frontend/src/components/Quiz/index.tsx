@@ -49,7 +49,7 @@ export const QuizComponent: React.FC = () => {
 
   const { groupSession, playerCorrectness } = useAppSelector((state) => state.groupQuiz);
 
-  const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
+  const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
 
   const hasSelectedAnswer = selectedAnswers[currentQuestionIndex] !== undefined;
   const progress =
@@ -59,16 +59,25 @@ export const QuizComponent: React.FC = () => {
   const currentQuestionData = questions[currentQuestionIndex];
 
   useEffect(() => {
-    if (!questions.length && !quizLoading && !quizError && categoryId && difficulty) {
-      dispatch(
-        fetchQuizQuestions({
-          category: categoryId,
-          difficulty,
-          count: settings.numberOfQuestions,
-        })
-      );
+    if (!questions.length && !quizLoading && !quizError && difficulty) {
+      // Fetch questions from all categories with the selected difficulty
+      const requestParams = {
+        difficulty,
+        count: settings.numberOfQuestions,
+        ...(categoryId && { category: categoryId }), // Only include category if not mix-up mode
+      };
+
+      dispatch(fetchQuizQuestions(requestParams));
     }
-  }, [categoryId, difficulty]);
+  }, [
+    categoryId,
+    difficulty,
+    questions.length,
+    quizLoading,
+    quizError,
+    settings.numberOfQuestions,
+    dispatch,
+  ]);
 
   const handleAnswerSelect = async (answer: string) => {
     if (!hasSelectedAnswer && !isLoading && !quizLoading) {
@@ -120,11 +129,13 @@ export const QuizComponent: React.FC = () => {
       dispatch(setLoading(true));
       dispatch(setFeedback({ show: false, isCorrect: false }));
 
-      if (mode === 'Group' && selectedPlayer) {
-        dispatch(updatePlayerScore({ playerId: Number(selectedPlayer), score: 5 }));
+      if (mode === 'Group' && selectedPlayers.length > 0) {
+        selectedPlayers.forEach((playerId) => {
+          dispatch(updatePlayerScore({ playerId: Number(playerId), score: 5 }));
+        });
       }
 
-      setSelectedPlayer(null);
+      setSelectedPlayers([]);
       dispatch(resetTempScores());
 
       if (currentQuestionIndex === settings.numberOfQuestions - 1) {
@@ -167,8 +178,8 @@ export const QuizComponent: React.FC = () => {
                 let playerFinalScore = 0;
 
                 questions.forEach((question, questionIndex) => {
-                  const correctPlayerId = playerCorrectness[questionIndex];
-                  const isCorrect = correctPlayerId === player.id;
+                  const correctPlayerIds = playerCorrectness[questionIndex] || [];
+                  const isCorrect = correctPlayerIds.includes(player.id);
                   correct_answers[String(question.id)] = isCorrect;
                   if (isCorrect) {
                     playerFinalScore += 5;
@@ -251,10 +262,10 @@ export const QuizComponent: React.FC = () => {
                 onAnswerSelect={handleAnswerSelect}
                 showFeedback={feedback.show}
                 selectedAnswer={selectedAnswers[currentQuestionIndex]}
-                onPlayerSelected={(playerId) => {
-                  setSelectedPlayer(playerId);
+                onPlayerSelected={(playerIds) => {
+                  setSelectedPlayers(playerIds);
                 }}
-                currentScoredPlayer={selectedPlayer}
+                currentScoredPlayers={selectedPlayers}
                 difficulty={difficulty}
                 category={category}
                 isLoading={isLoading || quizLoading}

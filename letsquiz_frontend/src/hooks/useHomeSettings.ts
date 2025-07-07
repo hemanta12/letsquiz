@@ -11,8 +11,12 @@ export default function useHomeSettings() {
 
   const toggleMixUp = () => {
     if (!isMixUpMode) {
+      // Enabling mix-up mode: clear selected category
       setCategory(null);
       setMixUpMode(true);
+    } else {
+      // Disabling mix-up mode: keep mix-up disabled, user can select a category
+      setMixUpMode(false);
     }
   };
 

@@ -69,6 +69,7 @@ const App: React.FC = () => {
               <Route element={<ProtectedRoute requireAuth={true} />}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/change-password" element={<ChangePassword />} />
+                <Route path="/profile" element={<Profile />} />
               </Route>
 
               {/* Mixed Access Routes - Both guest and auth users */}
@@ -78,7 +79,6 @@ const App: React.FC = () => {
                 <Route path="/results" element={<Results />} />
               </Route>
 
-              <Route path="/profile" element={<Profile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
