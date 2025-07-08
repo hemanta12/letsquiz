@@ -9,9 +9,32 @@ import { QuizSession } from '../types/dashboard.types';
 class UserService {
   async fetchUserProfile(userId: string): Promise<UserProfile> {
     try {
-      const response = await apiClient.get<UserProfile>(`/users/${userId}/`);
-      return response.data;
+      const response = await apiClient.get<any>(`/users/${userId}/`);
+
+      if (!response.data || !response.data.user_id) {
+        console.warn('[UserService] Received empty or invalid user profile data:', response.data);
+        throw new Error('Invalid user profile data received');
+      }
+
+      if (response.data.user_id.toString() !== userId) {
+        console.warn('[UserService] User ID mismatch:', {
+          requested: userId,
+          received: response.data.user_id,
+        });
+        throw new Error('User ID mismatch in profile response');
+      }
+
+      const userProfile: UserProfile = {
+        id: response.data.user_id,
+        email: response.data.email,
+        is_premium: response.data.is_premium,
+        date_joined: response.data.joined_date,
+        quiz_history: [],
+      };
+
+      return userProfile;
     } catch (error: any) {
+      console.error('[UserService] Error fetching user profile:', error);
       throw error;
     }
   }

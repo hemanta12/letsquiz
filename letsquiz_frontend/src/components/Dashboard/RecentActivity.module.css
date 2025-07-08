@@ -8,6 +8,17 @@
   overflow: hidden;
   transition: box-shadow 0.3s ease;
   padding: 0;
+  position: relative;
+}
+
+.recentActivityCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--color-primary);
 }
 
 .recentActivityHeader {
@@ -296,7 +307,6 @@
 /* Enhanced mobile responsive design */
 @media (max-width: 768px) {
   .recentActivityCard {
-    position: static;
     max-height: 800px;
     margin-top: var(--space-lg);
   }
@@ -382,7 +392,6 @@
 /* Disable sticky positioning on tablets */
 @media (max-width: 1024px) {
   .recentActivityCard {
-    position: static;
     max-height: calc(100vh - 100px);
   }
 }

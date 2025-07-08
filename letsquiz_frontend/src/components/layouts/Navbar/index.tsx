@@ -53,15 +53,7 @@ export const Navbar: React.FC = () => {
     <nav className={styles.navbar}>
       <div className={styles.container}>
         {/* Left Zone: Logo */}
-        <Link
-          to="/"
-          onClick={(e) => {
-            if (onQuizPage || onResultPage) e.preventDefault();
-          }}
-          className={styles.logo}
-        >
-          <Icon name="group" size="medium" color="inherit" className={styles.logoIcon} /> LetsQuiz
-        </Link>
+        <span className={styles.logo}>LetsQuiz</span>
 
         {/* Center Zone: "Play Quiz" and (if authenticated) "Dashboard" */}
         <div className={styles.centerLinks}>

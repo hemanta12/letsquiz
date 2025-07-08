@@ -46,12 +46,14 @@
   --font-size-h1: 32px;
   --font-size-h2: 24px;
   --font-size-h3: 20px;
+  --font-size-h4: 18px;
   --font-size-body: 16px;
   --font-size-small: 14px;
   --font-size-xsmall: 12px;
   --font-size-xxsmall: 10px;
 
   /* Spacing */
+  --space-xxs: 2px;
   --space-xs: 4px;
   --space-sm: 8px;
   --space-smd: 12px;

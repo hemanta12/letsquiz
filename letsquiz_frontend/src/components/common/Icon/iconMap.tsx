@@ -25,6 +25,14 @@ import {
   FiSun,
   FiMoon,
 } from 'react-icons/fi';
+import {
+  GiAtom,
+  GiScrollUnfurled,
+  GiEarthAmerica,
+  GiFilmStrip,
+  GiSoccerBall,
+  GiPuzzle,
+} from 'react-icons/gi';
 import { RiShuffleLine } from 'react-icons/ri';
 import {
   MdExpandMore,
@@ -41,7 +49,10 @@ import {
   BsXCircle,
   BsBookmark,
   BsBookmarkFill,
+  BsStar,
 } from 'react-icons/bs';
+import { TbSum } from 'react-icons/tb';
+import { PiGaugeDuotone } from 'react-icons/pi';
 import { IconName } from './types';
 import { IconType } from 'react-icons';
 
@@ -85,4 +96,13 @@ export const icons: Record<IconName, IconType> = {
   arrowLeft: FiArrowLeft,
   sun: FiSun,
   moon: FiMoon,
+  atom: GiAtom,
+  scroll: GiScrollUnfurled,
+  globe: GiEarthAmerica,
+  film: GiFilmStrip,
+  soccerBall: GiSoccerBall,
+  puzzle: GiPuzzle,
+  counter: TbSum,
+  percentage: PiGaugeDuotone,
+  star: BsStar,
 };

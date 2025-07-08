@@ -19,7 +19,6 @@ const SessionManager: React.FC = () => {
           await dispatch(refreshToken()).unwrap();
         } catch (error) {
           // If refresh fails, the warning will still show but user will likely be logged out
-          console.warn('Token refresh failed during inactivity warning:', error);
         }
       }
     }
@@ -64,17 +63,25 @@ const SessionManager: React.FC = () => {
     }
   }, [handleContinueSession, resetActivity, tokenExpiresAt, dispatch]);
 
-  // Listen for session expired events from AuthService
   useEffect(() => {
-    const handleSessionExpiredEvent = () => {
+    const handleSessionExpiredEvent = (event: CustomEvent) => {
       setShowWarning(false);
+      dispatch(logout());
     };
 
-    window.addEventListener('sessionExpired', handleSessionExpiredEvent);
-    return () => {
-      window.removeEventListener('sessionExpired', handleSessionExpiredEvent);
+    const handleAuthenticationError = (event: CustomEvent) => {
+      setShowWarning(false);
+      dispatch(logout());
     };
-  }, []);
+
+    window.addEventListener('sessionExpired', handleSessionExpiredEvent as EventListener);
+    window.addEventListener('authenticationError', handleAuthenticationError as EventListener);
+
+    return () => {
+      window.removeEventListener('sessionExpired', handleSessionExpiredEvent as EventListener);
+      window.removeEventListener('authenticationError', handleAuthenticationError as EventListener);
+    };
+  }, [dispatch]);
 
   // Only render for authenticated non-guest users
   if (!isAuthenticated || isGuest) {

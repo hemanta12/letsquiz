@@ -31,7 +31,7 @@ class CustomModelBackend:
                     raise AuthenticationFailed("Invalid email or password")
             except Exception as e:
                 logger.error(f"Password validation error for user {username}: {str(e)}")
-                raise AuthenticationFailed("Unable to validate credentials")
+                raise AuthenticationFailed("Unable to validate password. Please try again.")
                 
             # Check if user is active
             if not user.is_active:

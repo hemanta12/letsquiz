@@ -23,16 +23,14 @@
   display: flex;
   align-items: center;
   font-size: var(--font-size-h2);
-  font-weight: 900;
+  font-weight: bolder;
   color: var(--color-primary);
   text-decoration: none;
   margin-right: var(--space-lg);
   padding-left: var(--space-md);
 }
-
-.logoIcon {
-  margin-right: var(--space-xs);
-  vertical-align: middle;
+.logo:hover {
+  cursor: pointer;
 }
 
 /* ---------- Center Zone: Links ---------- */
@@ -272,9 +270,9 @@
     padding: 0 var(--space-sm);
   }
   .logo {
-    padding-left: var(--space-sm);
     font-size: var(--font-size-h3);
     margin-right: var(--space-md);
+    font-weight: 900;
   }
 
   .navLink {
@@ -358,11 +356,9 @@
   }
   .logo {
     font-size: var(--font-size-body);
-    padding-left: 0;
+    font-weight: bolder !important;
+
     margin-right: var(--space-sm);
-  }
-  .logoIcon {
-    margin-right: var(--space-xs);
   }
 
   .centerLinks {

@@ -21,7 +21,7 @@ const GroupQuizzes: React.FC<GroupQuizzesProps> = ({ sessions, onQuizCardClick }
     });
 
   if (groupSessions.length === 0) {
-    return null; // Don't render anything if no group sessions
+    return null;
   }
 
   return (

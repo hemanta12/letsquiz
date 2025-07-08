@@ -6,7 +6,6 @@ import { AES, enc } from 'crypto-js';
 import { v4 as uuidv4 } from 'uuid';
 
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'default-key';
-// const SESSION_CHECK_INTERVAL = 60 * 1000;
 
 export interface User {
   id: number;
@@ -67,8 +66,16 @@ const securelyStoreData = (key: string, data: any): void => {
   localStorage.setItem(key, encrypted);
 };
 
-// Check if token is expired
-if (securelyRetrieveData('tokenExpiresAt') && Date.now() > securelyRetrieveData('tokenExpiresAt')) {
+const tokenExpiresAt = securelyRetrieveData('tokenExpiresAt');
+const sessionData = AuthService.getSessionData();
+const latestExpiresAt = sessionData?.expiresAt || tokenExpiresAt;
+
+if (tokenExpiresAt && !latestExpiresAt) {
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('tokenExpiresAt');
+  localStorage.removeItem('user');
+  localStorage.removeItem('isAuthenticated');
+} else if (latestExpiresAt && Date.now() > latestExpiresAt) {
   localStorage.removeItem('authToken');
   localStorage.removeItem('tokenExpiresAt');
   localStorage.removeItem('user');
@@ -77,20 +84,25 @@ if (securelyRetrieveData('tokenExpiresAt') && Date.now() > securelyRetrieveData(
 
 const initialState: AuthState = (() => {
   const sessionData = AuthService.getSessionData();
-  const isAuthenticated = !!sessionData?.token && !isTokenExpired(sessionData?.expiresAt);
   const user = securelyRetrieveData('user');
   const guestUser = securelyRetrieveData('guestUser');
   const guestProgress = securelyRetrieveData('guestProgress');
 
+  const isAuthenticated = !!sessionData?.token && !!user && !isTokenExpired(sessionData?.expiresAt);
+
   return {
-    user: user || (guestUser && !isTokenExpired(guestUser.expiresAt) ? guestUser : null),
+    user: isAuthenticated
+      ? user
+      : guestUser && !isTokenExpired(guestUser.expiresAt)
+        ? guestUser
+        : null,
     isAuthenticated: isAuthenticated,
     userId: isAuthenticated ? user?.id || null : null,
-    isGuest: !!guestUser && !isTokenExpired(guestUser.expiresAt) && !isAuthenticated,
+    isGuest: !isAuthenticated && !!guestUser && !isTokenExpired(guestUser.expiresAt),
     loading: false,
     error: null,
-    accessToken: sessionData?.token || null,
-    tokenExpiresAt: sessionData?.expiresAt || null,
+    accessToken: isAuthenticated ? sessionData?.token || null : null,
+    tokenExpiresAt: isAuthenticated ? sessionData?.expiresAt || null : null,
     featureGates: {
       canAccessPremiumContent: false,
       maxQuestionsPerQuiz: 10,

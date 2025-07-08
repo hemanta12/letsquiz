@@ -23,24 +23,33 @@ const StatsPanel: React.FC<StatsPanelProps> = ({ profile, sessions, categoryStat
   const averageScore =
     soloQuizzesWithScores.length > 0
       ? Math.round(
-          (soloQuizzesWithScores.reduce((acc, s) => acc + (s.score ?? 0), 0) /
-            soloQuizzesWithScores.reduce((acc, s) => acc + (s.total_questions ?? 0), 0)) *
-            100
+          soloQuizzesWithScores.reduce((sum, s) => sum + (s.score! / s.total_questions!) * 100, 0) /
+            soloQuizzesWithScores.length
         )
       : 0;
 
-  // Calculate best category from passed categoryStats
-  let bestCategoryDisplay = 'N/A';
-  if (categoryStats.length > 0) {
-    // Find category with highest average score
-    const bestCategory = categoryStats.reduce((prev, current) => {
-      const prevAvg = prev.totalQuizzes > 0 ? prev.totalScore / prev.totalQuizzes : 0;
-      const currentAvg = current.totalQuizzes > 0 ? current.totalScore / current.totalQuizzes : 0;
-      return prevAvg > currentAvg ? prev : current;
-    });
-    bestCategoryDisplay = bestCategory.category;
-  }
+  type Perf = { totalPercent: number; count: number };
+  const categoryPerf: Record<string, Perf> = {};
 
+  soloQuizzesWithScores.forEach((s) => {
+    const pct = (s.score! / s.total_questions!) * 100;
+    if (!categoryPerf[s.category]) {
+      categoryPerf[s.category] = { totalPercent: 0, count: 0 };
+    }
+    categoryPerf[s.category].totalPercent += pct;
+    categoryPerf[s.category].count += 1;
+  });
+
+  let bestCategoryDisplay = 'N/A';
+  let highestAvg = -Infinity;
+
+  Object.entries(categoryPerf).forEach(([cat, { totalPercent, count }]) => {
+    const avg = totalPercent / count;
+    if (avg > highestAvg) {
+      highestAvg = avg;
+      bestCategoryDisplay = cat;
+    }
+  });
   return (
     <div className={styles.statsContainer}>
       <Card className={styles.statCard}>
@@ -50,7 +59,7 @@ const StatsPanel: React.FC<StatsPanelProps> = ({ profile, sessions, categoryStat
         <div className={styles.statsRow}>
           <div className={styles.statItem}>
             <div className={styles.iconWrapper}>
-              <Icon name="quiz" size="medium" className={styles.statIcon} />
+              <Icon name="counter" size="medium" className={styles.statIcon} />
             </div>
             <Typography variant="body2" className={styles.statLabel}>
               Total Quizzes
@@ -63,7 +72,7 @@ const StatsPanel: React.FC<StatsPanelProps> = ({ profile, sessions, categoryStat
           </div>
           <div className={styles.statItem}>
             <div className={styles.iconWrapper}>
-              <Icon name="chart" size="medium" className={styles.statIcon} />
+              <Icon name="percentage" size="medium" className={styles.statIcon} />
             </div>
             <Typography variant="body2" className={styles.statLabel}>
               Average Score
@@ -75,7 +84,7 @@ const StatsPanel: React.FC<StatsPanelProps> = ({ profile, sessions, categoryStat
           </div>
           <div className={styles.statItem}>
             <div className={styles.iconWrapper}>
-              <Icon name="trophy" size="medium" className={styles.statIcon} />
+              <Icon name="star" size="medium" className={styles.statIcon} />
             </div>
             <Typography variant="body2" className={styles.statLabel}>
               Best Category

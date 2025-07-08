@@ -69,15 +69,14 @@
 }
 
 .categoryIcon {
-  width: 40px;
-  height: 40px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--color-primary);
   color: white;
   border-radius: 8px;
-  font-size: 18px;
   transition: all 0.3s ease;
 }
 
@@ -86,7 +85,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: var(--space-md);
-  padding: var(--space-md);
+  padding: var(--space-md) var(--space-sm);
 }
 
 .expandIcon {
@@ -117,10 +116,6 @@
 }
 
 @media (max-width: 768px) {
-  .categoryTimeline {
-    padding-left: 0;
-  }
-
   .categoryGroup {
     margin-bottom: var(--space-md);
     padding: var(--space-sm);
@@ -133,9 +128,6 @@
   }
 
   .categoryIcon {
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
     border-radius: 10px;
   }
 }
@@ -150,13 +142,6 @@
     padding: var(--space-xs) var(--space-sm);
     margin: calc(-1 * var(--space-xs)) calc(-1 * var(--space-xs)) var(--space-xs);
     font-size: 13px;
-  }
-
-  .categoryIcon {
-    width: 36px;
-    height: 36px;
-    font-size: 16px;
-    border-radius: 8px;
   }
 
   .headerRow {

@@ -14,15 +14,15 @@ type CategoryListProps = {
 };
 
 const categoryIconMap: { [key: string]: IconName } = {
-  History: 'menu',
-  Science: 'check',
-  Geography: 'arrowRight',
-  Literature: 'play',
-  'General Knowledge': 'person',
-  Entertainment: 'group',
-  Sports: 'shuffle',
-  Movies: 'play',
-  Trivia: 'check',
+  History: 'scroll',
+  Science: 'atom',
+  Geography: 'globe',
+  Literature: 'book',
+  'General Knowledge': 'question',
+  Entertainment: 'play',
+  Sports: 'soccerBall',
+  Movies: 'film',
+  Trivia: 'puzzle',
 };
 
 const CategoryList: React.FC<CategoryListProps> = ({
@@ -68,7 +68,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
             >
               <div className={styles.headerRow}>
                 <div className={styles.categoryIcon}>
-                  <Icon name={iconName} size="large" />
+                  <Icon name={iconName} size="xs" />
                 </div>
                 <Typography variant="h3">{categoryName}</Typography>
               </div>

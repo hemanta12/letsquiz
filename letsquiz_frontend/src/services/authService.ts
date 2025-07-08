@@ -85,6 +85,7 @@ class CustomAuthError extends Error {
 
 class AuthService {
   private sessionCheckInterval: NodeJS.Timeout | null = null;
+  private logoutInProgress = false;
 
   constructor() {
     this.initializeSessionCheck();
@@ -99,13 +100,19 @@ class AuthService {
   private async checkSessionStatus() {
     try {
       const session = this.getSessionData();
-      if (!session) return;
+      if (!session) {
+        return;
+      }
 
       const timeUntilExpiry = session.expiresAt - Date.now();
 
       if (timeUntilExpiry <= 0) {
         this.logout();
-        window.dispatchEvent(new CustomEvent('sessionExpired'));
+        window.dispatchEvent(
+          new CustomEvent('sessionExpired', {
+            detail: { reason: 'token_expired' },
+          })
+        );
         return;
       }
 
@@ -114,14 +121,22 @@ class AuthService {
 
         if (!refreshSuccess) {
           this.logout();
-          window.dispatchEvent(new CustomEvent('sessionExpired'));
+          window.dispatchEvent(
+            new CustomEvent('sessionExpired', {
+              detail: { reason: 'refresh_failed' },
+            })
+          );
         } else {
           window.dispatchEvent(new CustomEvent('tokenRefreshed'));
         }
       }
-    } catch {
+    } catch (error) {
       this.logout();
-      window.dispatchEvent(new CustomEvent('sessionExpired'));
+      window.dispatchEvent(
+        new CustomEvent('sessionExpired', {
+          detail: { reason: 'session_check_error', error },
+        })
+      );
     }
   }
 
@@ -311,6 +326,8 @@ class AuthService {
   }
 
   async refreshSession(): Promise<boolean> {
+    if (this.logoutInProgress) return false;
+
     const refreshToken = getRefreshToken();
     if (!refreshToken) return false;
 
@@ -377,6 +394,7 @@ class AuthService {
   }
 
   logout(): void {
+    this.logoutInProgress = true;
     if (this.sessionCheckInterval) {
       clearInterval(this.sessionCheckInterval);
     }
@@ -397,6 +415,7 @@ class AuthService {
       localStorage.removeItem('sessionData');
       this.clearGuestSession();
     }
+    this.logoutInProgress = false;
   }
 
   isGuestSession(): boolean {

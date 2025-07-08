@@ -17,7 +17,7 @@ const QuizCard: React.FC<QuizCardProps> = ({ session, onClick }) => {
       onClick();
     }
   };
-
+  console.log('Difficulty', session.difficulty);
   // Handle potential null score
   const score = session.score !== null ? session.score : 'N/A';
   const totalQuestions = session.total_questions ?? 0;
@@ -27,13 +27,23 @@ const QuizCard: React.FC<QuizCardProps> = ({ session, onClick }) => {
   const displayText = getWinnerDisplay(session);
   const isGroupSession = session.is_group_session;
 
+  function toCamelCase(str: string) {
+    return str
+      .toLowerCase()
+      .split(' ')
+      .map((word, i) => (i === 0 ? word : word[0].toUpperCase() + word.slice(1)))
+      .join('');
+  }
+  const difficultyClass = toCamelCase(session.difficulty);
+  console.log('difficultyClass', difficultyClass);
+
   // Radial gauge calculations
   const radius = 24;
   const circumference = 2 * Math.PI * radius;
   const strokeDasharray = `${(scorePercentage / 100) * circumference} ${circumference}`;
 
-  const renderRadialGauge = () => (
-    <div className={styles.radialGauge}>
+  const renderRadialGaugeSolo = () => (
+    <div className={styles.radialGaugeSoloCol}>
       <svg className={styles.radialGaugeSvg} viewBox="0 0 60 60">
         <circle className={styles.gaugeBackground} cx="30" cy="30" r={radius} />
         <circle
@@ -44,12 +54,7 @@ const QuizCard: React.FC<QuizCardProps> = ({ session, onClick }) => {
           strokeDasharray={strokeDasharray}
         />
       </svg>
-      <div className={styles.gaugeContent}>
-        <div className={styles.gaugeScore}>
-          {score}/{totalQuestions}
-        </div>
-        <div className={styles.gaugePercentage}>{Math.round(scorePercentage)}%</div>
-      </div>
+      <div className={styles.gaugeContentSolo}>{Math.round(scorePercentage)}%</div>
     </div>
   );
 
@@ -62,40 +67,61 @@ const QuizCard: React.FC<QuizCardProps> = ({ session, onClick }) => {
       role="button"
       tabIndex={0}
     >
-      {/* First row: Date and Difficulty/Category */}
-      <div className={styles.topRow}>
-        <time className={styles.quizTime}>
-          {session.started_at ? formatDate(session.started_at) : 'Date N/A'}
-        </time>
-        {isGroupSession ? (
-          <div className={styles.badgeGroup}>
-            <span className={styles.quizTypeLabel + ' ' + styles.group}>{session.category}</span>
-            <span
-              className={styles.difficultyBadge + ' ' + styles[session.difficulty.toLowerCase()]}
-            >
+      {/* Two-column layout for solo mode */}
+      {!isGroupSession && totalQuestions > 0 && session.score !== null ? (
+        <div className={styles.soloRowLayout}>
+          <div className={styles.soloLeftCol}>
+            <time className={styles.quizTime}>
+              {session.started_at ? formatDate(session.started_at) : 'Date N/A'}
+            </time>
+            <div className={styles.soloScore}>
+              {score}/{totalQuestions}
+            </div>
+            <span className={styles.difficultyBadge + ' ' + styles[difficultyClass]}>
               {session.difficulty}
             </span>
           </div>
-        ) : (
-          <span className={styles.difficultyBadge + ' ' + styles[session.difficulty.toLowerCase()]}>
-            {session.difficulty}
-          </span>
-        )}
-      </div>
-
-      {/* Second row: Score/Winner */}
-      <div className={styles.scoreSection}>
-        {!isGroupSession && totalQuestions > 0 && session.score !== null ? (
-          renderRadialGauge()
-        ) : (
-          <Typography
-            variant="h3"
-            className={displayText.isWinner ? styles.winnerText : styles.scoreText}
-          >
-            {displayText.text}
-          </Typography>
-        )}
-      </div>
+          <div className={styles.soloRightCol}>{renderRadialGaugeSolo()}</div>
+        </div>
+      ) : (
+        <>
+          {/* Existing group mode layout */}
+          <div className={styles.topRow}>
+            <time className={styles.quizTime}>
+              {session.started_at ? formatDate(session.started_at) : 'Date N/A'}
+            </time>
+            {isGroupSession ? (
+              <div className={styles.badgeGroup}>
+                <span className={styles.quizTypeLabel + ' ' + styles.group}>
+                  {session.category}
+                </span>
+                <span className={styles.difficultyBadge + ' ' + styles[difficultyClass]}>
+                  {session.difficulty}
+                </span>
+              </div>
+            ) : (
+              <span className={styles.difficultyBadge + ' ' + styles[difficultyClass]}>
+                {session.difficulty}
+              </span>
+            )}
+          </div>
+          <div className={styles.scoreSection}>
+            <div className={styles.scoreWinnerBlock}>
+              <Typography
+                variant="h3"
+                className={displayText.isWinner ? styles.winnerText : styles.scoreText}
+              >
+                {displayText.text}
+              </Typography>
+              {isGroupSession && session.group_players && session.group_players.length > 0 && (
+                <Typography variant="caption" className={styles.groupPlayers}>
+                  Players: {session.group_players.map((p: { name: string }) => p.name).join(', ')}
+                </Typography>
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

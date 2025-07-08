@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Typography, Loading } from '../../components/common';
 import DashboardContent from '../../components/Dashboard/DashboardContent';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
 import { fetchUserProfile } from '../../store/slices/userSlice';
+import { logout } from '../../store/slices/authSlice';
 import styles from './Dashboard.module.css';
 
 const Dashboard: React.FC = () => {
@@ -11,30 +12,77 @@ const Dashboard: React.FC = () => {
   const dispatch = useAppDispatch();
   const auth = useAppSelector((state) => state.auth);
   const user = useAppSelector((state) => state.user);
+  const [profileFetchAttempted, setProfileFetchAttempted] = useState(false);
 
   const { profile, loadingProfile, loadingLeaderboard, errorProfile, errorLeaderboard } = user;
 
-  const { isAuthenticated } = auth;
+  const { isAuthenticated, userId } = auth;
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');
     }
   }, [isAuthenticated, navigate]);
+
   useEffect(() => {
-    if (isAuthenticated && !profile && !loadingProfile) {
-      const userId = auth.userId;
+    if (isAuthenticated && !profile && !loadingProfile && !profileFetchAttempted) {
       if (!userId) {
-        console.warn('[Dashboard useEffect] userId is null, cannot fetch profile.');
+        console.warn('[Dashboard useEffect] userId is null, logging out user.');
+        dispatch(logout());
         return;
       }
       console.log(
         '[Dashboard useEffect] Conditions met, dispatching fetchUserProfile for userId:',
         userId
       );
+      setProfileFetchAttempted(true);
       dispatch(fetchUserProfile(userId.toString()));
     }
-  }, [dispatch, isAuthenticated, profile, loadingProfile, auth]);
+  }, [dispatch, isAuthenticated, profile, loadingProfile, profileFetchAttempted, userId]);
+
+  useEffect(() => {
+    if (profileFetchAttempted && errorProfile && isAuthenticated && !loadingProfile) {
+      console.error(
+        '[Dashboard] Failed to fetch user profile, session may be invalid:',
+        errorProfile
+      );
+      if (
+        errorProfile.includes('401') ||
+        errorProfile.includes('Unauthorized') ||
+        errorProfile.includes('authentication')
+      ) {
+        console.log('[Dashboard] Authentication error detected, logging out user');
+        dispatch(logout());
+      }
+    }
+  }, [profileFetchAttempted, errorProfile, isAuthenticated, loadingProfile, dispatch]);
+
+  useEffect(() => {
+    if (isAuthenticated && userId && !profile && !loadingProfile && !errorProfile) {
+      const timer = setTimeout(() => {
+        if (!profile && !loadingProfile) {
+          console.warn('[Dashboard] No profile data after timeout, may indicate session issue');
+          if (!profileFetchAttempted) {
+            setProfileFetchAttempted(true);
+            dispatch(fetchUserProfile(userId.toString()));
+          } else {
+            console.log('[Dashboard] Profile fetch failed after retry, logging out');
+            dispatch(logout());
+          }
+        }
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [
+    isAuthenticated,
+    userId,
+    profile,
+    loadingProfile,
+    errorProfile,
+    profileFetchAttempted,
+    dispatch,
+  ]);
 
   // Show loading state
   if (loadingProfile || loadingLeaderboard) {

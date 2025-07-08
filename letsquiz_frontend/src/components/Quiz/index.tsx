@@ -50,16 +50,30 @@ export const QuizComponent: React.FC = () => {
   const { groupSession, playerCorrectness } = useAppSelector((state) => state.groupQuiz);
 
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
+  const [isFinishing, setIsFinishing] = useState(false);
 
   const hasSelectedAnswer = selectedAnswers[currentQuestionIndex] !== undefined;
   const progress =
-    settings.numberOfQuestions > 0
-      ? ((currentQuestionIndex + 1) / settings.numberOfQuestions) * 100
+    Math.min(settings.numberOfQuestions, questions.length) > 0
+      ? ((currentQuestionIndex + 1) / Math.min(settings.numberOfQuestions, questions.length)) * 100
       : 0;
   const currentQuestionData = questions[currentQuestionIndex];
 
+  const hasValidQuestion = currentQuestionData && currentQuestionIndex < questions.length;
+
+  const isQuizFinished =
+    currentQuestionIndex >= Math.min(settings.numberOfQuestions, questions.length);
+
+  const shouldRenderQuestion = hasValidQuestion && !isQuizFinished && !isFinishing;
+
   const isInitialLoading = !questions.length && (quizLoading || !difficulty);
-  const shouldShowLoading = isInitialLoading || isLoading || quizLoading;
+  const shouldShowLoading = isInitialLoading || isLoading || quizLoading || isFinishing;
+
+  useEffect(() => {
+    if (isQuizFinished && questions.length > 0 && !shouldShowLoading && !isInitialLoading) {
+      navigate('/results');
+    }
+  }, [isQuizFinished, questions.length, shouldShowLoading, isInitialLoading, navigate]);
 
   useEffect(() => {
     if (
@@ -69,11 +83,10 @@ export const QuizComponent: React.FC = () => {
       difficulty &&
       settings.numberOfQuestions > 0
     ) {
-      // Fetch questions from all categories with the selected difficulty
       const requestParams = {
         difficulty,
         count: settings.numberOfQuestions,
-        ...(categoryId && { category: categoryId }), // Only include category if not mix-up mode
+        ...(categoryId && { category: categoryId }),
       };
 
       dispatch(fetchQuizQuestions(requestParams));
@@ -147,7 +160,12 @@ export const QuizComponent: React.FC = () => {
       setSelectedPlayers([]);
       dispatch(resetTempScores());
 
-      if (currentQuestionIndex === settings.numberOfQuestions - 1) {
+      const isLastQuestion =
+        currentQuestionIndex >= Math.min(settings.numberOfQuestions, questions.length) - 1;
+
+      if (isLastQuestion) {
+        setIsFinishing(true);
+
         const score = Object.entries(selectedAnswers).reduce((total: number, [index, answer]) => {
           const questionIndex = parseInt(index);
           return total + (answer === questions[questionIndex].correct_answer ? 1 : 0);
@@ -215,6 +233,7 @@ export const QuizComponent: React.FC = () => {
         }
 
         navigate('/results');
+        return;
       } else {
         if (isGuest && currentQuestionIndex >= featureGates.maxQuestionsPerQuiz - 1) {
           dispatch(
@@ -230,6 +249,7 @@ export const QuizComponent: React.FC = () => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
       dispatch(setError(errorMessage));
+      setIsFinishing(false);
     } finally {
       dispatch(setLoading(false));
     }
@@ -239,7 +259,9 @@ export const QuizComponent: React.FC = () => {
     error ||
     quizError ||
     (questions.length === 0 ? 'No questions found for the selected criteria.' : null) ||
-    (!currentQuestionData ? 'Error: Invalid question format' : null);
+    (!hasValidQuestion && !isQuizFinished && !shouldShowLoading
+      ? 'Error: Invalid question format'
+      : null);
 
   return (
     <>
@@ -247,26 +269,31 @@ export const QuizComponent: React.FC = () => {
         mode={mode}
         difficulty={difficulty}
         category={category}
-        currentQuestionIndex={currentQuestionIndex}
-        totalQuestions={settings.numberOfQuestions}
+        currentQuestionIndex={Math.min(
+          currentQuestionIndex,
+          Math.min(settings.numberOfQuestions, questions.length) - 1
+        )}
+        totalQuestions={Math.min(settings.numberOfQuestions, questions.length)}
         progress={progress}
         isLoading={shouldShowLoading}
         error={errorMessage}
         onQuit={() => dispatch(setModal({ type: 'quitQuiz', isOpen: true }))}
         onNext={handleNext}
-        isNextDisabled={!hasSelectedAnswer || shouldShowLoading}
+        isNextDisabled={!hasSelectedAnswer || shouldShowLoading || !shouldRenderQuestion}
         nextButtonLabel={
-          currentQuestionIndex === settings.numberOfQuestions - 1 ? 'Finish Quiz' : 'Next Question'
+          currentQuestionIndex >= Math.min(settings.numberOfQuestions, questions.length) - 1
+            ? 'Finish Quiz'
+            : 'Next Question'
         }
       >
         {isInitialLoading ? (
           <Loading variant="skeleton" />
         ) : mode === 'Group' ? (
           <>
-            {currentQuestionData ? (
+            {shouldRenderQuestion ? (
               <GroupQuestionView
                 questionNumber={currentQuestionIndex + 1}
-                totalQuestions={settings.numberOfQuestions}
+                totalQuestions={Math.min(settings.numberOfQuestions, questions.length)}
                 question={currentQuestionData.question_text}
                 options={currentQuestionData.answer_options}
                 correctAnswer={currentQuestionData.correct_answer}
@@ -292,7 +319,7 @@ export const QuizComponent: React.FC = () => {
           </>
         ) : (
           <>
-            {currentQuestionData ? (
+            {shouldRenderQuestion ? (
               <QuestionContent
                 question={currentQuestionData.question_text}
                 options={currentQuestionData.answer_options}

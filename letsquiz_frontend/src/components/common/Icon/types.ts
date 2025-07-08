@@ -36,7 +36,16 @@ export type IconName =
   | 'countdown'
   | 'sun'
   | 'moon'
-  | 'dashboard';
+  | 'dashboard'
+  | 'atom'
+  | 'scroll'
+  | 'globe'
+  | 'film'
+  | 'soccerBall'
+  | 'puzzle'
+  | 'counter'
+  | 'percentage'
+  | 'star';
 
 export interface IconProps {
   name: IconName;

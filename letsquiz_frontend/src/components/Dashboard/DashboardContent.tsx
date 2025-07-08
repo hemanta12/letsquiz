@@ -140,12 +140,13 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
             />
           )}
         </div>
-
-        <RecentActivity
-          activities={recentActivities}
-          onActivityClick={(sessionId) => openDetail(sessionId)}
-          onDeleteSuccess={() => dispatch(fetchQuizHistoryThunk())}
-        />
+        <div className={styles.recentActivityContainer}>
+          <RecentActivity
+            activities={recentActivities}
+            onActivityClick={(sessionId) => openDetail(sessionId)}
+            onDeleteSuccess={() => dispatch(fetchQuizHistoryThunk())}
+          />
+        </div>
       </div>
 
       <GroupQuizzes

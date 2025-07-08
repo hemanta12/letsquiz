@@ -79,18 +79,6 @@
   color: var(--color-error);
 }
 
-/* Tablet Responsive */
-@media (max-width: 1024px) {
-  .contentRow {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-lg);
-  }
-
-  .historyContainer {
-    padding: var(--space-md);
-  }
-}
-
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .dashboardContent {

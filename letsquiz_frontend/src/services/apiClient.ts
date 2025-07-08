@@ -114,9 +114,17 @@ class ApiClientService {
     const retryCount = original._retryCount ?? 0;
     const isPublic = this.publicEndpoints.some((ep) => original.url?.endsWith(ep));
 
-    if (error.response?.status === 401 && !isPublic && !this.isRefreshing) {
-      if (retryCount < MAX_RETRIES) {
+    // Handle 401 Unauthorized errors
+    if (error.response?.status === 401 && !isPublic) {
+      if (!this.isRefreshing && retryCount < MAX_RETRIES) {
         return this.handleUnauthorizedError(error);
+      } else {
+        window.dispatchEvent(
+          new CustomEvent('sessionExpired', {
+            detail: { reason: 'authentication_failed', error: error.response.data },
+          })
+        );
+        return Promise.reject(this.formatError(error));
       }
     }
 
@@ -151,6 +159,13 @@ class ApiClientService {
           return this.axiosInstance(cfg).then(resolve).catch(reject);
         })
       );
+    } catch (refreshError) {
+      window.dispatchEvent(
+        new CustomEvent('authenticationError', {
+          detail: { reason: 'refresh_failed', error: refreshError },
+        })
+      );
+      throw refreshError;
     } finally {
       this.isRefreshing = false;
     }

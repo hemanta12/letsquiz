@@ -60,12 +60,14 @@ export const useActivityTracker = ({
     // Set warning timeout
     warningTimeoutRef.current = setTimeout(() => {
       if (isAuthenticated && !isGuest) {
+        console.log('[ActivityTracker] Inactivity warning triggered');
         isInactiveRef.current = true;
         onInactivityWarning?.();
 
         // Set expiry timeout after warning
         expiredTimeoutRef.current = setTimeout(() => {
           if (isAuthenticated && !isGuest) {
+            console.log('[ActivityTracker] Session expired due to inactivity');
             dispatch(logout());
             onSessionExpired?.();
           }
