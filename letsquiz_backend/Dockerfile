@@ -35,8 +35,5 @@ FROM base
 # Expose the port Gunicorn will listen on
 EXPOSE 8000
 
-# Use Gunicorn to serve the app
-CMD ["gunicorn", "core.wsgi:application", \
-     "--bind", "0.0.0.0:8000", \
-     "--workers", "3", \
-     "--timeout", "120"]
+# Use shell form so ${PORT} expands at runtime on Railway.
+CMD ["sh", "-c", "gunicorn core.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 3 --timeout 120"]
