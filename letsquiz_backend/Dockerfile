@@ -3,7 +3,7 @@
 ############################
 # Base image
 ############################
-FROM python:3.13-slim AS base
+FROM python:3.12-slim AS base
 
 # Don’t write .pyc, turn off buffering
 ENV PYTHONDONTWRITEBYTECODE=1
