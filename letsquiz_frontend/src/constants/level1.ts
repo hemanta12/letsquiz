@@ -1,3 +1,9 @@
+export const LEVEL1_CATEGORIES = [
+  { id: 1, name: 'Science' },
+  { id: 2, name: 'History' },
+  { id: 3, name: 'Geography' },
+] as const;
+
 export const LEVEL1_ALLOWED_DIFFICULTIES = ['Easy', 'Medium', 'Quiz Genius'] as const;
 
 export type Level1Difficulty = (typeof LEVEL1_ALLOWED_DIFFICULTIES)[number];
