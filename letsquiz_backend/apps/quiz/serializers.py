@@ -8,7 +8,7 @@ import re
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from letsquiz_backend.apps.quiz.models import (
+from apps.quiz.models import (
     Question,
     Category,
     DifficultyLevel,

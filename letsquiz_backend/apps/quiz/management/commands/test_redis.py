@@ -3,7 +3,7 @@ Management command to test Redis connectivity
 """
 from django.core.management.base import BaseCommand
 from django.core.cache import cache
-from letsquiz_backend.core.redis_utils import get_redis_client, is_redis_available
+from core.redis_utils import get_redis_client, is_redis_available
 
 
 class Command(BaseCommand):

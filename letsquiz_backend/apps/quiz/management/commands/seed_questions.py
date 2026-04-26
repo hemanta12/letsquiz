@@ -5,12 +5,12 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from letsquiz_backend.apps.quiz.level1_config import (
+from apps.quiz.level1_config import (
     canonicalize_difficulty_label,
     get_allowed_category_names,
     normalize_question_key,
 )
-from letsquiz_backend.apps.quiz.models import Category, DifficultyLevel, Question
+from apps.quiz.models import Category, DifficultyLevel, Question
 
 
 class Command(BaseCommand):

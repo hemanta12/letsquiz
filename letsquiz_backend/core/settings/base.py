@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "django_celery_beat",
-    "letsquiz_backend.apps.quiz",
+    "apps.quiz",
 ]
 
 MIDDLEWARE = [
@@ -50,7 +50,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "letsquiz_backend.core.urls"
+ROOT_URLCONF = "core.urls"
 
 TEMPLATES = [
     {
@@ -67,7 +67,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "letsquiz_backend.core.wsgi.application"
+WSGI_APPLICATION = "core.wsgi.application"
 
 
 
@@ -80,7 +80,7 @@ DATABASES = {
 
 
 AUTHENTICATION_BACKENDS = [
-    'letsquiz_backend.apps.quiz.backends.CustomModelBackend', # Use your custom backend
+    'apps.quiz.backends.CustomModelBackend', # Use your custom backend
 ]
 
 
@@ -127,7 +127,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
-    'EXCEPTION_HANDLER': 'letsquiz_backend.core.exceptions.custom_exception_handler',
+    'EXCEPTION_HANDLER': 'core.exceptions.custom_exception_handler',
 }
 
 from datetime import timedelta
@@ -162,7 +162,7 @@ SIMPLE_JWT = {
 
     "USERNAME_FIELD": "email",
 
-    "TOKEN_OBTAIN_SERIALIZER": "letsquiz_backend.apps.quiz.serializers.CustomTokenObtainPairSerializer",
+    "TOKEN_OBTAIN_SERIALIZER": "apps.quiz.serializers.CustomTokenObtainPairSerializer",
 }
 
 LOGGING = {

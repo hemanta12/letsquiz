@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated 
 
-from letsquiz_backend.core.redis_utils import cache_set, cache_get, cache_delete
+from core.redis_utils import cache_set, cache_get, cache_delete
 from .level1_config import (
     canonicalize_difficulty_label,
     get_allowed_category_names,

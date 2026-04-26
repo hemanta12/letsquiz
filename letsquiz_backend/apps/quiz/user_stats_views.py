@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 
 from django.contrib.auth import get_user_model
 
-from letsquiz_backend.core.redis_utils import cache_set, cache_get, cache_delete
+from core.redis_utils import cache_set, cache_get, cache_delete
 
 from .models import (
     QuizSession,

@@ -5,6 +5,6 @@ from rest_framework_simplejwt.views import (
 )
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('', include('letsquiz_backend.apps.quiz.urls')),
+    path('', include('apps.quiz.urls')),
     path('auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

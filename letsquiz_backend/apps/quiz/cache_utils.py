@@ -4,7 +4,7 @@ Cache management utilities for quiz data
 import logging
 from typing import Optional, List
 from django.core.cache import cache
-from letsquiz_backend.core.redis_utils import cache_delete, get_redis_client
+from core.redis_utils import cache_delete, get_redis_client
 
 logger = logging.getLogger(__name__)
 
@@ -120,8 +120,8 @@ def invalidate_all_quiz_cache():
 
 def warm_questions_cache(category_ids: Optional[List[int]] = None, difficulties: Optional[List[str]] = None):
     """Pre-warm the questions cache with popular combinations"""
-    from letsquiz_backend.apps.quiz.quiz_views import get_questions_from_cache_or_db
-    from letsquiz_backend.apps.quiz.models import Category, DifficultyLevel
+    from apps.quiz.quiz_views import get_questions_from_cache_or_db
+    from apps.quiz.models import Category, DifficultyLevel
     
     # Get actual category IDs from database if not provided
     if not category_ids:

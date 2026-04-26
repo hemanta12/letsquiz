@@ -3,13 +3,13 @@ Management command to test and manage quiz caching
 """
 from django.core.management.base import BaseCommand
 from django.core.cache import cache
-from letsquiz_backend.apps.quiz.cache_utils import (
+from apps.quiz.cache_utils import (
     invalidate_all_quiz_cache,
     warm_questions_cache,
     invalidate_questions_cache,
     invalidate_categories_cache
 )
-from letsquiz_backend.core.redis_utils import get_redis_client, is_redis_available
+from core.redis_utils import get_redis_client, is_redis_available
 
 
 class Command(BaseCommand):
@@ -72,7 +72,7 @@ class Command(BaseCommand):
         cache.delete(test_key)
         
         # Test 2: Cache key generation
-        from letsquiz_backend.apps.quiz.quiz_views import generate_cache_key
+        from apps.quiz.quiz_views import generate_cache_key
         
         key1 = generate_cache_key("test", category=1, difficulty="Easy")
         key2 = generate_cache_key("test", difficulty="Easy", category=1)
@@ -84,7 +84,7 @@ class Command(BaseCommand):
         
         # Test 3: Questions cache function
         try:
-            from letsquiz_backend.apps.quiz.quiz_views import get_questions_from_cache_or_db
+            from apps.quiz.quiz_views import get_questions_from_cache_or_db
             
             # This should work even if no questions exist
             result = get_questions_from_cache_or_db(count=1)

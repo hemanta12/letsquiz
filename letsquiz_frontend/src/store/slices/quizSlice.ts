@@ -262,7 +262,7 @@ export const startGroupQuiz = createAsyncThunk<
     difficulty: string;
     numberOfQuestions: number;
   },
-  { rejectValue: string }
+  { rejectValue: string; state: RootState }
 >(
   'quiz/startGroupQuiz',
   async (

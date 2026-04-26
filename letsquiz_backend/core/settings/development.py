@@ -20,7 +20,7 @@ DATABASES = {
 logger.info(f"DATABASES setting in development.py: {DATABASES}")
 
 MIDDLEWARE += [
-    'letsquiz_backend.core.middleware.GuestSessionMiddleware',
+    'core.middleware.GuestSessionMiddleware',
 ]
 
 CACHES = {
