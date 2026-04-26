@@ -28,11 +28,6 @@ RUN pip install --upgrade pip \
 COPY . .
 
 ############################
-# Collect static (if any)
-############################
-RUN python manage.py collectstatic --no-input
-
-############################
 # Final image
 ############################
 FROM base
