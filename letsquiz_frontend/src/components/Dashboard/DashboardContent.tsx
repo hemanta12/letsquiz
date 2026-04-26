@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Typography } from '../common/Typography';
 import Button from '../common/Button';
 import Modal from '../common/Modal';
@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
 import {
   fetchSingleDetailedQuizSession,
   clearSelectedDetailedSession,
+  fetchUserProfile,
   cleanExpiredCache,
 } from '../../store/slices/userSlice';
 import ActivityDetailContent from './ActivityDetailContent';
@@ -17,6 +18,7 @@ import GroupQuizzes from './GroupQuizzes';
 import { UserProfile } from '../../types/api.types';
 import { calculateCategoryStats } from '../../utils/dashboardUtils';
 import { fetchQuizHistoryThunk } from '../../store/slices/quizSlice';
+
 import styles from './DashboardContent.module.css';
 
 interface DashboardContentProps {
@@ -25,10 +27,8 @@ interface DashboardContentProps {
 
 const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
   const dispatch = useAppDispatch();
-  const { userId, isAuthenticated } = useAppSelector((state) => ({
-    userId: state.auth.userId,
-    isAuthenticated: state.auth.isAuthenticated,
-  }));
+  const userId = useAppSelector((state) => state.auth.userId);
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const { selectedDetailedSession, loadingSelectedDetailedSession, errorSelectedDetailedSession } =
     useAppSelector((state) => state.user);
 
@@ -36,9 +36,32 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
     sessions: reduxSessions,
     historyLoading,
     historyError,
+    lastHistoryFetch: quizLastHistoryFetch,
   } = useAppSelector((state) => state.quiz);
+  const { lastProfileFetch } = useAppSelector((state) => state.user);
+
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [showModal, setShowModal] = useState(false);
+  const historyFetchAttempted = useRef(false);
+
+  useEffect(() => {
+    if (isAuthenticated && userId && !historyFetchAttempted.current) {
+      historyFetchAttempted.current = true;
+      dispatch(fetchQuizHistoryThunk());
+    }
+  }, [dispatch, isAuthenticated, userId]);
+
+  // Cleanup expired cache periodically
+  useEffect(() => {
+    const cleanup = setInterval(
+      () => {
+        dispatch(cleanExpiredCache());
+      },
+      3 * 60 * 1000
+    ); // Clean every 3 minutes
+
+    return () => clearInterval(cleanup);
+  }, [dispatch]);
 
   const categoryStats = useMemo(() => {
     return calculateCategoryStats(reduxSessions || []);
@@ -74,23 +97,30 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
     dispatch(clearSelectedDetailedSession());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (isAuthenticated && userId) {
+  const handleSmartRefresh = useCallback(() => {
+    const now = Date.now();
+
+    // Force refresh quiz history if it's stale (older than 5 minutes)
+    const historyAge = quizLastHistoryFetch ? now - quizLastHistoryFetch : Infinity;
+    if (historyAge > 5 * 60 * 1000) {
+      console.log('[Cache] Refreshing stale quiz history');
       dispatch(fetchQuizHistoryThunk());
+    } else {
+      console.log('[Cache] Quiz history is fresh, skipping refresh');
     }
-  }, [dispatch, isAuthenticated, userId]);
 
-  // Periodic cache cleanup - runs every 2 minutes
-  useEffect(() => {
-    const cleanup = setInterval(
-      () => {
-        dispatch(cleanExpiredCache());
-      },
-      2 * 60 * 1000
-    );
+    // Force refresh user profile if it's stale (older than 8 minutes)
+    const profileAge = lastProfileFetch ? now - lastProfileFetch : Infinity;
+    if (profileAge > 8 * 60 * 1000 && userId) {
+      console.log('[Cache] Refreshing stale user profile');
+      dispatch(fetchUserProfile(userId.toString()));
+    } else {
+      console.log('[Cache] User profile is fresh, skipping refresh');
+    }
 
-    return () => clearInterval(cleanup);
-  }, [dispatch]);
+    // Clean expired session cache
+    dispatch(cleanExpiredCache());
+  }, [dispatch, userId, quizLastHistoryFetch, lastProfileFetch]);
 
   if (!isAuthenticated) {
     return (
@@ -125,6 +155,9 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
         <div className={styles.historyContainer}>
           <div className={styles.historyHeader}>
             <Typography variant="h3">Quiz History (Solo Mode)</Typography>
+            <Button onClick={handleSmartRefresh} variant="secondary" size="small">
+              Refresh
+            </Button>
           </div>
           {reduxSessions.length === 0 ? (
             <div className={styles.emptyState}>
@@ -144,7 +177,14 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ profile }) => {
           <RecentActivity
             activities={recentActivities}
             onActivityClick={(sessionId) => openDetail(sessionId)}
-            onDeleteSuccess={() => dispatch(fetchQuizHistoryThunk())}
+            onDeleteSuccess={() => {
+              // Force refresh after deletion since data has changed
+              console.log('[Cache] Session deleted, forcing data refresh');
+              dispatch(fetchQuizHistoryThunk());
+              if (userId) {
+                dispatch(fetchUserProfile(userId.toString()));
+              }
+            }}
           />
         </div>
       </div>

@@ -2,6 +2,7 @@ import React, { KeyboardEvent } from 'react';
 import { Button, Typography, Icon } from '../common';
 import commonStyles from './QuizCommon.module.css';
 import { BaseQuestionProps } from '../../types/quiz.types';
+import { areAnswersEquivalent } from '../../utils/quizUtils';
 
 export const handleKeyPress = (
   event: KeyboardEvent<HTMLButtonElement>,
@@ -19,6 +20,7 @@ export const QuestionContent: React.FC<BaseQuestionProps> = ({
   selectedAnswer,
   showFeedback,
   correctAnswer,
+  isAnswerCorrect,
   onAnswerSelect,
   disabled = false,
   playerId,
@@ -32,18 +34,25 @@ export const QuestionContent: React.FC<BaseQuestionProps> = ({
       <div className={commonStyles.options}>
         {options.map((option) => {
           const isSelected = selectedAnswer === option;
-          const isCorrectAnswer = option === correctAnswer;
+          const hasCanonicalCorrectAnswer =
+            typeof correctAnswer === 'string' && correctAnswer.length > 0;
+          const isCanonicalCorrectOption = hasCanonicalCorrectAnswer
+            ? areAnswersEquivalent(option, correctAnswer)
+            : false;
           let optionClassNames = commonStyles.option;
+
+          if (isSelected) {
+            optionClassNames += ` ${commonStyles.selected}`;
+          }
 
           if (showFeedback) {
             if (isSelected) {
-              optionClassNames += ` ${commonStyles.selected}`;
-              if (isCorrectAnswer) {
+              if (isAnswerCorrect) {
                 optionClassNames += ` ${commonStyles.correct}`;
               } else {
                 optionClassNames += ` ${commonStyles.incorrect}`;
               }
-            } else if (isCorrectAnswer) {
+            } else if (isCanonicalCorrectOption) {
               optionClassNames += ` ${commonStyles.correct}`;
             }
           }
@@ -51,19 +60,19 @@ export const QuestionContent: React.FC<BaseQuestionProps> = ({
           // Determine which icon to show
           let iconElement = null;
           if (showFeedback) {
-            if (isSelected && isCorrectAnswer) {
+            if (isSelected && isAnswerCorrect) {
               iconElement = (
                 <div className={`${commonStyles.optionIcon} ${commonStyles.optionIconSuccess}`}>
                   <Icon name="check" size="xs" color="white" />
                 </div>
               );
-            } else if (isSelected && !isCorrectAnswer) {
+            } else if (isSelected && !isAnswerCorrect) {
               iconElement = (
                 <div className={`${commonStyles.optionIcon} ${commonStyles.optionIconError}`}>
                   <Icon name="close" size="xs" color="white" />
                 </div>
               );
-            } else if (!isSelected && isCorrectAnswer) {
+            } else if (!isSelected && isCanonicalCorrectOption) {
               iconElement = (
                 <div className={`${commonStyles.optionIcon} ${commonStyles.optionIconSuccess}`}>
                   <Icon name="check" size="xs" color="white" />

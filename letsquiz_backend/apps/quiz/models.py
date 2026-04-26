@@ -85,6 +85,11 @@ class Question(models.Model):
     def __str__(self):
         return f"{self.question_text[:50]}..." 
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['is_seeded', 'category', 'difficulty'], name='question_seed_cat_diff_idx'),
+        ]
+
 # Define the QuizSession model
 class QuizSession(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='quiz_sessions', null=True, blank=True)

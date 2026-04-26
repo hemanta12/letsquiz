@@ -47,9 +47,17 @@ export const QuizCore: React.FC<QuizCoreProps> = ({
   if (error) {
     return (
       <div className={commonStyles.quiz}>
+        <div className={commonStyles.header}>
+          <Typography variant="body1">Quiz Error</Typography>
+        </div>
         <Typography variant="body2" color="error" className={commonStyles.error}>
           {error}
         </Typography>
+        {error.includes('network connection') && (
+          <Typography variant="body2" className={commonStyles.error}>
+            💡 Make sure the backend server is running on http://127.0.0.1:8000
+          </Typography>
+        )}
       </div>
     );
   }

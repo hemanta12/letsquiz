@@ -1,11 +1,17 @@
 import os
 from pathlib import Path
 import environ
+from corsheaders.defaults import default_headers
 
 env = environ.Env()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+
+def env_list(name: str, default: str = ""):
+    raw = env(name, default=default)
+    return [item.strip() for item in raw.split(',') if item.strip()]
 
 
 
@@ -14,7 +20,7 @@ SECRET_KEY = env('SECRET_KEY')
 
 DEBUG = env('DEBUG', default=False)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1')
 
 
 
@@ -187,8 +193,12 @@ LOGGING = {
     },
 }
 
-
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = env.bool('CORS_ALLOW_ALL_ORIGINS', default=False)
+CORS_ALLOWED_ORIGINS = env_list('CORS_ALLOWED_ORIGINS')
+CSRF_TRUSTED_ORIGINS = env_list('CSRF_TRUSTED_ORIGINS')
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "x-guest-session-id",
+]
 
 CELERY_BROKER_URL = env('REDIS_URL', default='redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = env('REDIS_URL', default='redis://localhost:6379/0')

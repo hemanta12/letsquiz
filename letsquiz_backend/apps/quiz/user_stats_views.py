@@ -1,15 +1,15 @@
 import logging
-from django.db.models import Sum, Avg, Count
-from django.utils import timezone
+from django.db.models import Sum, Count, Q
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 
 from django.contrib.auth import get_user_model
+
+from letsquiz_backend.core.redis_utils import cache_set, cache_get, cache_delete
 
 from .models import (
     QuizSession,
@@ -21,12 +21,17 @@ from .serializers import UserStatsSerializer
 logger = logging.getLogger(__name__)
 User = get_user_model()
 
+# Cache timeouts for user data
+CACHE_TIMEOUT_USER_PROFILE = 15 * 60  # 15 minutes
+CACHE_TIMEOUT_USER_STATS = 30 * 60    # 30 minutes  
+CACHE_TIMEOUT_USER_SESSIONS = 10 * 60  # 10 minutes
+
 class UserProfileView(APIView):
     """API endpoint for user profile operations."""
     permission_classes = [IsAuthenticated]
 
     def get(self, request, userId):
-        """Get user profile data."""
+        """Get user profile data with Redis caching."""
         try:
             # Only allow users to access their own profile
             if request.user.id != userId:
@@ -35,6 +40,14 @@ class UserProfileView(APIView):
                     'code': 'permission_denied'
                 }, status=status.HTTP_403_FORBIDDEN)
 
+            # Try cache first
+            cache_key = f"user_profile:{userId}"
+            cached_data = cache_get(cache_key)
+            if cached_data:
+                logger.info(f"Cache HIT for user profile: {userId}")
+                return Response(cached_data, status=status.HTTP_200_OK)
+
+            logger.info(f"Cache MISS for user profile: {userId}")
             user = request.user
 
             # Get solo sessions owned by the user
@@ -81,6 +94,10 @@ class UserProfileView(APIView):
                 'joined_date': user.date_joined
             }
 
+            # Cache the result for future requests
+            cache_set(cache_key, profile_data, CACHE_TIMEOUT_USER_PROFILE)
+            logger.info(f"Cached user profile: {userId}")
+
             return Response(profile_data, status=status.HTTP_200_OK)
 
         except User.DoesNotExist:
@@ -98,7 +115,7 @@ class UserProfileView(APIView):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_sessions_view(request, userId):
-    """API endpoint for retrieving paginated quiz history."""
+    """API endpoint for retrieving paginated quiz history with Redis caching."""
     try:
         # Only allow users to access their own sessions
         if request.user.id != userId:
@@ -106,6 +123,15 @@ def get_user_sessions_view(request, userId):
                 'error': 'Not authorized to access this data.',
                 'code': 'permission_denied'
             }, status=status.HTTP_403_FORBIDDEN)
+
+        # Try cache first
+        cache_key = f"user_sessions:{userId}"
+        cached_data = cache_get(cache_key)
+        if cached_data:
+            logger.info(f"Cache HIT for user sessions: {userId}")
+            return Response(cached_data, status=status.HTTP_200_OK)
+
+        logger.info(f"Cache MISS for user sessions: {userId}")
 
         # Get quiz sessions with pagination
         try:
@@ -146,6 +172,10 @@ def get_user_sessions_view(request, userId):
                 }
                 sessions_data.append(session_data)
 
+            # Cache the result for future requests
+            cache_set(cache_key, sessions_data, CACHE_TIMEOUT_USER_SESSIONS)
+            logger.info(f"Cached user sessions: {userId}")
+
             return Response(sessions_data, status=status.HTTP_200_OK)
         except Exception as e:
             logger.error(f"Error retrieving user sessions: {e}", exc_info=True)
@@ -164,7 +194,7 @@ def get_user_sessions_view(request, userId):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_stats_view(request, userId):
-    """API endpoint for retrieving aggregate statistics."""
+    """API endpoint for retrieving aggregate statistics with Redis caching."""
     try:
         # Only allow users to access their own stats
         if request.user.id != userId:
@@ -172,6 +202,15 @@ def get_user_stats_view(request, userId):
                 'error': 'Not authorized to access this data.',
                 'code': 'permission_denied'
             }, status=status.HTTP_403_FORBIDDEN)
+
+        # Try cache first
+        cache_key = f"user_stats:{userId}"
+        cached_data = cache_get(cache_key)
+        if cached_data:
+            logger.info(f"Cache HIT for user stats: {userId}")
+            return Response(cached_data, status=status.HTTP_200_OK)
+
+        logger.info(f"Cache MISS for user stats: {userId}")
 
         quiz_sessions = QuizSession.objects.filter(user_id=userId)
 
@@ -241,6 +280,10 @@ def get_user_stats_view(request, userId):
 
         serializer = UserStatsSerializer(data=response_data)
         serializer.is_valid(raise_exception=True)
+
+        # Cache the result for future requests
+        cache_set(cache_key, response_data, CACHE_TIMEOUT_USER_STATS)
+        logger.info(f"Cached user stats: {userId}")
 
         return Response(response_data, status=status.HTTP_200_OK)
 

@@ -15,18 +15,16 @@ from .serializers import (
     UserSerializer,
     AccountVerificationSerializer,
     LoginSerializer,
-  
 )
 
 logger = logging.getLogger(__name__)
-User = get_user_model()
 User = get_user_model()
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def signup_view(request):
     """API endpoint for user registration."""
-    logger.info(f"Signup attempt with data: {request.data}")
+    logger.info("Signup attempt received")
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         logger.info("Signup serializer is valid.")
@@ -79,10 +77,9 @@ def login_view(request):
     - tokens (refresh and access)
     - user details
     """
-    logger.info(f"Login attempt with data: {request.data}")
+    logger.info("Login attempt received for email: %s", request.data.get('email'))
     
     serializer = LoginSerializer(data=request.data, context={'request': request})
-    logger.debug(f"Login attempt with data: {request.data}")
 
     try:
         if serializer.is_valid(raise_exception=False):
@@ -100,7 +97,6 @@ def login_view(request):
                 'access': str(refresh.access_token),
                 'user': user_data
             }
-            logger.info(f"[Login] Full response data: {response_data}")
             
             logger.info(f"User logged in successfully: {user.email}. Tokens generated.")
             return Response(response_data, status=status.HTTP_200_OK)

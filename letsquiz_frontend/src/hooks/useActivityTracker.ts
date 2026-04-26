@@ -20,7 +20,7 @@ export const useActivityTracker = ({
   onInactivityWarning,
   onSessionExpired,
   inactivityTimeout = 15 * 60 * 1000, // 15 minutes
-  warningTime = 2 * 1 * 1000, // 2 minutes warning
+  warningTime = 2 * 60 * 1000, // 2 minutes warning
 }: UseActivityTrackerProps = {}): UseActivityTrackerReturn => {
   const dispatch = useAppDispatch();
   const { isAuthenticated, isGuest } = useAppSelector((state) => state.auth);

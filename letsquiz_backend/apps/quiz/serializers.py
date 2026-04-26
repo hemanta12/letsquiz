@@ -3,6 +3,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from django.utils import timezone
+import re
 
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
@@ -17,6 +18,21 @@ from letsquiz_backend.apps.quiz.models import (
 )
 
 User = get_user_model()
+
+
+def normalize_answer_text(value: str) -> str:
+    if not value:
+        return ""
+    normalized = value.strip().lower()
+    normalized = re.sub(r'^\s*(a|an|the)\s+', '', normalized)
+    normalized = re.sub(r'[^\w\s]', '', normalized)
+    normalized = re.sub(r'\s+', ' ', normalized)
+    return normalized
+
+MIN_GROUP_PLAYERS = 2
+# Level 1 cap: keep group sessions at 2-6 players for stable local gameplay.
+# If Level 3+ expands this, update frontend and backend caps together.
+MAX_GROUP_PLAYERS = 6
 
 class UserSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
@@ -96,6 +112,7 @@ class QuestionSerializer(serializers.ModelSerializer):
         model = Question
         fields = ('id', 'category', 'difficulty', 'question_text', 'correct_answer', 'answer_options', 'metadata_json')
 
+
 class QuizSessionStartSerializer(serializers.Serializer):
     category_id = serializers.IntegerField(required=False, allow_null=True)
     difficulty_id = serializers.IntegerField(required=False, allow_null=True)
@@ -104,15 +121,17 @@ class QuizSessionStartSerializer(serializers.Serializer):
     players = serializers.ListField(child=serializers.CharField(max_length=100), required=False)
 
     def validate(self, data):
-        category_id = data.get('category_id')
-        if category_id and not Question.objects.filter(category_id=category_id).exists():
-            raise ValidationError({"category_id": ["No questions available for this category."]})
-
         mode = data.get('mode')
         players = data.get('players', [])
         if mode == 'group':
-            if not players or len(players) < 2:
-                raise ValidationError({"players": ["At least two players are required for group mode."]})
+            if not players or len(players) < MIN_GROUP_PLAYERS:
+                raise ValidationError(
+                    {"players": [f"At least {MIN_GROUP_PLAYERS} players are required for group mode."]}
+                )
+            if len(players) > MAX_GROUP_PLAYERS:
+                raise ValidationError(
+                    {"players": [f"Maximum {MAX_GROUP_PLAYERS} players are allowed for group mode."]}
+                )
             if len(set(name.strip().lower() for name in players)) != len(players):
                 raise ValidationError({"players": ["All player names must be unique."]})
 
@@ -175,7 +194,7 @@ class QuizSessionSaveSerializer(serializers.Serializer):
         return data
 
     def create(self, validated_data):
-        user = self.context['request'].user
+        user = self.context['request'].user if self.context['request'].user.is_authenticated else None
         questions_data = validated_data.pop('questions')
         score = validated_data.pop('score')
         is_group_session = validated_data.pop('is_group_session', False)
@@ -194,7 +213,10 @@ class QuizSessionSaveSerializer(serializers.Serializer):
             try:
                 question = Question.objects.get(id=question_data['id'])
                 questions_in_order.append(question)
-                is_correct = question.correct_answer == question_data['selected_answer']
+                is_correct = (
+                    normalize_answer_text(question.correct_answer)
+                    == normalize_answer_text(question_data['selected_answer'])
+                )
                 QuizSessionQuestion.objects.create(
                     quiz_session=quiz_session,
                     question=question,
@@ -222,7 +244,10 @@ class QuizSessionSaveSerializer(serializers.Serializer):
                         if idx >= len(player_answers):
                             break
                         answer = player_answers[idx]
-                        is_correct = (answer.lower() == question.correct_answer.lower())
+                        is_correct = (
+                            normalize_answer_text(answer)
+                            == normalize_answer_text(question.correct_answer)
+                        )
                         correct_answers_dict[str(question.id)] = is_correct
                 group_player = GroupPlayer(
                     quiz_session=quiz_session,
@@ -248,6 +273,10 @@ class AnswerSubmissionSerializer(serializers.Serializer):
         except Question.DoesNotExist:
             raise ValidationError("Invalid question ID.")
         return value
+
+
+class AnswerValidationSerializer(serializers.Serializer):
+    selected_answer = serializers.CharField(max_length=255)
 
 class UserStatsSerializer(serializers.Serializer):
     overall_stats = serializers.DictField()

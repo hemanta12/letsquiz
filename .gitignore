@@ -1,0 +1,39 @@
+# Global repository safety ignores
+# Applies across backend, frontend, docs, and local tooling
+
+# Secrets and env files
+.env
+.env.*
+*.env
+*.secret
+*.secrets
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Local databases and runtime artifacts
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.log
+
+# Python virtual environments and caches
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Node artifacts
+node_modules/
+dist/
+build/
+coverage/
+
+# OS/editor noise
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo

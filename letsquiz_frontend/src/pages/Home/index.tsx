@@ -7,14 +7,14 @@ import CategorySelector from '../../components/Home/CategorySelector';
 import DifficultySelector from '../../components/Home/DifficultySelector';
 import useHomeSettings from '../../hooks/useHomeSettings';
 import AuthService from '../../services/authService';
+import QuizService from '../../services/quizService';
 import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
-import { setQuizSettings } from '../../store/slices/quizSlice';
+import { setQuizSettings, hydrateQuestionsFromPrefetch } from '../../store/slices/quizSlice';
 import styles from './Home.module.css';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   const [fetchError, setFetchError] = useState<string>('');
 
@@ -60,6 +60,12 @@ const Home: React.FC = () => {
       }
 
       await AuthService.createGuestSession();
+      const prefetched = await QuizService.fetchQuestions({
+        category: isMixUpMode ? null : (selectedCategory?.id ?? null),
+        difficulty: selectedDifficulty,
+        count: selectedQuestionCount,
+      });
+
       dispatch(
         setQuizSettings({
           mode: selectedMode,
@@ -69,6 +75,7 @@ const Home: React.FC = () => {
           numberOfQuestions: selectedQuestionCount,
         })
       );
+      dispatch(hydrateQuestionsFromPrefetch(prefetched.questions));
       navigate('/quiz');
     } catch (error: any) {
       setFetchError(error.message || 'An unexpected error occurred');
@@ -81,6 +88,7 @@ const Home: React.FC = () => {
         Welcome to LetsQuiz
       </Typography>
 
+      {/*
       {!isAuthenticated && (
         <div className={styles.guestBanner}>
           <Typography variant="body1">
@@ -90,6 +98,7 @@ const Home: React.FC = () => {
           </Typography>
         </div>
       )}
+      */}
 
       {/* Section 1: Mode & Number of Questions */}
       <div className={styles.section}>
@@ -122,7 +131,6 @@ const Home: React.FC = () => {
             isMixUp={isMixUpMode}
             onSelect={(cat) => setCategory(cat)}
             onMixToggle={toggleMixUp}
-            isAuthenticated={isAuthenticated}
           />
         </div>
       </div>

@@ -14,7 +14,7 @@ const Dashboard: React.FC = () => {
   const user = useAppSelector((state) => state.user);
   const [profileFetchAttempted, setProfileFetchAttempted] = useState(false);
 
-  const { profile, loadingProfile, loadingLeaderboard, errorProfile, errorLeaderboard } = user;
+  const { profile, loadingProfile, errorProfile } = user;
 
   const { isAuthenticated, userId } = auth;
 
@@ -31,14 +31,24 @@ const Dashboard: React.FC = () => {
         dispatch(logout());
         return;
       }
-      console.log(
-        '[Dashboard useEffect] Conditions met, dispatching fetchUserProfile for userId:',
-        userId
-      );
+
       setProfileFetchAttempted(true);
       dispatch(fetchUserProfile(userId.toString()));
     }
   }, [dispatch, isAuthenticated, profile, loadingProfile, profileFetchAttempted, userId]);
+
+  // Smart cache check - only refresh if necessary
+  useEffect(() => {
+    if (isAuthenticated && userId && profile) {
+      const now = Date.now();
+      const shouldRefreshProfile =
+        !user.lastProfileFetch || now - user.lastProfileFetch > 10 * 60 * 1000; // 10 minutes
+
+      if (shouldRefreshProfile && !loadingProfile) {
+        dispatch(fetchUserProfile(userId.toString()));
+      }
+    }
+  }, [dispatch, isAuthenticated, userId, profile, user.lastProfileFetch, loadingProfile]);
 
   useEffect(() => {
     if (profileFetchAttempted && errorProfile && isAuthenticated && !loadingProfile) {
@@ -85,7 +95,7 @@ const Dashboard: React.FC = () => {
   ]);
 
   // Show loading state
-  if (loadingProfile || loadingLeaderboard) {
+  if (loadingProfile) {
     return (
       <div className={styles.dashboard}>
         <Loading />
@@ -94,11 +104,11 @@ const Dashboard: React.FC = () => {
   }
 
   // Show error state
-  if (errorProfile || errorLeaderboard) {
+  if (errorProfile) {
     return (
       <div className={styles.dashboard}>
         <Typography variant="body2" color="error" className={styles.error}>
-          {errorProfile || errorLeaderboard}{' '}
+          {errorProfile}{' '}
         </Typography>
       </div>
     );

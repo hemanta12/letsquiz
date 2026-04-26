@@ -79,6 +79,10 @@ export interface Question {
   answer_options: string[];
 }
 
+export interface AnswerValidationResponse {
+  is_correct: boolean;
+}
+
 export interface FetchQuestionsRequest {
   category?: number | null;
   difficulty?: string;

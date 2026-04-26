@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import { QuizMode } from '../types/quiz.types';
 import { Category } from '../components/Home/CategorySelector';
 
 export default function useHomeSettings() {
-  const [selectedMode, setMode] = useState<'Solo' | 'Group'>('Solo');
+  const [selectedMode, setMode] = useState<QuizMode>('Solo');
   const [selectedCategory, setCategory] = useState<Category | null>(null);
   const [isMixUpMode, setMixUpMode] = useState(false);
   const [selectedDifficulty, setDifficulty] = useState('');

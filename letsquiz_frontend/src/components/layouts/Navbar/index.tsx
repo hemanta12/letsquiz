@@ -8,7 +8,6 @@ import styles from './Navbar.module.css';
 import Icon from '../../common/Icon';
 
 export const Navbar: React.FC = () => {
-  const user = useSelector((state: RootState) => state.auth.user);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -36,16 +35,6 @@ export const Navbar: React.FC = () => {
     };
   }, []);
 
-  // Prefer username, fallback to 'User'
-  const displayName =
-    (isAuthenticated &&
-      user &&
-      !user.isGuest &&
-      typeof user.username === 'string' &&
-      user.username) ||
-    'User';
-
-  const onAuthPage = location.pathname === '/login' || location.pathname === '/signup';
   const onQuizPage = location.pathname.startsWith('/quiz');
   const onResultPage = location.pathname.startsWith('/result');
 
@@ -55,7 +44,7 @@ export const Navbar: React.FC = () => {
         {/* Left Zone: Logo */}
         <span className={styles.logo}>LetsQuiz</span>
 
-        {/* Center Zone: "Play Quiz" and (if authenticated) "Dashboard" */}
+        {/* Center Zone: Keep Level 1 navigation focused on gameplay only */}
         <div className={styles.centerLinks}>
           {!onQuizPage && !onResultPage && (
             <Link
@@ -66,23 +55,9 @@ export const Navbar: React.FC = () => {
               <span className={styles.navLinkText}>Play Quiz</span>
             </Link>
           )}
-          {isAuthenticated && (
-            <Link
-              to="/dashboard"
-              className={`${styles.navLink} ${styles.dashboardLink} ${
-                location.pathname === '/dashboard' ? styles.navLinkActive : ''
-              }`}
-              aria-label="Dashboard"
-              title="Dashboard"
-            >
-              <Icon name="dashboard" size="small" className={styles.dashboardIcon} />
-              <span className={styles.mobileText}>Dash</span>
-              <span className={styles.desktopText}>Dashboard</span>
-            </Link>
-          )}
         </div>
 
-        {/* Right Zone: Guest => Login/Sign Up, Authenticated => Avatar + Dropdown */}
+        {/* Right Zone: Authenticated users can still logout via avatar menu */}
         <div className={styles.rightSection}>
           <button
             className={styles.themeToggle}
@@ -92,36 +67,8 @@ export const Navbar: React.FC = () => {
             <Icon name={theme === 'light' ? 'moon' : 'sun'} size="medium" />
           </button>
 
-          {!isAuthenticated && !onAuthPage && (
-            <>
-              <Link
-                to="/login"
-                onClick={(e) => {
-                  if (onQuizPage || onResultPage) e.preventDefault();
-                }}
-                className={`${styles.loginButton} `}
-                title="Login"
-                aria-label="Login"
-              >
-                <span className={styles.loginButtonText}>Login</span>
-              </Link>
-              <Link
-                to="/signup"
-                onClick={(e) => {
-                  if (onQuizPage || onResultPage) e.preventDefault();
-                }}
-                className={`${styles.signupButton} ${styles.hideOnMobile}`}
-                title="SignUp"
-                aria-label="SignUp"
-              >
-                <span className={styles.desktopText}>Sign Up</span>
-              </Link>
-            </>
-          )}
-
           {isAuthenticated && (
             <div className={styles.authenticatedSection} ref={dropdownRef}>
-              <span className={styles.greeting}>Hi, {displayName}</span>
               <button
                 className={styles.avatarButton}
                 onClick={() => setDropdownOpen((open) => !open)}
@@ -134,16 +81,6 @@ export const Navbar: React.FC = () => {
 
               {dropdownOpen && (
                 <div className={styles.dropdownMenu}>
-                  <Link to="/profile" className={styles.dropdownItem}>
-                    <Icon
-                      name="person"
-                      size="small"
-                      color="secondary"
-                      className={styles.dropdownIcon}
-                    />{' '}
-                    Profile
-                  </Link>
-
                   <button className={styles.dropdownItemDanger} onClick={handleLogout}>
                     <Icon
                       name="logout"

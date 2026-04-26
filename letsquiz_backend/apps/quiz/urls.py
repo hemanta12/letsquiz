@@ -25,6 +25,7 @@ urlpatterns = [
     
     # Quiz related URLs
     path('questions/', quiz_views.fetch_seeded_questions_view, name='fetch_seeded_questions'),
+    path('questions/<int:questionId>/validate/', quiz_views.validate_answer_view, name='validate_answer'),
     path('categories/', quiz_views.fetch_categories_view, name='fetch_categories'),
     path('sessions/', quiz_views.start_quiz_session_view, name='start_quiz_session'),
     path('sessions/<int:sessionId>/', quiz_views.get_quiz_session_view, name='get_quiz_session'),

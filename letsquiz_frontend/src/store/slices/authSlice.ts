@@ -207,6 +207,7 @@ const authSlice = createSlice({
     },
     logout: (state) => {
       console.log('[Auth] Logging out user', { userId: state.user?.id });
+
       if (state.isGuest) {
         console.log('[Auth] Saving guest progress', state.guestProgress);
         securelyStoreData('guestProgress', state.guestProgress);

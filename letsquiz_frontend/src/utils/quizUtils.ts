@@ -1,5 +1,35 @@
 import { Question } from '../types/api.types'; // Import Question from api.types
 
+export const normalizeAnswerText = (value: string): string => {
+  if (!value) return '';
+
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/^(a|an|the)\s+/i, '')
+    .replace(/[^\w\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+};
+
+export const areAnswersEquivalent = (a: string, b: string): boolean =>
+  normalizeAnswerText(a) === normalizeAnswerText(b);
+
+export const normalizeQuestionText = (value: string): string =>
+  value.trim().toLowerCase().replace(/\s+/g, ' ');
+
+export const calculateQuizScore = (
+  selectedAnswers: Record<number, string>,
+  questions: Question[]
+): number => {
+  return Object.entries(selectedAnswers).reduce((total, [index, selectedAnswer]) => {
+    const question = questions[Number(index)];
+    if (!question || !question.correct_answer) return total;
+
+    return total + (areAnswersEquivalent(selectedAnswer, question.correct_answer) ? 1 : 0);
+  }, 0);
+};
+
 export const distributeQuestions = (
   questionsByCategory: Record<string, Question[]>,
   totalQuestions: number
@@ -39,12 +69,18 @@ const shuffleArray = <T>(array: T[]): T[] => {
 
 // Helper function to remove duplicate questions by ID
 export const removeDuplicateQuestions = (questions: Question[]): Question[] => {
-  const seen = new Set<number>();
+  const seenIds = new Set<number>();
+  const seenNormalizedText = new Set<string>();
+
   return questions.filter((question) => {
-    if (seen.has(question.id)) {
+    const normalizedText = normalizeQuestionText(question.question_text);
+
+    if (seenIds.has(question.id) || seenNormalizedText.has(normalizedText)) {
       return false;
     }
-    seen.add(question.id);
+
+    seenIds.add(question.id);
+    seenNormalizedText.add(normalizedText);
     return true;
   });
 };

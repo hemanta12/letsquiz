@@ -1,7 +1,9 @@
 import { GroupGameState } from './group.types';
 
+export type QuizMode = 'Solo' | 'Group';
+
 export interface QuizSettings {
-  mode: 'Solo' | 'Group';
+  mode: QuizMode;
   category: string;
   categoryId?: number | null;
   difficulty: string;
@@ -42,7 +44,8 @@ export interface BaseQuestionProps {
   options: string[];
   selectedAnswer?: string;
   showFeedback: boolean;
-  correctAnswer: string;
+  correctAnswer?: string;
+  isAnswerCorrect?: boolean;
   onAnswerSelect: (answer: string) => void;
   disabled?: boolean;
   playerId?: string;

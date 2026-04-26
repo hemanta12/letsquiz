@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { QuizSettings, GroupQuizSession } from '../../types/quiz.types';
 import QuizService from '../../services/quizService';
+import UserService from '../../services/userService';
+import { QUIZ_SETTINGS_STORAGE_KEY } from '../../constants/storageKeys';
 import { QuizSession } from '../../types/dashboard.types';
 import {
   FetchQuestionsRequest,
@@ -10,6 +12,13 @@ import {
 } from '../../types/api.types';
 import { setGroupSession, setGroupMode, setCurrentPlayer } from './groupQuizSlice';
 import { RootState } from '../store';
+import { HISTORY_CACHE_DURATION_MS, CATEGORIES_CACHE_DURATION_MS } from '../../constants/timings';
+import {
+  isLevel1CategoryId,
+  isLevel1Difficulty,
+  LEVEL1_DIFFICULTY_TO_ID,
+} from '../../constants/level1';
+import { calculateQuizScore } from '../../utils/quizUtils';
 
 interface LocalProgress {
   questionIds: number[];
@@ -28,6 +37,7 @@ interface QuizState {
   currentQuestionIndex: number;
   questions: Question[];
   selectedAnswers: Record<number, string>;
+  answerCorrectness: Record<number, boolean>;
   score: number;
   pointsPerQuestion: number;
   loading: boolean;
@@ -41,9 +51,11 @@ interface QuizState {
   sessions: QuizSession[];
   historyLoading: boolean;
   historyError: string | null;
+  lastHistoryFetch: number | null;
   categories: Category[];
   loadingCategories: boolean;
   categoryError: string | null;
+  lastCategoriesFetch: number | null;
   savedSessionId: number | null;
 }
 
@@ -66,6 +78,7 @@ const initialState: QuizState = {
   currentQuestionIndex: 0,
   questions: [],
   selectedAnswers: {},
+  answerCorrectness: {},
   score: 0,
   pointsPerQuestion: 5,
   loading: false,
@@ -77,9 +90,11 @@ const initialState: QuizState = {
   sessions: [],
   historyLoading: false,
   historyError: null,
+  lastHistoryFetch: null,
   categories: [],
   loadingCategories: false,
   categoryError: null,
+  lastCategoriesFetch: null,
   savedSessionId: null,
 };
 
@@ -88,29 +103,68 @@ export const fetchQuizHistoryThunk = createAsyncThunk<
   QuizSession[],
   void,
   { state: { quiz: QuizState; auth: any }; rejectValue: string }
->('quiz/fetchHistory', async (_, { getState, rejectWithValue }) => {
-  const userId = getState().auth.userId;
-  if (!userId) return rejectWithValue('Not authenticated');
-  try {
-    const sessions = await QuizService.fetchUserSessions(userId);
-    return sessions.map((session) => ({
-      ...session,
-      total_questions: session.total_questions,
-    }));
-  } catch (err: any) {
-    return rejectWithValue(err.message || 'Failed to load history');
+>(
+  'quiz/fetchHistory',
+  async (_, { getState, rejectWithValue }) => {
+    const userId = getState().auth.userId;
+    if (!userId) return rejectWithValue('Not authenticated');
+    try {
+      const sessions = await UserService.fetchUserQuizHistory(userId.toString());
+      return sessions.map((session: QuizSession) => ({
+        ...session,
+        total_questions: session.total_questions,
+      }));
+    } catch (err: any) {
+      return rejectWithValue(err.message || 'Failed to load history');
+    }
+  },
+  {
+    condition: (_, { getState }) => {
+      const { quiz, auth } = getState();
+      // Don't fetch if already loading or not authenticated
+      if (quiz.historyLoading || !auth.userId) return false;
+
+      // Don't fetch if we have recent data
+      if (quiz.sessions.length > 0 && quiz.lastHistoryFetch) {
+        if (Date.now() - quiz.lastHistoryFetch < HISTORY_CACHE_DURATION_MS) {
+          return false;
+        }
+      }
+
+      return true;
+    },
   }
-});
+);
 
 // Async thunk for fetching categories
-export const fetchCategoriesThunk = createAsyncThunk<Category[], void, { rejectValue: string }>(
+export const fetchCategoriesThunk = createAsyncThunk<
+  Category[],
+  void,
+  { rejectValue: string; state: RootState }
+>(
   'quiz/fetchCategories',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState }) => {
     try {
       return await QuizService.fetchCategories();
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch categories');
     }
+  },
+  {
+    condition: (_, { getState }) => {
+      const { quiz } = getState();
+      // Don't fetch if already loading
+      if (quiz.loadingCategories) return false;
+
+      // Don't fetch if we have recent data
+      if (quiz.categories.length > 0 && quiz.lastCategoriesFetch) {
+        if (Date.now() - quiz.lastCategoriesFetch < CATEGORIES_CACHE_DURATION_MS) {
+          return false;
+        }
+      }
+
+      return true;
+    },
   }
 );
 
@@ -126,9 +180,13 @@ export const saveQuizSessionThunk = createAsyncThunk<
     players?: { name: string; score: number }[];
   },
   { rejectValue: string }
->('quiz/saveQuizSession', async (quizSessionData, { rejectWithValue }) => {
+>('quiz/saveQuizSession', async (quizSessionData, { rejectWithValue, getState }) => {
   try {
     const response = await QuizService.saveQuizSession(quizSessionData);
+
+    // Note: Cache invalidation is now handled by Redis on the backend
+    // No frontend cache invalidation needed as we rely on Redis-backed API responses
+
     return response;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to save quiz session');
@@ -145,9 +203,21 @@ export const fetchQuizQuestions = createAsyncThunk<
   async (params: FetchQuestionsRequest, { rejectWithValue, getState }) => {
     try {
       const state = getState();
-      const numberOfQuestions = state.quiz.settings.numberOfQuestions;
-      const response = await QuizService.fetchQuestions({ ...params, count: numberOfQuestions });
-      console.log('fetchQuizQuestions thunk - response:', response);
+      const count = params.count || state.quiz.settings.numberOfQuestions;
+
+      if (
+        params.category !== null &&
+        params.category !== undefined &&
+        !isLevel1CategoryId(params.category)
+      ) {
+        return rejectWithValue('Invalid category selected for Level 1.');
+      }
+
+      if (params.difficulty && !isLevel1Difficulty(params.difficulty)) {
+        return rejectWithValue('Invalid difficulty selected for Level 1.');
+      }
+
+      const response = await QuizService.fetchQuestions({ ...params, count });
 
       // Validate response
       if (!response || !response.questions || response.questions.length === 0) {
@@ -156,8 +226,6 @@ export const fetchQuizQuestions = createAsyncThunk<
 
       return response;
     } catch (error: any) {
-      console.error('fetchQuizQuestions thunk - error:', error);
-
       if (error.response) {
         return rejectWithValue(
           error.response.data?.detail ||
@@ -165,7 +233,9 @@ export const fetchQuizQuestions = createAsyncThunk<
             'Failed to fetch quiz questions'
         );
       } else if (error.request) {
-        return rejectWithValue('No response from server. Please check your network connection.');
+        return rejectWithValue(
+          'No response from server. Please check your network connection and ensure the backend is running.'
+        );
       } else {
         return rejectWithValue(
           error.message || 'An unexpected error occurred while fetching questions'
@@ -188,17 +258,15 @@ export const startGroupQuiz = createAsyncThunk<
   'quiz/startGroupQuiz',
   async ({ players, categoryId, difficulty, numberOfQuestions }, { dispatch, rejectWithValue }) => {
     try {
-      const difficultyMap: { [key: string]: number } = {
-        Easy: 1,
-        Medium: 2,
-        Hard: 3,
-        'Quiz Genius': 3,
-      };
-      const difficultyId = difficultyMap[difficulty];
-
-      if (difficultyId === undefined) {
+      if (!isLevel1Difficulty(difficulty)) {
         return rejectWithValue(`Invalid difficulty level: ${difficulty}`);
       }
+
+      if (categoryId !== null && categoryId !== undefined && !isLevel1CategoryId(categoryId)) {
+        return rejectWithValue('Invalid category selected for Level 1 group mode.');
+      }
+
+      const difficultyId = LEVEL1_DIFFICULTY_TO_ID[difficulty];
 
       const backendSession = await QuizService.createGroupSession(
         players,
@@ -230,11 +298,20 @@ export const startGroupQuiz = createAsyncThunk<
         dispatch(setCurrentPlayer(frontendSession.players[0]));
       }
 
-      const { questions } = await QuizService.fetchQuestions({
-        category: categoryId,
-        difficulty,
-        count: numberOfQuestions,
-      });
+      // Reuse questions already returned by the backend session creation
+      // to avoid a redundant second HTTP request.
+      const questions: Question[] = (backendSession.session_questions || []).map((sq) => ({
+        id: sq.question.id,
+        category: sq.question.category.name,
+        difficulty: sq.question.difficulty.label,
+        question_text: sq.question.question_text,
+        correct_answer: sq.question.correct_answer,
+        answer_options: sq.question.answer_options,
+        metadata_json: sq.question.metadata_json,
+        is_seeded: sq.question.is_seeded,
+        is_fallback: sq.question.is_fallback,
+        created_by: sq.question.created_by,
+      }));
       return { questions };
     } catch (error: any) {
       dispatch(setGroupMode(false));
@@ -261,17 +338,59 @@ export const quizSlice = createSlice({
   initialState,
   reducers: {
     setQuizSettings: (state, action: PayloadAction<QuizSettings>) => {
-      state.settings = action.payload;
+      const isMixUpMode = action.payload.category === 'Mix Up' || action.payload.categoryId == null;
+      const sanitizedCategoryId = isMixUpMode
+        ? null
+        : isLevel1CategoryId(action.payload.categoryId)
+          ? action.payload.categoryId
+          : null;
+      const sanitizedDifficulty = isLevel1Difficulty(action.payload.difficulty)
+        ? action.payload.difficulty
+        : '';
+
+      state.settings = {
+        ...action.payload,
+        categoryId: sanitizedCategoryId,
+        difficulty: sanitizedDifficulty,
+      };
       state.mode = action.payload.mode;
-      state.category = action.payload.category;
-      state.categoryId = action.payload.categoryId;
-      state.difficulty = action.payload.difficulty;
+      state.category = isMixUpMode ? 'Mix Up' : action.payload.category;
+      state.categoryId = sanitizedCategoryId;
+      state.difficulty = sanitizedDifficulty;
       state.settings.numberOfQuestions = action.payload.numberOfQuestions;
+
+      // Keep latest valid quiz settings to recover on hard refresh/direct /quiz visits.
+      try {
+        sessionStorage.setItem(
+          QUIZ_SETTINGS_STORAGE_KEY,
+          JSON.stringify({
+            mode: action.payload.mode,
+            category: isMixUpMode ? 'Mix Up' : action.payload.category,
+            categoryId: sanitizedCategoryId,
+            difficulty: sanitizedDifficulty,
+            numberOfQuestions: action.payload.numberOfQuestions,
+          })
+        );
+      } catch {
+        // Ignore storage failures and continue runtime flow.
+      }
+
+      if (!isMixUpMode && action.payload.categoryId != null && sanitizedCategoryId == null) {
+        state.error = 'Only Science, History, and Geography are available in Level 1.';
+        return;
+      }
+
+      if (action.payload.difficulty && !sanitizedDifficulty) {
+        state.error = 'Selected difficulty is not available in Level 1.';
+        return;
+      }
 
       if (state.isGuestSession && state.guestQuizCount >= state.guestQuizLimit) {
         state.error = 'Guest quiz limit reached. Please sign up to continue.';
         return;
       }
+
+      state.error = null;
     },
 
     setGuestSession: (state, action: PayloadAction<boolean>) => {
@@ -281,15 +400,32 @@ export const quizSlice = createSlice({
       }
     },
 
+    hydrateQuestionsFromPrefetch: (state, action: PayloadAction<Question[]>) => {
+      state.questions = action.payload;
+      state.currentQuestionIndex = 0;
+      state.selectedAnswers = {};
+      state.answerCorrectness = {};
+      state.score = 0;
+      state.error = null;
+    },
+
     selectAnswer: (state, action: PayloadAction<{ questionIndex: number; answer: string }>) => {
       state.selectedAnswers[action.payload.questionIndex] = action.payload.answer;
     },
 
+    setAnswerCorrectness: (
+      state,
+      action: PayloadAction<{ questionIndex: number; isCorrect: boolean }>
+    ) => {
+      state.answerCorrectness[action.payload.questionIndex] = action.payload.isCorrect;
+    },
+
     updateScore: (state) => {
-      state.score = Object.entries(state.selectedAnswers).reduce((score, [index, answer]) => {
-        const points = answer === state.questions[Number(index)].correct_answer ? 1 : 0;
-        return score + points;
-      }, 0);
+      if (Object.keys(state.answerCorrectness).length > 0) {
+        state.score = Object.values(state.answerCorrectness).filter(Boolean).length;
+      } else {
+        state.score = calculateQuizScore(state.selectedAnswers, state.questions);
+      }
 
       if (state.isGuestSession) {
         const quizId = `quiz_${Date.now()}`;
@@ -338,6 +474,12 @@ export const quizSlice = createSlice({
     setSavedSessionId: (state, action: PayloadAction<number | null>) => {
       state.savedSessionId = action.payload;
     },
+
+    invalidateQuizHistoryCache: (state, action: PayloadAction<number>) => {
+      // Note: Quiz history cache invalidation is now handled by Redis on the backend
+      // This action is kept for compatibility but no longer performs cache operations
+      console.log('Quiz history invalidation handled by Redis backend for user:', action.payload);
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -353,6 +495,7 @@ export const quizSlice = createSlice({
             state.questions = action.payload.questions;
             state.currentQuestionIndex = 0;
             state.selectedAnswers = {};
+            state.answerCorrectness = {};
             state.score = 0;
             state.error = null;
           } else {
@@ -366,6 +509,7 @@ export const quizSlice = createSlice({
         state.error = (action.payload as string) || 'Failed to fetch quiz questions';
         state.currentQuestionIndex = 0;
         state.selectedAnswers = {};
+        state.answerCorrectness = {};
         state.score = 0;
       })
       .addCase(startGroupQuiz.pending, (state) => {
@@ -378,6 +522,7 @@ export const quizSlice = createSlice({
           state.questions = action.payload.questions;
           state.currentQuestionIndex = 0;
           state.selectedAnswers = {};
+          state.answerCorrectness = {};
           state.score = 0;
           state.error = null;
         } else {
@@ -390,6 +535,7 @@ export const quizSlice = createSlice({
         state.error = (action.payload as string) || 'Failed to start group quiz';
         state.currentQuestionIndex = 0;
         state.selectedAnswers = {};
+        state.answerCorrectness = {};
         state.score = 0;
       })
       .addCase(saveQuizSessionThunk.pending, (state) => {
@@ -411,6 +557,7 @@ export const quizSlice = createSlice({
       .addCase(fetchQuizHistoryThunk.fulfilled, (state, action) => {
         state.historyLoading = false;
         state.sessions = action.payload;
+        state.lastHistoryFetch = Date.now();
       })
       .addCase(fetchQuizHistoryThunk.rejected, (state, action) => {
         state.historyLoading = false;
@@ -423,6 +570,7 @@ export const quizSlice = createSlice({
       .addCase(fetchCategoriesThunk.fulfilled, (state, action: PayloadAction<Category[]>) => {
         state.loadingCategories = false;
         state.categories = action.payload;
+        state.lastCategoriesFetch = Date.now();
       })
       .addCase(fetchCategoriesThunk.rejected, (state, action) => {
         state.loadingCategories = false;
@@ -435,13 +583,16 @@ export const quizSlice = createSlice({
 export const {
   setQuizSettings,
   selectAnswer,
+  setAnswerCorrectness,
   updateScore,
   nextQuestion,
   clearGuestProgress,
   incrementQuestionIndex,
   resetQuiz,
   setGuestSession,
+  hydrateQuestionsFromPrefetch,
   setSavedSessionId,
+  invalidateQuizHistoryCache,
 } = quizSlice.actions;
 
 export default quizSlice.reducer;

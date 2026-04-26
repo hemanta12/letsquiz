@@ -134,12 +134,14 @@
   }
   .options {
     gap: var(--space-md);
-    padding: var(--space-sm);
+    padding: var(--space-xs) var(--space-sm) var(--space-sm);
+    margin-top: var(--space-sm);
   }
   .option {
-    width: 90%;
-    font-size: var(--font-size-h3);
-    padding: var(--space-md);
-    padding-right: var(--space-xl);
+    width: 92%;
+    font-size: calc(var(--font-size-body) * 1.02);
+    line-height: 1.35;
+    min-height: 52px;
+    padding: 0.9rem 2.5rem 0.9rem 0.85rem;
   }
 }

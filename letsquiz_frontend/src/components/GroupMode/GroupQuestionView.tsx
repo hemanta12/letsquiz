@@ -12,7 +12,8 @@ interface GroupQuestionViewProps {
   totalQuestions: number;
   question: string;
   options: string[];
-  correctAnswer: string;
+  correctAnswer?: string;
+  isAnswerCorrect?: boolean;
   onAnswerSelect: (answer: string) => void;
   showFeedback: boolean;
   selectedAnswer?: string;
@@ -34,6 +35,7 @@ export const GroupQuestionView: React.FC<GroupQuestionViewProps> = ({
   question,
   options,
   correctAnswer,
+  isAnswerCorrect,
   onAnswerSelect,
   showFeedback,
   selectedAnswer,
@@ -103,6 +105,7 @@ export const GroupQuestionView: React.FC<GroupQuestionViewProps> = ({
           selectedAnswer={selectedAnswer}
           showFeedback={showFeedback}
           correctAnswer={correctAnswer}
+          isAnswerCorrect={isAnswerCorrect}
           onAnswerSelect={handleAnswerSelect}
           disabled={showFeedback}
           playerId={currentScoredPlayers.length > 0 ? currentScoredPlayers[0] : undefined}

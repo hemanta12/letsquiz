@@ -4,6 +4,7 @@ import axios, {
   InternalAxiosRequestConfig,
   AxiosRequestConfig,
 } from 'axios';
+import { AES, enc } from 'crypto-js';
 import { getAuthToken, getRefreshToken, setRefreshToken } from './authService';
 import {
   LoginRequest,
@@ -36,9 +37,11 @@ interface RequestQueueItem {
   retryCount: number;
 }
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000';
 const MAX_RETRIES = 3;
 const INITIAL_RETRY_DELAY = 1000;
+const REQUEST_TIMEOUT_MS = 15000;
+const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'default-key';
 
 class ApiClientService {
   private requestQueue: RequestQueueItem[] = [];
@@ -47,6 +50,7 @@ class ApiClientService {
   public readonly axiosInstance = axios.create({
     baseURL: API_BASE_URL,
     headers: { 'Content-Type': 'application/json' },
+    timeout: REQUEST_TIMEOUT_MS,
   });
 
   private publicEndpoints = [
@@ -57,6 +61,13 @@ class ApiClientService {
     '/auth/refresh/',
     '/auth/signup/',
   ];
+
+  private shouldAttachGuestHeader(url?: string): boolean {
+    if (!url) return false;
+
+    // Avoid custom-header preflights for read-only public data requests.
+    return !url.endsWith('/categories/') && !url.endsWith('/questions/');
+  }
 
   constructor() {
     this.axiosInstance.interceptors.request.use(
@@ -94,7 +105,7 @@ class ApiClientService {
     }
 
     const guestId = this.getGuestSessionId();
-    if (guestId) {
+    if (guestId && this.shouldAttachGuestHeader(config.url)) {
       config.headers['X-Guest-Session-ID'] = guestId;
     }
 
@@ -210,11 +221,28 @@ class ApiClientService {
   private getGuestSessionId(): string | null {
     const raw = localStorage.getItem('guestUser');
     if (!raw) return null;
+
+    // Backward-compatible parse for both plain JSON and encrypted guest payloads.
     try {
-      return JSON.parse(raw).id;
+      const parsed = JSON.parse(raw);
+      if (parsed?.id && typeof parsed.id === 'string') {
+        return parsed.id;
+      }
     } catch {
-      return null;
+      // Ignore and try decrypt path.
     }
+
+    try {
+      const decrypted = AES.decrypt(raw, ENCRYPTION_KEY).toString(enc.Utf8);
+      const parsed = JSON.parse(decrypted);
+      if (parsed?.id && typeof parsed.id === 'string') {
+        return parsed.id;
+      }
+    } catch {
+      // No-op: invalid guest payload.
+    }
+
+    return null;
   }
 
   // Public convenience methods:

@@ -4,6 +4,7 @@ import {
   FetchQuestionsResponse,
   SubmitAnswerRequest,
   SubmitAnswerResponse,
+  AnswerValidationResponse,
   Question,
   BackendQuizSessionResponse,
   Category,
@@ -12,12 +13,19 @@ import { GroupQuizSession } from '../types/quiz.types';
 import AuthService from './authService';
 import { AES, enc } from 'crypto-js';
 import { QuizSession } from '../types/dashboard.types';
+import { isLevel1CategoryId } from '../constants/level1';
+import { removeDuplicateQuestions } from '../utils/quizUtils';
 
-/* Constants for caching and session management */
+import {
+  GROUP_SESSION_TIMEOUT_MS,
+  CATEGORY_CACHE_TTL_MS as SERVICE_CATEGORY_CACHE_TTL,
+} from '../constants/timings';
+
+/* Constants for session management */
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'default-key';
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-const GROUP_SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
-const MAX_GROUP_SIZE = 10;
+// Level 1 cap: keep group sessions at 2-6 players for stable local gameplay.
+// If product scope changes in later levels, update this cap together with backend validation.
+const MAX_GROUP_SIZE = 6;
 const MIN_GROUP_SIZE = 2;
 
 interface GuestAnswerSubmission extends SubmitAnswerRequest {
@@ -31,19 +39,56 @@ interface LocalQuizProgress {
   timestamp: string;
 }
 
-interface CacheEntry {
-  data: Question[];
-  timestamp: number;
-}
-
-/* In-memory cache for optimizing API calls */
-const questionCache: Record<string, CacheEntry> = {};
-let categoriesCache: { data: Category[]; timestamp: number } | null = null;
-
 const GUEST_QUIZ_PROGRESS = 'guestQuizProgress';
 const GUEST_QUIZ_COUNT = 'guestQuizCount';
+const CATEGORY_CACHE_KEY = 'quizCategoriesCacheV1';
+const CATEGORY_CACHE_TTL_MS = SERVICE_CATEGORY_CACHE_TTL;
+
+interface CachedCategoriesPayload {
+  categories: Category[];
+  cachedAt: number;
+}
 
 class QuizService {
+  async validateAnswer(
+    questionId: number,
+    selectedAnswer: string
+  ): Promise<AnswerValidationResponse> {
+    const response = await apiClient.post<AnswerValidationResponse>(
+      `/questions/${questionId}/validate/`,
+      { selected_answer: selectedAnswer }
+    );
+    return response.data;
+  }
+
+  private readCachedCategories(): Category[] | null {
+    const raw = localStorage.getItem(CATEGORY_CACHE_KEY);
+    if (!raw) return null;
+
+    try {
+      const parsed = JSON.parse(raw) as CachedCategoriesPayload;
+      if (!Array.isArray(parsed.categories) || typeof parsed.cachedAt !== 'number') {
+        return null;
+      }
+
+      if (Date.now() - parsed.cachedAt > CATEGORY_CACHE_TTL_MS) {
+        return null;
+      }
+
+      return parsed.categories;
+    } catch {
+      return null;
+    }
+  }
+
+  private writeCachedCategories(categories: Category[]): void {
+    const payload: CachedCategoriesPayload = {
+      categories,
+      cachedAt: Date.now(),
+    };
+    localStorage.setItem(CATEGORY_CACHE_KEY, JSON.stringify(payload));
+  }
+
   /* Guest session management methods */
   private getGuestQuizCount(): number {
     const encrypted = localStorage.getItem(GUEST_QUIZ_COUNT);
@@ -83,7 +128,7 @@ class QuizService {
     localStorage.setItem(GUEST_QUIZ_PROGRESS, encrypted);
   }
 
-  /* Question fetching with caching and guest limits */
+  /* Question fetching with guest limits - caching handled by Redis backend */
   async fetchQuestions(params?: FetchQuestionsRequest): Promise<FetchQuestionsResponse> {
     if (AuthService.isGuestSession()) {
       const guestCount = this.getGuestQuizCount();
@@ -94,28 +139,23 @@ class QuizService {
       }
     }
 
-    const cacheKey = `${params?.category ?? 'all'}-${params?.difficulty || 'all'}-${params?.count ?? 10}`;
-
     try {
-      const cached = questionCache[cacheKey];
-      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-        return { questions: cached.data };
-      }
-
+      const { count, ...rest } = params ?? {};
       const response = await apiClient.get<Question[]>('/questions/', {
         params: {
-          ...params,
-          _limit: params?.count || 10,
+          ...rest,
+          _limit: count || 10,
         },
       });
-      const fetchedQuestions = response.data;
+      const fetchedQuestions = removeDuplicateQuestions(response.data);
 
-      questionCache[cacheKey] = {
-        data: fetchedQuestions,
-        timestamp: Date.now(),
-      };
+      if ((count || 10) > fetchedQuestions.length) {
+        throw new Error(
+          `Only ${fetchedQuestions.length} unique questions are available for this selection. Please reduce the question count or choose a different category/difficulty.`
+        );
+      }
 
-      return { questions: fetchedQuestions };
+      return { questions: fetchedQuestions.slice(0, count || 10) };
     } catch (error: any) {
       throw new Error(
         `Failed to fetch questions: ${error.response?.data?.detail || error.message || 'An error occurred'}`
@@ -123,10 +163,11 @@ class QuizService {
     }
   }
 
-  /* Category fetching with in-memory caching */
+  /* Category fetching - caching handled by Redis backend */
   async fetchCategories(): Promise<Category[]> {
-    if (categoriesCache && Date.now() - categoriesCache.timestamp < CACHE_DURATION) {
-      return categoriesCache.data;
+    const cached = this.readCachedCategories();
+    if (cached) {
+      return cached;
     }
 
     try {
@@ -141,13 +182,25 @@ class QuizService {
         name: String(category.name),
       }));
 
-      categoriesCache = {
-        data: fetchedCategories,
-        timestamp: Date.now(),
-      };
-
-      return fetchedCategories;
+      const level1Categories = fetchedCategories.filter((category) =>
+        isLevel1CategoryId(category.id)
+      );
+      this.writeCachedCategories(level1Categories);
+      return level1Categories;
     } catch (error: any) {
+      // If network fetch fails but we have stale-but-usable cache, prefer availability.
+      const fallbackRaw = localStorage.getItem(CATEGORY_CACHE_KEY);
+      if (fallbackRaw) {
+        try {
+          const parsed = JSON.parse(fallbackRaw) as CachedCategoriesPayload;
+          if (Array.isArray(parsed.categories) && parsed.categories.length > 0) {
+            return parsed.categories;
+          }
+        } catch {
+          // Ignore parse errors and surface the original fetch error below.
+        }
+      }
+
       throw new Error(
         `Failed to fetch categories: ${error.response?.data?.detail || error.message || 'An error occurred'}`
       );
@@ -156,20 +209,29 @@ class QuizService {
 
   async checkQuizDataAvailability(
     category: number | null | undefined,
-    difficulty: string
-  ): Promise<boolean> {
+    difficulty: string,
+    requiredCount: number
+  ): Promise<{ isEnough: boolean; available: number }> {
     try {
       const response = await apiClient.get<Question[]>('/questions/', {
         params: {
           category,
           difficulty,
-          _limit: 1,
+          _limit: requiredCount,
           is_seeded: true,
         },
       });
-      return Array.isArray(response.data) && response.data.length > 0;
+      if (!Array.isArray(response.data)) {
+        return { isEnough: false, available: 0 };
+      }
+
+      const uniqueQuestions = removeDuplicateQuestions(response.data);
+      return {
+        isEnough: uniqueQuestions.length >= requiredCount,
+        available: uniqueQuestions.length,
+      };
     } catch {
-      return false;
+      return { isEnough: false, available: 0 };
     }
   }
 
@@ -218,7 +280,7 @@ class QuizService {
       };
 
       const response = await apiClient.post<SubmitAnswerResponse>(
-        `/sessions/${data.quiz_session_id}/submit-answer/`,
+        `/sessions/${data.quiz_session_id}/answer/`,
         payload
       );
       return response.data;
@@ -312,7 +374,7 @@ class QuizService {
       const updatedData = {
         ...data,
         lastActive: new Date().toISOString(),
-        timeoutAt: new Date(Date.now() + GROUP_SESSION_TIMEOUT).toISOString(),
+        timeoutAt: new Date(Date.now() + GROUP_SESSION_TIMEOUT_MS).toISOString(),
       };
 
       const response = await apiClient.patch<GroupQuizSession>(
@@ -362,11 +424,6 @@ class QuizService {
     correctnessData?: { questionId: string; playerId: number }[];
   }): Promise<any> {
     try {
-      // Check auth headers and refresh token if needed
-      if (!apiClient.axiosInstance.defaults.headers['Authorization']) {
-        await AuthService.refreshSession();
-      }
-
       // Only require players for group sessions
       if (
         !quizSessionData.questions ||
@@ -389,12 +446,26 @@ class QuizService {
         has_correctness: correctnessPayload.length > 0,
       };
 
-      return apiClient.post('/quiz-sessions/', payload);
+      const response = await apiClient.post('/quiz-sessions/', payload);
+      return response.data;
     } catch (error: any) {
       if (error.response?.status === 401) {
         AuthService.logout();
       }
-      throw error;
+
+      const saveErrorMap: Record<number, string> = {
+        400: 'Could not save quiz session due to invalid session payload.',
+        401: 'Authentication required. Please log in again to save your progress.',
+        403: 'You are not authorized to save this quiz session.',
+        500: 'Server error while saving quiz session. Please try again.',
+      };
+
+      throw new Error(
+        saveErrorMap[error.response?.status] ||
+          error.response?.data?.detail ||
+          error.message ||
+          'Failed to save quiz session.'
+      );
     }
   }
 

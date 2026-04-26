@@ -33,11 +33,7 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({
 }) => {
   // Helper to get multiple correct player names for a question
   const getCorrectPlayers = (questionId: string): string[] => {
-    console.log('[DEBUG] Finding correct players for question:', questionId);
-    console.log('[DEBUG] Correctness data:', correctnessData);
-
     if (!correctnessData || !groupSession?.players) {
-      console.log('[DEBUG] Missing correctness data or players');
       return [];
     }
 
@@ -46,7 +42,6 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({
     );
 
     if (correctAnswers.length === 0) {
-      console.log('[DEBUG] No correctness data found for question:', questionId);
       return [];
     }
 
@@ -55,7 +50,6 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({
       .filter((player) => player !== undefined)
       .map((player) => player!.name);
 
-    console.log('[DEBUG] Found players:', players);
     return players;
   };
 
@@ -64,12 +58,6 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({
     const players = getCorrectPlayers(questionId);
     return players.length > 0 ? players[0] : 'None';
   };
-  console.log('[DEBUG] ResultsComponent received:', {
-    mode,
-    hasCorrectnessData: !!correctnessData,
-    correctnessDataCount: correctnessData?.length || 0,
-    groupPlayersCount: groupSession?.players?.length || 0,
-  });
   const totalQuestions = questions.length;
   const percentage = Math.round((score / totalQuestions) * 100);
 
@@ -91,14 +79,6 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({
   }, []);
 
   const handleReviewSession = () => {
-    console.log('[DEBUG] Reviewing session with correctness data:', {
-      correctnessData,
-      groupPlayers: groupSession?.players?.map((p) => ({
-        name: p.name,
-        score: p.score,
-        answers: p.answers,
-      })),
-    });
     const sessionDetail: SessionDetail = {
       session_id: Date.now(),
       category,
@@ -111,22 +91,11 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({
         const questionId = String(q.id);
         const correctPlayers = mode === 'Group' ? getCorrectPlayers(questionId) : [];
 
-        console.log('[DEBUG] Passing to QuestionDetail:', {
-          questionId: questionId,
-          correctPlayer: mode === 'Group' ? getCorrectPlayer(questionId) : undefined,
-          correctPlayers: correctPlayers,
-          correctAnswer: q.correct_answer,
-          debugInfo: {
-            correctnessData: correctnessData,
-            players: groupSession?.players,
-          },
-        });
-
         return {
           id: typeof q.id === 'number' ? q.id : idx,
           question: q.question_text,
           userAnswer: selectedAnswers[idx] || '',
-          correctAnswer: q.correct_answer,
+          correctAnswer: q.correct_answer ?? '',
           correctPlayer: mode === 'Group' ? getCorrectPlayer(questionId) : undefined,
           correctPlayers: correctPlayers,
           debugInfo:

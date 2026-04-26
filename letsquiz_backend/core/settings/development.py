@@ -7,7 +7,8 @@ logger = logging.getLogger(__name__)
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.devtunnels.ms']
+CORS_ALLOW_ALL_ORIGINS = True
 
 DATABASES = {
     'default': {
@@ -25,11 +26,21 @@ MIDDLEWARE += [
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake'
+        'LOCATION': 'letsquiz-level1-dev',
+        'TIMEOUT': 300,
     }
 }
 
 GUEST_SESSION_TIMEOUT = 60 * 60 * 24 * 30  # 30 days in seconds
+
+# Session configuration (Redis-free for Level 1)
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+SESSION_COOKIE_AGE = GUEST_SESSION_TIMEOUT
+SESSION_SAVE_EVERY_REQUEST = True
+
+# Keep Redis optional and disabled by default for Level 1.
+LEVEL1_USE_REDIS = False
 
 RATE_LIMIT = {
     'GUEST': {

@@ -3,6 +3,7 @@ import styles from './ActivityDetailContent.module.css';
 import Typography from '../common/Typography';
 import { GroupPlayer } from '../../types/dashboard.types';
 import { QuestionDetail } from '../../types/dashboard.types';
+import { areAnswersEquivalent } from '../../utils/quizUtils';
 
 interface SessionDetail {
   session_id: number;
@@ -93,7 +94,7 @@ const ActivityDetailContent: React.FC<ActivityDetailContentProps> = ({ sessionDe
           const correctPlayers = getCorrectPlayers(idx, detail.correctAnswer);
           const isCorrect = is_group_session
             ? correctPlayers.length > 0
-            : detail.userAnswer === detail.correctAnswer;
+            : areAnswersEquivalent(detail.userAnswer, detail.correctAnswer);
 
           return (
             <div

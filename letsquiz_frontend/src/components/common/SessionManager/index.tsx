@@ -93,7 +93,7 @@ const SessionManager: React.FC = () => {
       isOpen={showWarning}
       onContinue={handleContinue}
       onLogout={handleLogoutNow}
-      timeRemaining={60} // a minutes in seconds
+      timeRemaining={120} // 2 minutes in seconds
     />
   );
 };

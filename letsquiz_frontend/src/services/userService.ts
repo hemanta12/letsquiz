@@ -1,9 +1,5 @@
 import apiClient from './apiClient';
-import {
-  UserProfile,
-  FetchLeaderboardResponse,
-  BackendQuizSessionResponse,
-} from '../types/api.types';
+import { UserProfile, BackendQuizSessionResponse } from '../types/api.types';
 import { QuizSession } from '../types/dashboard.types';
 
 class UserService {
@@ -29,7 +25,7 @@ class UserService {
         email: response.data.email,
         is_premium: response.data.is_premium,
         date_joined: response.data.joined_date,
-        quiz_history: [],
+        quiz_history: [], // Quiz history comes from separate endpoint
       };
 
       return userProfile;
@@ -39,18 +35,9 @@ class UserService {
     }
   }
 
-  async fetchLeaderboard(): Promise<FetchLeaderboardResponse> {
-    try {
-      const response = await apiClient.get<FetchLeaderboardResponse>('/users/leaderboard');
-      return response.data;
-    } catch (error: any) {
-      throw new Error(error.response?.data?.detail || error.message);
-    }
-  }
-
   async fetchUserQuizHistory(userId: string): Promise<QuizSession[]> {
     try {
-      const response = await apiClient.get<QuizSession[]>(`/quiz-session/user/${userId}/`);
+      const response = await apiClient.get<QuizSession[]>(`/users/${userId}/sessions/`);
 
       if (!response.data) {
         return [];

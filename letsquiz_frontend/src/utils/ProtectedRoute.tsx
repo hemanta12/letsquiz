@@ -17,11 +17,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const isGuestSession = localStorage.getItem('guestUser') !== null;
 
-  // Redirect to login if authentication is required and user is not authenticated
+  // Level 1 uses public gameplay routing, so auth-required redirects go home for now.
   if (requireAuth && !isAuthenticated) {
-    // Store the attempted URL for redirect after login
+    // Keep redirect intent for future levels where auth routes are restored.
     localStorage.setItem('redirectAfterLogin', window.location.pathname);
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   if (isAuthenticated || (guestAllowed && isGuestSession) || (!requireAuth && !guestAllowed)) {
@@ -33,8 +33,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/" replace />;
   }
 
-  // Default fallback to login
-  return <Navigate to="/login" replace />;
+  // Default fallback to home for Level 1.
+  return <Navigate to="/" replace />;
 };
 
 export default ProtectedRoute;

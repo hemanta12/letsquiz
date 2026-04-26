@@ -17,7 +17,6 @@ const QuizCard: React.FC<QuizCardProps> = ({ session, onClick }) => {
       onClick();
     }
   };
-  console.log('Difficulty', session.difficulty);
   // Handle potential null score
   const score = session.score !== null ? session.score : 'N/A';
   const totalQuestions = session.total_questions ?? 0;
@@ -35,7 +34,6 @@ const QuizCard: React.FC<QuizCardProps> = ({ session, onClick }) => {
       .join('');
   }
   const difficultyClass = toCamelCase(session.difficulty);
-  console.log('difficultyClass', difficultyClass);
 
   // Radial gauge calculations
   const radius = 24;

@@ -5,11 +5,10 @@ import { MainLayout } from './components/layouts/MainLayout';
 import { RouteTransition } from './components/layouts/RouteTransition';
 import ProtectedRoute from './utils/ProtectedRoute';
 import styles from './App.module.css';
-import { QuizStateHandler } from './components/Quiz/QuizStateHandler';
+import { QuizStateHandler } from './components/Quiz/QuizHooks';
 import SessionManager from './components/common/SessionManager';
 
 const Home = lazy(() => import('./pages/Home'));
-const Profile = lazy(() => import('./pages/Profile'));
 
 const LoadingFallback = () => (
   <RouteTransition>
@@ -41,10 +40,7 @@ const NotFound = () => (
   </RouteTransition>
 );
 
-const Login = lazy(() => import('./components/auth/Login'));
-const SignUp = lazy(() => import('./components/auth/SignUp'));
 const PlayerSetup = lazy(() => import('./pages/PlayerSetup'));
-const Dashboard = lazy(() => import('./pages/Dashboard'));
 
 const App: React.FC = () => {
   return (
@@ -57,14 +53,6 @@ const App: React.FC = () => {
             <Routes>
               {/* Public Routes - No auth required */}
               <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<SignUp />} />
-
-              {/* Auth Required Routes - Only logged in users */}
-              <Route element={<ProtectedRoute requireAuth={true} />}>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/profile" element={<Profile />} />
-              </Route>
 
               {/* Mixed Access Routes - Both guest and auth users */}
               <Route element={<ProtectedRoute guestAllowed={true} />}>

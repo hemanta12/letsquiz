@@ -1,13 +1,14 @@
 import React from 'react';
 import { Button } from '../../components/common';
 import styles from '../../pages/Home/Home.module.css';
+import { LEVEL1_ALLOWED_DIFFICULTIES } from '../../constants/level1';
 
 export interface DifficultySelectorProps {
   value: string;
   onSelect: (level: string) => void;
 }
 
-const levels = ['Easy', 'Medium', 'Quiz Genius'];
+const levels = [...LEVEL1_ALLOWED_DIFFICULTIES];
 
 const DifficultySelector: React.FC<DifficultySelectorProps> = ({ value, onSelect }) => (
   <div role="group" aria-label="Select difficulty" className={styles.difficultySelector}>
