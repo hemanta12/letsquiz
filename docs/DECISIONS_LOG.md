@@ -100,3 +100,11 @@ Format:
 - Context: Runtime checks confirmed backend question endpoints were healthy while some users still hit `Loading Quiz...` loops or `Quiz setup is missing` after refresh/direct route entry.
 - Consequences: Quiz initialization now restores setup from session storage when Redux state is empty, and loading has a timeout fallback with actionable error UI rather than indefinite spinner behavior.
 - Follow-up: Keep setup persistence and timeout safeguards as Level 1 reliability invariants; if Level 2 rewires routing/auth bootstrap, re-verify direct `/quiz` and refresh behavior.
+
+## D-012
+
+- Date: 2026-04-26
+- Decision: Make Level 1 question scope config-driven and manage seeded quiz data through an idempotent JSON sync command.
+- Context: Runtime DB had drifted from the intended Level 1 scope, with duplicated seeded questions, extra categories, and legacy difficulty-label variants (`Quiz_genius` vs `Quiz Genius`).
+- Consequences: Level 1 categories/difficulties are now controlled from backend settings, the seed command updates existing questions instead of blindly inserting duplicates, and destructive pruning remains explicit via command flags rather than automatic runtime behavior.
+- Follow-up: Keep new question imports on the seed-command path only, and if Level 1 scope expands later, update `LEVEL1_ALLOWED_CATEGORIES` before syncing new JSON data.

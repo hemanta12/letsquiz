@@ -13,11 +13,7 @@ import {
 import { setGroupSession, setGroupMode, setCurrentPlayer } from './groupQuizSlice';
 import { RootState } from '../store';
 import { HISTORY_CACHE_DURATION_MS, CATEGORIES_CACHE_DURATION_MS } from '../../constants/timings';
-import {
-  isLevel1CategoryId,
-  isLevel1Difficulty,
-  LEVEL1_DIFFICULTY_TO_ID,
-} from '../../constants/level1';
+import { isLevel1Difficulty } from '../../constants/level1';
 import { calculateQuizScore } from '../../utils/quizUtils';
 
 interface LocalProgress {
@@ -61,6 +57,19 @@ interface QuizState {
 
 const savedGuestProgress = localStorage.getItem('guestQuizProgress');
 const savedGuestCount = localStorage.getItem('guestQuizCount');
+
+const isAllowedCategoryInState = (
+  categories: Category[],
+  categoryId: number | null | undefined
+): boolean => {
+  if (categoryId === null || categoryId === undefined) {
+    return true;
+  }
+  if (categories.length === 0) {
+    return true;
+  }
+  return categories.some((category) => category.id === categoryId);
+};
 
 const initialState: QuizState = {
   settings: {
@@ -208,9 +217,9 @@ export const fetchQuizQuestions = createAsyncThunk<
       if (
         params.category !== null &&
         params.category !== undefined &&
-        !isLevel1CategoryId(params.category)
+        !isAllowedCategoryInState(state.quiz.categories, params.category)
       ) {
-        return rejectWithValue('Invalid category selected for Level 1.');
+        return rejectWithValue('Invalid category selected for the current quiz scope.');
       }
 
       if (params.difficulty && !isLevel1Difficulty(params.difficulty)) {
@@ -256,22 +265,24 @@ export const startGroupQuiz = createAsyncThunk<
   { rejectValue: string }
 >(
   'quiz/startGroupQuiz',
-  async ({ players, categoryId, difficulty, numberOfQuestions }, { dispatch, rejectWithValue }) => {
+  async (
+    { players, categoryId, difficulty, numberOfQuestions },
+    { dispatch, rejectWithValue, getState }
+  ) => {
     try {
       if (!isLevel1Difficulty(difficulty)) {
         return rejectWithValue(`Invalid difficulty level: ${difficulty}`);
       }
 
-      if (categoryId !== null && categoryId !== undefined && !isLevel1CategoryId(categoryId)) {
-        return rejectWithValue('Invalid category selected for Level 1 group mode.');
+      const availableCategories = getState().quiz.categories;
+      if (!isAllowedCategoryInState(availableCategories, categoryId)) {
+        return rejectWithValue('Invalid category selected for current group mode scope.');
       }
-
-      const difficultyId = LEVEL1_DIFFICULTY_TO_ID[difficulty];
 
       const backendSession = await QuizService.createGroupSession(
         players,
         categoryId,
-        difficultyId,
+        difficulty,
         numberOfQuestions
       );
 
@@ -341,7 +352,7 @@ export const quizSlice = createSlice({
       const isMixUpMode = action.payload.category === 'Mix Up' || action.payload.categoryId == null;
       const sanitizedCategoryId = isMixUpMode
         ? null
-        : isLevel1CategoryId(action.payload.categoryId)
+        : isAllowedCategoryInState(state.categories, action.payload.categoryId)
           ? action.payload.categoryId
           : null;
       const sanitizedDifficulty = isLevel1Difficulty(action.payload.difficulty)
@@ -376,7 +387,7 @@ export const quizSlice = createSlice({
       }
 
       if (!isMixUpMode && action.payload.categoryId != null && sanitizedCategoryId == null) {
-        state.error = 'Only Science, History, and Geography are available in Level 1.';
+        state.error = 'Selected category is not available for the current quiz scope.';
         return;
       }
 

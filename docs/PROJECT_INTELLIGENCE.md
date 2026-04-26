@@ -1,6 +1,6 @@
 # PROJECT_INTELLIGENCE
 
-Last verified against code: 2026-04-25
+Last verified against code: 2026-04-26
 
 Purpose:
 
@@ -31,7 +31,7 @@ This means login/signup/dashboard/profile are not in the primary frontend route 
 
 ### Level 1 constraints currently enforced
 
-- Categories allowlisted to IDs 1, 2, 3 (Science, History, Geography)
+- Categories allowlisted by backend config (`LEVEL1_ALLOWED_CATEGORIES`), currently Science, History, Geography
 - Difficulty allowlist: Easy, Medium, Quiz Genius
 - Group players constrained to 2-6 (frontend and backend validation)
 
@@ -67,6 +67,9 @@ This means login/signup/dashboard/profile are not in the primary frontend route 
 - Development DB: SQLite
 - Production DB target: PostgreSQL
 - Cache utility abstraction in `core/redis_utils.py` with Redis optional and disabled by default for Level 1
+- Canonical Level 1 seed source: `letsquiz_backend/data/questions.json`
+- Seed sync command: `apps/quiz/management/commands/seed_questions.py`
+- Current verified seeded DB scope: 244 total seeded questions across 3 categories (Science 85, History 84, Geography 75)
 
 ---
 
@@ -162,6 +165,7 @@ Invalidation utilities exist in `apps/quiz/cache_utils.py` and are called on use
 - Solo and local group gameplay
 - Level 1 category/difficulty constraints
 - Session creation, answering, and results
+- Config-driven seeded question scope with idempotent JSON sync workflow
 
 ### Present in code but outside Level 1 primary runtime path
 
@@ -178,6 +182,8 @@ The following observations should be reviewed before promoting Level 2+:
 
 - Some auth verification logic references fields that are not visible on the current User model definition and may require implementation alignment.
 - Production settings import path should be re-validated for deployment correctness.
+- Legacy difficulty row `Quiz_genius` can remain as an empty DB record after cleanup; it does not affect runtime because difficulty matching is normalized, but the row can be removed in a later maintenance slice.
+- Seeded question changes should not be made directly in SQLite; use the seed sync command to avoid drift and duplicate reintroduction.
 
 These are documented here to prevent hidden regressions when reactivating dormant features.
 

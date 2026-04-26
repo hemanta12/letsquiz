@@ -99,6 +99,12 @@ Step 3 notes (2026-04-25):
 - Group start flow now maps difficulty IDs from the same Level 1 allowlist (legacy `Hard` mapping removed).
 - Category fetch responses are filtered to Level 1 categories to keep data flow consistent with home selection constraints.
 
+Step 3 data-governance update (2026-04-26):
+
+- Backend Level 1 category scope is now config-driven and enforced on seeded question sync as well as runtime fetches.
+- Seeded quiz data was cleaned to the intended Level 1 scope: 244 questions across Science (85), History (84), and Geography (75).
+- Future question additions should go through the seed sync command rather than direct DB edits.
+
 ## Step 4 - Runtime Reliability for Public Gameplay
 
 - [x] Verify retry/error handling coverage on quiz start, answer submit, and results fetch

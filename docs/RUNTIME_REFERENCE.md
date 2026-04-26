@@ -38,6 +38,32 @@ Level 1 strategy keeps Redis disabled by default and uses Django cache backend f
 Question fetch and session-start flows avoid DB random sort (`order_by('?')`) and use random ID sampling + joined fetches to keep startup latency low.
 Solo mode also uses a single-fetch startup path (prefetch on Home + Redux hydration) so Quiz page avoids a duplicate request in the common path.
 
+## 4.1) Question Data Source of Truth
+
+- Canonical seed file: `letsquiz_backend/data/questions.json`
+- Runtime DB: `letsquiz_backend/core/db.sqlite3`
+- Level 1 category scope is controlled by backend config, not hardcoded frontend DB IDs.
+
+Safe import/update command:
+
+```bash
+.venv/bin/python manage.py seed_questions --data-file data/questions.json
+```
+
+Optional maintenance flags:
+
+```bash
+.venv/bin/python manage.py seed_questions --data-file data/questions.json --dedupe
+.venv/bin/python manage.py seed_questions --data-file data/questions.json --prune-stale-seeded
+.venv/bin/python manage.py seed_questions --data-file data/questions.json --prune-non-level1
+```
+
+Import behavior:
+
+- New seeded questions are inserted.
+- Existing seeded questions are updated when the normalized `question_text + category + difficulty` key already exists.
+- Non-allowed categories are skipped unless Level 1 config is expanded first.
+
 ## 5) Source of Truth
 
 For product and implementation decisions, treat these as canonical:

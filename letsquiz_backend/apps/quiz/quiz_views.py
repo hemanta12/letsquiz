@@ -15,6 +15,11 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated 
 
 from letsquiz_backend.core.redis_utils import cache_set, cache_get, cache_delete
+from .level1_config import (
+    canonicalize_difficulty_label,
+    get_allowed_category_names,
+    normalize_label,
+)
 
 from .serializers import (
     QuestionSerializer,
@@ -40,6 +45,26 @@ logger = logging.getLogger(__name__)
 CACHE_TIMEOUT_QUESTIONS = 30 * 60  # 30 minutes
 CACHE_TIMEOUT_CATEGORIES = 60 * 60  # 1 hour
 CACHE_TIMEOUT_SESSION_RESULTS = 30 * 60  # 30 minutes for completed session results
+
+
+def is_allowed_level1_category_id(category_id: int) -> bool:
+    if category_id is None:
+        return True
+    return Category.objects.filter(id=category_id, name__in=get_allowed_category_names()).exists()
+
+
+def resolve_difficulty_filter_values(raw_difficulty: str):
+    canonical = canonicalize_difficulty_label(raw_difficulty)
+    if not canonical:
+        return None
+
+    canonical_normalized = normalize_label(canonical)
+    matching_labels = [
+        difficulty.label
+        for difficulty in DifficultyLevel.objects.all()
+        if normalize_label(difficulty.label) == canonical_normalized
+    ]
+    return matching_labels or [canonical]
 
 def generate_cache_key(prefix: str, **params) -> str:
     """Generate a consistent cache key from parameters"""
@@ -128,12 +153,15 @@ def get_session_questions_queryset(quiz_session: QuizSession) -> Iterable[QuizSe
 
 def get_questions_from_cache_or_db(category_id=None, difficulty=None, count=10):
     """Get questions from cache or database with Redis caching"""
+    allowed_categories = sorted(get_allowed_category_names())
+
     # Generate cache key
     cache_key = generate_cache_key(
         "questions", 
         category_id=category_id, 
         difficulty=difficulty, 
-        count=count
+        count=count,
+        allowed_categories=allowed_categories,
     )
     
     # Try to get from cache first
@@ -145,17 +173,21 @@ def get_questions_from_cache_or_db(category_id=None, difficulty=None, count=10):
     logger.info(f"Cache MISS for questions: {cache_key}")
     
     # Cache miss - fetch from database
-    queryset = Question.objects.filter(is_seeded=True)
+    queryset = Question.objects.filter(
+        is_seeded=True,
+        category__name__in=allowed_categories,
+    )
     
     if category_id:
+        if not is_allowed_level1_category_id(category_id):
+            return None
         queryset = queryset.filter(category__id=category_id)
     
     if difficulty:
-        try:
-            difficulty_obj = DifficultyLevel.objects.get(label=difficulty)
-            queryset = queryset.filter(difficulty=difficulty_obj)
-        except DifficultyLevel.DoesNotExist:
+        difficulty_values = resolve_difficulty_filter_values(difficulty)
+        if not difficulty_values:
             return None  # Invalid difficulty
+        queryset = queryset.filter(difficulty__label__in=difficulty_values)
     
     questions = pick_random_questions(queryset, count=count, enforce_unique_text=True)
     serializer = QuestionSerializer(questions, many=True)
@@ -214,6 +246,11 @@ def fetch_seeded_questions_view(request):
         except ValueError:
             return Response({
                 'error': 'Invalid category ID.', 
+                'code': 'invalid_category'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        if not is_allowed_level1_category_id(category_id):
+            return Response({
+                'error': 'Category is outside current Level 1 scope.',
                 'code': 'invalid_category'
             }, status=status.HTTP_400_BAD_REQUEST)
 
@@ -290,7 +327,10 @@ def fetch_categories_view(request):
     # Cache miss - fetch from database
     categories = Category.objects.annotate(
         question_count=Count('questions', filter=Q(questions__is_seeded=True))
-    ).filter(question_count__gt=0)
+    ).filter(
+        question_count__gt=0,
+        name__in=get_allowed_category_names(),
+    ).order_by('id')
     
     serializer = CategorySerializer(categories, many=True)
     # Convert ReturnList to regular list for JSON serialization
@@ -314,16 +354,38 @@ def start_quiz_session_view(request):
 
     category_id = serializer.validated_data.get('category_id')
     difficulty_id = serializer.validated_data.get('difficulty_id')
+    difficulty_label = serializer.validated_data.get('difficulty')
     count = serializer.validated_data['count']
     mode = serializer.validated_data['mode']
     players_data = serializer.validated_data.get('players', [])
 
-    queryset = Question.objects.filter(is_seeded=True)
+    queryset = Question.objects.filter(
+        is_seeded=True,
+        category__name__in=get_allowed_category_names(),
+    )
     if category_id:
+        if not is_allowed_level1_category_id(category_id):
+            return Response({'error': 'Invalid category for Level 1.', 'code': 'invalid_category'}, status=status.HTTP_400_BAD_REQUEST)
         queryset = queryset.filter(category_id=category_id)
 
-    if difficulty_id:
-        queryset = queryset.filter(difficulty_id=difficulty_id)
+    difficulty_values = None
+    if difficulty_label:
+        difficulty_values = resolve_difficulty_filter_values(difficulty_label)
+        if not difficulty_values:
+            return Response({'error': 'Invalid difficulty for Level 1.', 'code': 'invalid_difficulty'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if difficulty_id is not None:
+        try:
+            difficulty_obj = DifficultyLevel.objects.get(id=difficulty_id)
+        except DifficultyLevel.DoesNotExist:
+            return Response({'error': 'Difficulty not found.', 'code': 'invalid_difficulty'}, status=status.HTTP_400_BAD_REQUEST)
+
+        difficulty_values = resolve_difficulty_filter_values(difficulty_obj.label)
+        if not difficulty_values:
+            return Response({'error': 'Invalid difficulty for Level 1.', 'code': 'invalid_difficulty'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if difficulty_values:
+        queryset = queryset.filter(difficulty__label__in=difficulty_values)
 
     available_questions = queryset.count()
     if category_id and available_questions == 0:
@@ -344,7 +406,7 @@ def start_quiz_session_view(request):
             for name in players_data
         ])
 
-    selected_questions = pick_random_questions(queryset, count=count)
+    selected_questions = pick_random_questions(queryset, count=count, enforce_unique_text=True)
     QuizSessionQuestion.objects.bulk_create([
         QuizSessionQuestion(quiz_session=quiz_session, question=q)
         for q in selected_questions

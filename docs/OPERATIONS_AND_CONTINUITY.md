@@ -1,6 +1,6 @@
 # OPERATIONS_AND_CONTINUITY
 
-Last verified: 2026-04-25
+Last verified: 2026-04-26
 
 ## 1) Purpose
 
@@ -67,10 +67,70 @@ REACT_APP_ENCRYPTION_KEY=replace-with-local-key
 Useful backend commands:
 
 ```bash
-python manage.py test_redis
-python manage.py manage_cache --action=stats
-python manage.py seed_questions
+.venv/bin/python manage.py test_redis
+.venv/bin/python manage.py manage_cache --action=stats
+.venv/bin/python manage.py seed_questions --data-file data/questions.json
 ```
+
+## 4.1) Question Data Operations
+
+Canonical Level 1 question source:
+
+- Seed file: `letsquiz_backend/data/questions.json`
+- Runtime DB: `letsquiz_backend/core/db.sqlite3`
+
+Current verified Level 1 DB state after cleanup:
+
+- Categories retained: Science, History, Geography
+- Total seeded questions: 244
+- Category counts: Science 85, History 84, Geography 75
+
+How to import more questions safely:
+
+1. Add new question objects to `letsquiz_backend/data/questions.json`, or prepare another JSON file with the same schema.
+2. Run the non-destructive sync command:
+
+```bash
+.venv/bin/python manage.py seed_questions --data-file data/questions.json
+```
+
+This command:
+
+- Inserts new seeded questions that do not exist yet.
+- Updates matching seeded questions by normalized `question_text + category + difficulty` key.
+- Does not blindly duplicate rows.
+
+Question JSON shape:
+
+```json
+{
+  "category": "Science",
+  "difficulty": "Easy",
+  "question_text": "What is the chemical symbol for water?",
+  "correct_answer": "H2O",
+  "options": ["H2O", "O2", "CO2", "NaCl"],
+  "metadata": {}
+}
+```
+
+Cleanup and sync variants:
+
+```bash
+.venv/bin/python manage.py seed_questions --data-file data/questions.json --dedupe
+.venv/bin/python manage.py seed_questions --data-file data/questions.json --prune-stale-seeded
+.venv/bin/python manage.py seed_questions --data-file data/questions.json --prune-non-level1
+.venv/bin/python manage.py seed_questions --data-file data/questions.json --dedupe --prune-stale-seeded --prune-non-level1
+```
+
+Flag meanings:
+
+- `--dedupe`: remove duplicate seeded rows for the same normalized question/category/difficulty key.
+- `--prune-stale-seeded`: delete seeded rows in allowed categories that are not present in the current JSON file.
+- `--prune-non-level1`: delete seeded rows outside the configured Level 1 category allowlist.
+
+Important operating rule:
+
+- If you add a new category in JSON, update backend config first via `LEVEL1_ALLOWED_CATEGORIES`; otherwise those entries are intentionally skipped.
 
 ## 5) Resume After Long Gap (Checklist)
 
@@ -105,6 +165,7 @@ Update docs in the same change when any of the following happen:
 - Divergence between implementation and PROJECT_INTELLIGENCE snapshot.
 - Dormant features reactivated without complete contract checks.
 - Env/config assumptions changing without runbook updates.
+- Seed JSON and DB drifting apart because question changes were made directly in SQLite instead of through the seed command.
 
 ## 9) Single-Maintainer Operating Pattern
 

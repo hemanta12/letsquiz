@@ -116,6 +116,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 class QuizSessionStartSerializer(serializers.Serializer):
     category_id = serializers.IntegerField(required=False, allow_null=True)
     difficulty_id = serializers.IntegerField(required=False, allow_null=True)
+    difficulty = serializers.CharField(required=False, allow_blank=False, max_length=50)
     count = serializers.IntegerField(min_value=1)
     mode = serializers.ChoiceField(choices=['solo', 'group'])
     players = serializers.ListField(child=serializers.CharField(max_length=100), required=False)

@@ -13,7 +13,6 @@ import { GroupQuizSession } from '../types/quiz.types';
 import AuthService from './authService';
 import { AES, enc } from 'crypto-js';
 import { QuizSession } from '../types/dashboard.types';
-import { isLevel1CategoryId } from '../constants/level1';
 import { removeDuplicateQuestions } from '../utils/quizUtils';
 
 import {
@@ -182,11 +181,8 @@ class QuizService {
         name: String(category.name),
       }));
 
-      const level1Categories = fetchedCategories.filter((category) =>
-        isLevel1CategoryId(category.id)
-      );
-      this.writeCachedCategories(level1Categories);
-      return level1Categories;
+      this.writeCachedCategories(fetchedCategories);
+      return fetchedCategories;
     } catch (error: any) {
       // If network fetch fails but we have stale-but-usable cache, prefer availability.
       const fallbackRaw = localStorage.getItem(CATEGORY_CACHE_KEY);
@@ -306,16 +302,11 @@ class QuizService {
   async createGroupSession(
     players: string[],
     categoryId: number | null | undefined,
-    difficultyId: number,
+    difficulty: string,
     numberOfQuestions: number
   ): Promise<BackendQuizSessionResponse> {
     try {
-      if (
-        !players.length ||
-        difficultyId === undefined ||
-        difficultyId === null ||
-        numberOfQuestions <= 0
-      ) {
+      if (!players.length || !difficulty || numberOfQuestions <= 0) {
         throw new Error(
           'Invalid group session data: players, difficulty, or number of questions missing/invalid'
         );
@@ -336,7 +327,7 @@ class QuizService {
 
       const sessionPayload = {
         category_id: categoryId,
-        difficulty_id: difficultyId,
+        difficulty,
         count: numberOfQuestions,
         mode: 'group',
         players: players,

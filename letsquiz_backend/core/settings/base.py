@@ -200,6 +200,23 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
     "x-guest-session-id",
 ]
 
+# Level 1 quiz scope is configurable through env values.
+# Example:
+# LEVEL1_ALLOWED_CATEGORIES=Science,History,Geography
+# LEVEL1_ALLOWED_DIFFICULTIES=Easy,Medium,Quiz Genius
+LEVEL1_ALLOWED_CATEGORIES = env_list(
+    'LEVEL1_ALLOWED_CATEGORIES',
+    'Science,History,Geography',
+)
+LEVEL1_ALLOWED_DIFFICULTIES = env_list(
+    'LEVEL1_ALLOWED_DIFFICULTIES',
+    'Easy,Medium,Quiz Genius',
+)
+LEVEL1_SEED_FILE = env(
+    'LEVEL1_SEED_FILE',
+    default=str(BASE_DIR.parent / 'data' / 'questions.json'),
+)
+
 CELERY_BROKER_URL = env('REDIS_URL', default='redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = env('REDIS_URL', default='redis://localhost:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
