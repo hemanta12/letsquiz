@@ -8,7 +8,7 @@ import DifficultySelector from '../../components/Home/DifficultySelector';
 import useHomeSettings from '../../hooks/useHomeSettings';
 import AuthService from '../../services/authService';
 import QuizService from '../../services/quizService';
-import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
+import { useAppDispatch } from '../../hooks/reduxHooks';
 import { setQuizSettings, hydrateQuestionsFromPrefetch } from '../../store/slices/quizSlice';
 import styles from './Home.module.css';
 
