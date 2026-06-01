@@ -42,7 +42,8 @@
     "postcss-import": "^15.1.0",
     "postcss-nested": "^6.0.0",
     "postcss-preset-env": "^8.0.0",
-    "prettier": "^3.5.3"
+    "prettier": "^3.5.3",
+    "wrangler": "^4.95.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -50,7 +51,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "test:coverage": "npm test -- --coverage --watchAll=false",
-    "server": "json-server --watch db.json --port 9000"
+    "server": "json-server --watch db.json --port 9000",
+    "deploy": "npm run build && wrangler deploy",
+    "preview": "npm run build && wrangler dev"
   },
   "eslintConfig": {
     "extends": [
