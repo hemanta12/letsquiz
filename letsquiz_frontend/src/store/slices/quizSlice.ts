@@ -274,7 +274,7 @@ export const startGroupQuiz = createAsyncThunk<
         return rejectWithValue(`Invalid difficulty level: ${difficulty}`);
       }
 
-      const availableCategories = getState().quiz.categories;
+      const availableCategories = (getState() as RootState).quiz.categories;
       if (!isAllowedCategoryInState(availableCategories, categoryId)) {
         return rejectWithValue('Invalid category selected for current group mode scope.');
       }
