@@ -51,76 +51,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name="Question",
-            fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("question_text", models.TextField()),
-                ("correct_answer", models.CharField(max_length=255)),
-                ("metadata_json", models.JSONField(blank=True, null=True)),
-                ("is_seeded", models.BooleanField(default=False)),
-                ("is_fallback", models.BooleanField(default=False)),
-                (
-                    "category",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name="questions",
-                        to="quiz.category",
-                    ),
-                ),
-                (
-                    "created_by",
-                    models.ForeignKey(
-                        blank=True,
-                        null=True,
-                        on_delete=django.db.models.deletion.SET_NULL,
-                        related_name="created_questions",
-                        to=settings.AUTH_USER_MODEL,
-                    ),
-                ),
-                (
-                    "difficulty",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name="questions",
-                        to="quiz.difficultylevel",
-                    ),
-                ),
-            ],
-        ),
-        migrations.CreateModel(
-            name="QuizSession",
-            fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("started_at", models.DateTimeField(auto_now_add=True)),
-                ("completed_at", models.DateTimeField(blank=True, null=True)),
-                ("score", models.IntegerField(default=0)),
-                (
-                    "user",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name="quiz_sessions",
-                        to=settings.AUTH_USER_MODEL,
-                    ),
-                ),
-            ],
-        ),
-        migrations.CreateModel(
             name="User",
             fields=[
                 (
@@ -239,6 +169,76 @@ class Migration(migrations.Migration):
             },
             managers=[
                 ("objects", django.contrib.auth.models.UserManager()),
+            ],
+        ),
+        migrations.CreateModel(
+            name="Question",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("question_text", models.TextField()),
+                ("correct_answer", models.CharField(max_length=255)),
+                ("metadata_json", models.JSONField(blank=True, null=True)),
+                ("is_seeded", models.BooleanField(default=False)),
+                ("is_fallback", models.BooleanField(default=False)),
+                (
+                    "category",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="questions",
+                        to="quiz.category",
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_questions",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "difficulty",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="questions",
+                        to="quiz.difficultylevel",
+                    ),
+                ),
+            ],
+        ),
+        migrations.CreateModel(
+            name="QuizSession",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("started_at", models.DateTimeField(auto_now_add=True)),
+                ("completed_at", models.DateTimeField(blank=True, null=True)),
+                ("score", models.IntegerField(default=0)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="quiz_sessions",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
